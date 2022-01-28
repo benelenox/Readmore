@@ -14,8 +14,14 @@ Including another URLconf
     2. Add a URL to urlpatterns:  path('blog/', include('blog.urls'))
 """
 from django.contrib import admin
-from django.urls import path
+from django.urls import path, include
+from readmore_app import urls as readmore_app_urls
+from readmore_app import views as readmore_app_views
+from django.shortcuts import redirect
+
 
 urlpatterns = [
     path('admin/', admin.site.urls),
+    path('readmore/', include(('readmore_app.urls', 'readmore_app'), namespace="readmore_app"), name="readmore_app_patterns"),
+    path('', lambda request: redirect('readmore/', permanent=False)),
 ]
