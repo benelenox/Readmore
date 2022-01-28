@@ -44,6 +44,8 @@ class register(forms.Form):
         confirm_password = cleaned_data.get('confirm_password')
         if password != confirm_password:
             raise ValidationError("Passwords do not match.")
+        if type(birthdate) is type(None):
+            raise ValidationError("Birthdate must be entered in the form MM/DD/YYYY.")
         elif birthdate > date.today() - timedelta(days=1095) or birthdate < date(1900, 1, 1):
             raise ValidationError("A valid birthdate must be provided.")
         elif len(UserExt.objects.filter(username=username)):

@@ -19,7 +19,7 @@ def login(request, account_created=None):
         form = loginform(request.POST)
         if form.is_valid():
             if not authenticate(username=form.cleaned_data['username'], password=form.cleaned_data['password']):
-                return render(request, "readmore_app/login.html", {'error_message': "Invalid login information."})
+                return render(request, "readmore_app/login.html", {'form': form, 'optional_message': "Invalid login information."})
             else:
                 log_in(request, authenticate(username=form.cleaned_data['username'], password=form.cleaned_data['password']))
                 return HttpResponseRedirect(reverse("readmore_app:index"))
