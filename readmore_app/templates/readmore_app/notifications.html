@@ -1,0 +1,41 @@
+{% extends parent_template|default:"base.html" %}
+{% load static %}
+
+{% block title %}
+Readmore - Notifications
+{% endblock %}
+
+{% block content %}
+<div>
+    <h1>Notifications</h1>
+    <table>
+    {% if not notifications %}
+        <tr><td>No Notifications Here</td></tr>
+    {% else %}
+    {% for notification in notifications %}
+        <tr id="notification{{ notification.notification_id }}">
+            <td>
+                <h3>{{ notification.notification_title }}</h3>
+                <button onclick="removeNotification({{ notification.notification_id }});" class="like"><img style="width: 10px;" src="{% static 'readmore_app/x_button.png' %}" /></button>
+                <p style="font-size: 10px">{{ notification.notification_time }}</p>
+                {% if notification.notification_link %}
+                <p><a href="{{ notification.notification_link }}">{{ notification.notification_link_text }}</a></p>
+                {% endif %}
+                <p>{{ notification.notification_message }}</p>
+            </td>
+        </tr>
+    {% endfor %}
+    {% endif %}
+    </table>
+</div>
+{% endblock %}
+
+{% block js %}
+function removeNotification(notification_id) {
+    const tr = document.getElementById("notification" + notification_id);
+    tr.parentNode.removeChild(tr);
+    const xhrnotify = new XMLHttpRequest();
+    xhrnotify.open("GET", "/readmore/ajax/notifications/" + notification_id + "/");
+    xhrnotify.send();
+}
+{% endblock %}

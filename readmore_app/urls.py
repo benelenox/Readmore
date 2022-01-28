@@ -7,4 +7,6 @@ urlpatterns = [
     path('login/', views.login, name='login'),
     path('login/<int:account_created>/', views.login, name='login_account_created'),
     path('logout/', views.logout, name='logout'),
+    path('notifications/', views.notifications, name='notifications'),
+    path('ajax/notifications/<int:notification_id>/', views.delete_notification, name="delete_notification"),
 ]

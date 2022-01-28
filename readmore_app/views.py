@@ -1,11 +1,19 @@
 import re
 from datetime import datetime
+from django.views.decorators.csrf import csrf_exempt
 from django.shortcuts import render, redirect
 from django.urls import reverse
 from django.http import HttpResponse, HttpResponseRedirect
-from .models import UserExt
+from .models import UserExt, Notification
 from .forms import register as regform, login as loginform
 from django.contrib.auth import authenticate, login as log_in, logout as log_out
+
+def delete_notification(request, notification_id):
+    Notification.objects.filter(notification_id=notification_id).delete()
+
+def notifications(request):
+    notifications = Notification.objects.filter(notification_user = UserExt.objects.get(pk=request.user.id))
+    return render(request, "readmore_app/notifications.html", {"notifications": notifications})
 
 def index(request):
     # If the user isn't logged in, redirect to login page

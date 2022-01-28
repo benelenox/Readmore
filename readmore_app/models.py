@@ -9,4 +9,11 @@ class UserExt(User):
     user_interests = models.TextField()
 
 
-    
+class Notification(models.Model):
+    notification_id = models.AutoField(primary_key=True)
+    notification_user = models.ForeignKey(UserExt, on_delete=models.CASCADE)
+    notification_title = models.CharField(max_length=10000)
+    notification_time = models.DateTimeField()
+    notification_link = models.CharField(max_length=10000, blank=True)
+    notification_link_text = models.CharField(max_length=10000, blank=True)
+    notification_message = models.TextField()
