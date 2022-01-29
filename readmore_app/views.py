@@ -51,6 +51,8 @@ def registration(request):
             new_user.user_birthdate = form.cleaned_data['birthdate']
             new_user.save()
             return redirect(reverse('readmore_app:login_account_created', kwargs={'account_created':1}))
+    if request.user.is_authenticated:
+        return HttpResponseRedirect(reverse("readmore_app:index"))
     return render(request, 'readmore_app/registration.html', {'form': form})
 
 def logout(request):

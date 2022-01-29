@@ -22,8 +22,11 @@ Readmore - Notifications
                 <p><a href="{{ notification.notification_link }}">{{ notification.notification_link_text }}</a></p>
                 {% endif %}
                 <p>{{ notification.notification_message }}</p>
+                <hr>
             </td>
+            
         </tr>
+        
     {% endfor %}
     {% endif %}
     </table>
