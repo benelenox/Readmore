@@ -31,7 +31,7 @@ main{
 }
 
 #dropdown {position: absolute; display: none; background-color: #dde0ff; padding: 0px; z-index: 1; top:45px;}
-#drop .dropaw {display: block; width: 150%; position: relative; text-align: center;}
+#drop .dropaw {display: block; width: 90%; position: relative; text-align: center;  color: #3b3e66;}
 #drop {float: right; display: flex; flex-direction: column; padding: 10px;}
 #drop:hover #dropdown {display:flex; flex-direction: column; z-index: 1;}
 
