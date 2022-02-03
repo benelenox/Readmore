@@ -7,7 +7,6 @@ from django.http import HttpResponse, HttpResponseRedirect
 from .models import UserExt, Notification
 from .forms import register as regform, login as loginform
 from django.contrib.auth import authenticate, login as log_in, logout as log_out
-from datetime import datetime
 
 def profile(request, profile_id):
     profile_user = get_object_or_404(UserExt, id=profile_id)
@@ -24,32 +23,16 @@ def process_friend(request):
         profile_user = UserExt.objects.get(pk=request.POST['profile_user_id'])
         type = request.POST['type']
         if type == "add":
-            if real_user in profile_user.user_pending_friends.all():
+            if real_user in profile_user.pending_friends.all():
                 profile_user.user_pending_friends.remove(real_user)
                 profile_user.user_friends.add(real_user)
                 profile_user.save()
                 real_user.user_friends.add(profile_user)
                 real_user.save()
-                notify_friend_added = Notification()
-                notify_friend_added.notification_type = "friend"
-                notify_friend_added.notification_user = profile_user
-                notify_friend_added.notification_title = "New Friend!"
-                notify_friend_added.notification_link = f"/readmore/profile/{real_user.id}/"
-                notify_friend_added.notification_link_text = f"@{real_user.username}"
-                notify_friend_added.notification_message = f"{real_user.username} has accepted your friend request!"
-                notify_friend_added.save()
                 return HttpResponse("added")
             else:
                 real_user.user_pending_friends.add(profile_user)
                 real_user.save()
-                notify_friend_request = Notification()
-                notify_friend_request.notification_type = "friend"
-                notify_friend_request.notification_user = profile_user
-                notify_friend_request.notification_title = f"Friend Request"
-                notify_friend_request.notification_link = f"/readmore/profile/{real_user.id}/"
-                notify_friend_request.notification_link_text = f"@{real_user.username}"
-                notify_friend_request.notification_message = f"{real_user.username} wants to be your friend.  Go to their profile and click the add friend button to add them."
-                notify_friend_request.save()
                 return HttpResponse('pending')
         elif type == "pending":
             real_user.user_pending_friends.remove(profile_user)
@@ -60,11 +43,6 @@ def process_friend(request):
             real_user.user_friends.remove(profile_user)
             return HttpResponse("")
 
-def get_friend_count(request, user_id):
-    this_user = get_object_or_404(UserExt, id=user_id)
-    num_friends = this_user.user_friends.all().count()
-    return HttpResponse(str(num_friends))
-    
 def delete_notification(request, notification_id):
     Notification.objects.filter(notification_id=notification_id).delete()
 

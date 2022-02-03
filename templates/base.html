@@ -1,3 +1,4 @@
+{% load extras %}
 <!DOCTYPE html>
 <html lang="en">
   <head>
@@ -38,9 +39,10 @@
                 
                 <a href="{% url 'readmore_app:logout' %}" style="float:right; margin-right:50px;">Logout</a>
                 <div id="drop">
-                    <a style="margin-top: -10px;">{{ user.username }}</a>
+                    {% num_notifications user.id as has_notifications %}
+                    <a style="margin-top: -10px;">{% if has_notifications %}<span style="color: red;">●</span>{% endif %}{{ user.username }}</a>
                     <div id="dropdown">
-                        <a class="dropaw" href="{% url 'readmore_app:notifications' %}">Notifications</a>
+                        <a class="dropaw" href="{% url 'readmore_app:notifications' %}">({% num_notifications user.id %}) Notifications</a>
                         <a class="dropaw" href="#">Link 2</a>
                         <a class="dropaw" href="#">Link 3</a>
                     </div>
