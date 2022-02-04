@@ -8,10 +8,7 @@ urlpatterns = [
     path('login/<int:account_created>/', views.login, name='login_account_created'),
     path('logout/', views.logout, name='logout'),
     path('notifications/', views.notifications, name='notifications'),
-	path('profile/<int:profile_id>/', views.profile, name='profile'),
-    path('make_club/', views.make_club, name='make_club'),
-    path('club/<int:club_id>/', views.club, name='club'),
+    path('profile/<int:profile_id>/', views.profile, name='profile'),
     path('ajax/notifications/<int:notification_id>/', views.delete_notification, name="delete_notification"),
     path('ajax/friend/', views.process_friend, name='process_friend'),
-    path('ajax/get_friend_count/<int:user_id>/', views.get_friend_count, name="get_friend_count"),
 ]

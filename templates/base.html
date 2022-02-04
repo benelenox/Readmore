@@ -1,3 +1,4 @@
+{% load extras %}
 {% load static %}
 <!DOCTYPE html>
 <html lang="en">
@@ -8,8 +9,8 @@
         Readmore
       {% endblock %}
     </title>
-    <link rel=stylesheet href="{% static 'style.css' %}">
-
+    <link rel=stylesheet href="{% static 'readmore_app/style.css' %}">
+    <link rel="icon" type="image/x-icon" href="{% static 'readmore_app/readmore.ico' %}">
     <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
     <meta name="viewport" content="width=device-width, initial-scale=1">
   
@@ -18,21 +19,23 @@
     <div>
       <header>
             <div class="navbar">
-              <div>
-                <h2 class="logo">readmore</h2>                
+              <div class="navbar">
+                <div><h2 class="logo">readmore</h2></div>
+                <div><img src="{% static 'readmore_app/logo_small.png' %}"></div>   
               </div>
               <div>
                 <a class="link" href="{% url 'readmore_app:index' %}">Home</a>
                 {% if not user.is_authenticated %}
                 <a class="link" href="{% url 'readmore_app:login' %}" >Login</a>
-                <a class="link" href="{% url 'readmore_app:registration' %}"  ">Register</a>
+                <a class="link" href="{% url 'readmore_app:registration' %}">Register</a>
                 {% else %}
                 
                 <a href="{% url 'readmore_app:logout' %}" style="float:right; margin-right:50px;">Logout</a>
                 <div id="drop">
-                    <a style="margin-top: -10px;">{{ user.username }}</a>
+                    {% num_notifications user.id as has_notifications %}
+                    <a style="margin-top: -10px;">{% if has_notifications %}<span style="color: red;">●</span>{% endif %}{{ user.username }}</a>
                     <div id="dropdown">
-                        <a class="dropaw" href="{% url 'readmore_app:notifications' %}">Notifications</a>
+                        <a class="dropaw" href="{% url 'readmore_app:notifications' %}">({% num_notifications user.id %}) Notifications</a>
                         <a class="dropaw" href="#">Link 2</a>
                         <a class="dropaw" href="#">Link 3</a>
                     </div>

@@ -1,0 +1,61 @@
+{% extends parent_template|default:"base.html" %}
+{% load static %}
+
+{% block title %}
+Blog - {{ profile_user.username }} Profile
+{% endblock %}
+
+{% block content %}
+<div class="profile">
+    <h1>{{ profile_user.username }}'s Profile</h1>
+    {% if user.is_authenticated and profile_user != real_user %}
+        {% if real_user not in profile_user.user_friends.all and profile_user not in real_user.user_pending_friends.all %}
+            <button id="friendbutton" onclick="friend({{ profile_user.id }}, 'add');" name="user_id" value="{{ profile_user.id }}" class="friend">Add Friend</button>
+        {% elif profile_user in real_user.user_pending_friends.all and real_user not in profile_user.user_friends.all %}
+            <button id="friendbutton" onclick="friend({{ profile_user.id }}, 'pending');" name="user_id" value="{{ profile_user.id }}" class="friend">Pending...</button>
+        {% elif real_user in profile_user.user_friends.all %}
+            <button id="friendbutton" onclick="friend({{ profile_user.id }}, 'remove');" name="user_id" value="{{ profile_user.id }}" class="friend">Remove Friend</button>
+        {% endif %}
+    {% endif %}
+    <div style="height:42px;">
+    <!-- Implement Friends View -->
+    <a href="" id="followinfo" style="margin-right:200px;">{{ profile_user.user_friends.all.count }} Friends</a>
+    </div>
+    <!-- Implement User bio -->
+{% endblock %}
+
+{% block js %}
+function friend(user_id, type) {
+    const xhrfriend = new XMLHttpRequest();
+    if (type == 'add'){
+        xhrfriend.onload = function(){
+            const friendbutton = document.getElementById('friendbutton');
+            if (this.responseText == 'added'){
+                friendbutton.innerHTML = "Remove Friend";
+                friendbutton.onclick = friend({{ profile_user.id }}, 'remove');
+            }
+            else if (this.responseText == 'pending') {
+                friendbutton.innerHTML = "Pending...";
+                friendbutton.onclick = friend({{ profile_user.id }}, 'pending');
+            }
+        }
+        
+    } else if (type == "pending"){
+        xhrfriend.onload = function(){
+            const friendbutton = document.getElementById('friendbutton');
+            friendbutton.innerHTML = "Add Friend";
+            friendbutton.onclick = friend({{ profile_user.id }}, 'add');
+        }
+    } else if (type == "remove"){
+        xhrfriend.onload = function(){
+            const friendbutton = document.getElementById('friendbutton');
+            friendbutton.innerHTML = "Add Friend";
+            friendbutton.onclick = friend({{ profile_user.id }}, 'add');
+        }
+    }
+    xhrfriend.open("POST", "/readmore/ajax/friend/");
+    xhrfriend.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
+    xhrfriend.send("type=" + type + "&profile_user_id=" + user_id + "&real_user_id=" + {{ real_user.id }});
+}
+
+{% endblock %}
