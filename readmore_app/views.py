@@ -116,7 +116,7 @@ def logout(request):
     log_out(request)
     return HttpResponseRedirect(reverse("readmore_app:login"))
 
-def make_club(request):
+def create_club(request):
     """
     The creation page for book clubs
     """
@@ -131,16 +131,18 @@ def make_club(request):
             if form.is_valid():
                 new_club = Club()
                 
-                new_club.club_name        = form.cleaned_data['name']
+                new_club.club_name = form.cleaned_data['name']
                 new_club.club_description = form.cleaned_data['description']
-                new_club.club_owner       = UserExt.objects.get(pk=request.user.id)
-                
+                new_club.club_owner = UserExt.objects.get(pk=request.user.id)
                 new_club.save()
+                new_club.club_users.add(new_club.club_owner)
+                new_club.save()
+                
                 
                 return redirect(reverse('readmore_app:club', kwargs={ 'club_id': new_club.club_id }))
                 
         # Display the Book Club Creation Form
-        return render(request, "readmore_app/make_club.html", { 'form': form })
+        return render(request, "readmore_app/create_club.html", { 'form': form })
     
     # Redirect Unknown Users
     return HttpResponseRedirect(reverse("readmore_app:login"))
