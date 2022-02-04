@@ -56,3 +56,7 @@ class register(forms.Form):
             raise ValidationError("Email already in use.")
         else:
             return cleaned_data
+			
+class club(forms.Form):
+	name        = forms.CharField()
+	description = forms.CharField(widget=forms.Textarea)

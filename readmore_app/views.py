@@ -4,8 +4,8 @@ from django.views.decorators.csrf import csrf_exempt
 from django.shortcuts import render, redirect
 from django.urls import reverse
 from django.http import HttpResponse, HttpResponseRedirect
-from .models import UserExt, Notification
-from .forms import register as regform, login as loginform
+from .models import UserExt, Notification, Club
+from .forms import register as regform, login as loginform, club as clubform
 from django.contrib.auth import authenticate, login as log_in, logout as log_out
 
 def delete_notification(request, notification_id):
@@ -58,3 +58,39 @@ def registration(request):
 def logout(request):
     log_out(request)
     return HttpResponseRedirect(reverse("readmore_app:login"))
+
+def make_club(request):
+    """
+    The creation page for book clubs
+    """
+    
+    if request.user.is_authenticated:
+        form = clubform()
+        
+        # Create a Book Club
+        if request.method == 'POST':
+            form = clubform(request.POST)
+            
+            if form.is_valid():
+                new_club = Club()
+                
+                new_club.club_name        = form.cleaned_data['name']
+                new_club.club_description = form.cleaned_data['description']
+                new_club.club_owner       = UserExt.objects.get(pk=request.user.id)
+                
+                new_club.save()
+                
+                return redirect(reverse('readmore_app:club', kwargs={ 'club_id': new_club.club_id }))
+                
+        # Display the Book Club Creation Form
+        return render(request, "readmore_app/make_club.html", { 'form': form })
+    
+    # Redirect Unknown Users
+    return HttpResponseRedirect(reverse("readmore_app:login"))
+    
+def club(request, club_id=None):
+    """
+    The home page for book clubs
+    """
+    
+    return index(request) # Temporary

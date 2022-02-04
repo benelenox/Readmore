@@ -17,3 +17,11 @@ class Notification(models.Model):
     notification_link = models.CharField(max_length=10000, blank=True)
     notification_link_text = models.CharField(max_length=10000, blank=True)
     notification_message = models.TextField()
+	
+	
+class Club(models.Model):
+	club_id          = models.AutoField(primary_key=True)
+	club_name        = models.CharField(max_length=100)
+	club_description = models.TextField(blank=True, default="This is my book club.")
+	club_owner       = models.ForeignKey(UserExt, on_delete=models.CASCADE)
+	club_users       = models.ManyToManyField(UserExt, blank=True, related_name="users")
