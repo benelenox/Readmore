@@ -2,7 +2,7 @@
 {% load static %}
 
 {% block title %}
-Readmore - {{ profile_user.username }} Profile
+Readmore - {{ profile_user.username }}'s Profile
 {% endblock %}
 
 {% block content %}
@@ -19,7 +19,7 @@ Readmore - {{ profile_user.username }} Profile
     {% endif %}
     <div style="height:42px;">
     <!-- Implement Friends View -->
-    <a href="" id="friendinfo" style="margin-right:200px;">{{ profile_user.user_friends.all.count }} Friends</a>
+    <a href="{% url 'readmore_app:friend_list' profile_user.id %}" id="friendinfo" style="margin-right:200px;">{{ profile_user.user_friends.all.count }} Friends</a>
     </div>
     <!-- Implement User bio -->
 {% endblock %}

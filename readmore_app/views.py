@@ -9,6 +9,14 @@ from .forms import register as regform, login as loginform, club as clubform
 from django.contrib.auth import authenticate, login as log_in, logout as log_out
 from datetime import datetime
 
+def friend_list(request, profile_id):
+    profile_user = get_object_or_404(UserExt, id=profile_id)
+    if request.user.is_authenticated:
+        real_user = UserExt.objects.get(pk=request.user.id)
+        return render(request, "readmore_app/friend_list.html", {'real_user': real_user, 'profile_user': profile_user})
+    else:
+        return render(request, "readmore_app/friend_list.html", {'profile_user': profile_user})
+
 def profile(request, profile_id):
     profile_user = get_object_or_404(UserExt, id=profile_id)
     if request.user.is_authenticated:

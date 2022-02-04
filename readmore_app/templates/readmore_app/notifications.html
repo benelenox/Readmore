@@ -8,12 +8,12 @@ Readmore - Notifications
 {% block content %}
 <div>
     <h1>Notifications</h1>
-    <table>
+    <table id="notification_table">
     {% if not notifications %}
         <tr><td>No Notifications Here</td></tr>
     {% else %}
     {% for notification in notifications %}
-        <tr id="notification{{ notification.notification_id }}">
+        <tr class="notification" id="notification{{ notification.notification_id }}">
             <td>
                 <h3>{{ notification.notification_title }}</h3>
                 <button onclick="removeNotification({{ notification.notification_id }});" class="like"><img style="width: 10px;" src="{% static 'readmore_app/x_button.png' %}" /></button>
@@ -40,5 +40,11 @@ function removeNotification(notification_id) {
     const xhrnotify = new XMLHttpRequest();
     xhrnotify.open("GET", "/readmore/ajax/notifications/" + notification_id + "/");
     xhrnotify.send();
+    
+    let num_notifications = document.getElementsByClassName('notification').length;
+    if (num_notifications == 0) {
+        let table = document.getElementById("notification_table");
+        table.innerHTML = "<tr><td>No Notifications Here</td></tr>";
+    }
 }
 {% endblock %}

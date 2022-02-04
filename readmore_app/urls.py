@@ -11,6 +11,7 @@ urlpatterns = [
 	path('profile/<int:profile_id>/', views.profile, name='profile'),
     path('create_club/', views.create_club, name='create_club'),
     path('club/<int:club_id>/', views.club, name='club'),
+    path('friend_list/<int:profile_id>/', views.friend_list, name='friend_list'),
     path('ajax/notifications/<int:notification_id>/', views.delete_notification, name="delete_notification"),
     path('ajax/friend/', views.process_friend, name='process_friend'),
     path('ajax/get_friend_count/<int:user_id>/', views.get_friend_count, name="get_friend_count"),
