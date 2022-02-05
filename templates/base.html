@@ -33,16 +33,15 @@
                 <a href="{% url 'readmore_app:logout' %}" style="float:right; margin-right:50px;">Logout</a>
                 <div id="drop">
                     {% num_notifications user.id as has_notifications %}
-                    <a style="margin-top: -10px;">{% if has_notifications %}<span style="color: red;">●</span>{% endif %}{{ user.username }}</a>
+                    <a style="margin-top: -10px;"><span id="notification_dot" style="color: red;">{% if has_notifications %}●{% endif %}</span>{{ user.username }}</a>
                     <div id="dropdown">
-                        <a class="dropaw" href="{% url 'readmore_app:notifications' %}">({% num_notifications user.id %}) Notifications</a>
+                        <a class="dropaw" href="{% url 'readmore_app:notifications' %}">(<span id="num_notifications">{% num_notifications user.id %}</span>) Notifications</a>
                         <a class="dropaw" href="#">Link 2</a>
                         <a class="dropaw" href="#">Link 3</a>
                     </div>
                 </div>
-              </div>
-
                 {% endif %}
+              </div>
             </div>
       </header>
     <nav>

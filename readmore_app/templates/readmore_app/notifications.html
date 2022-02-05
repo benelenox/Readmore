@@ -41,10 +41,14 @@ function removeNotification(notification_id) {
     xhrnotify.open("GET", "/readmore/ajax/notifications/" + notification_id + "/");
     xhrnotify.send();
     
+    document.getElementById("num_notifications").innerHTML = parseInt(document.getElementById("num_notifications").innerHTML) - 1;
+    
     let num_notifications = document.getElementsByClassName('notification').length;
     if (num_notifications == 0) {
         let table = document.getElementById("notification_table");
         table.innerHTML = "<tr><td>No Notifications Here</td></tr>";
+        let notification_dot = document.getElementById("notification_dot");
+        notification_dot.innerHTML = "";
     }
 }
 {% endblock %}

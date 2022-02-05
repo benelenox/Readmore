@@ -91,10 +91,11 @@ def login(request, account_created=None):
     if request.method == 'POST':
         form = loginform(request.POST)
         if form.is_valid():
-            if not authenticate(username=form.cleaned_data['username'], password=form.cleaned_data['password']):
+            cased_username = UserExt.objects.get(username__iexact=form.cleaned_data['username'])
+            if not authenticate(username=cased_username, password=form.cleaned_data['password']):
                 return render(request, "readmore_app/login.html", {'form': form, 'optional_message': "Invalid login information."})
             else:
-                log_in(request, authenticate(username=form.cleaned_data['username'], password=form.cleaned_data['password']))
+                log_in(request, authenticate(username=cased_username, password=form.cleaned_data['password']))
                 return HttpResponseRedirect(reverse("readmore_app:index"))
     
     context = {'form': form}
@@ -112,7 +113,7 @@ def registration(request):
             new_user.set_password(form.cleaned_data['password'])
             new_user.first_name = form.cleaned_data['first_name']
             new_user.last_name = form.cleaned_data['last_name']
-            new_user.email = form.cleaned_data['email']
+            new_user.email = form.cleaned_data['email'].lower()
             new_user.user_birthdate = form.cleaned_data['birthdate']
             new_user.save()
             return redirect(reverse('readmore_app:login_account_created', kwargs={'account_created':1}))
