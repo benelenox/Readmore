@@ -21,9 +21,14 @@
             <div class="navbar">
               <div class="navbar">
                 <div><h2 class="logo">readmore</h2></div>
-                <div><img src="{% static 'readmore_app/logo_small.png' %}"></div>   
+                <div><img src="{% static 'readmore_app/logo_small.png' %}"></div>
               </div>
               <div>
+                <form style="float: right; display: inline; left: 0px; position: relative; top:7px;" class="link" method="POST" action="{% url 'readmore_app:search_results' %}">
+                    {% csrf_token %}
+                    <input type="image" width="20px" style="position:relative; top: 3px;" src="{% static 'readmore_app/logo_search.png' %}">
+                    <input type="text" name="search_query">
+                </form>
                 <a class="link" href="{% url 'readmore_app:index' %}">Home</a>
                 {% if not user.is_authenticated %}
                 <a class="link" href="{% url 'readmore_app:login' %}" >Login</a>

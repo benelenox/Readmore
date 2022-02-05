@@ -1,0 +1,29 @@
+{% extends parent_template|default:"base.html" %}
+{% load static %}
+
+{% block title %}
+Readmore - Search Results
+{% endblock %}
+
+{% block content %}
+<div>
+    <h1>Search Results For: {{ search }}</h1>
+    <table>
+    {% if not user_search_results.count %}
+        <tr><td>No results matching search</td></tr>
+    {% else %}
+    {% for user_found in user_search_results %}
+        <tr>
+            <td>
+                <p><a href="{% url 'readmore_app:profile' user_found.id %}">@{{ user_found.username }}</a></p>
+                <hr>
+            </td>
+        </tr>
+    {% endfor %}
+    {% endif %}
+    </table>
+</div>
+{% endblock %}
+
+{% block js %}
+{% endblock %}

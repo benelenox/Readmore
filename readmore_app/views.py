@@ -3,11 +3,11 @@ from datetime import datetime
 from django.views.decorators.csrf import csrf_exempt
 from django.shortcuts import render, redirect, get_object_or_404
 from django.urls import reverse
-from django.http import HttpResponse, HttpResponseRedirect
+from django.http import HttpResponse, HttpResponseRedirect, Http404
 from .models import UserExt, Notification, Club
 from .forms import register as regform, login as loginform, club as clubform
 from django.contrib.auth import authenticate, login as log_in, logout as log_out
-from datetime import datetime
+
 
 def friend_list(request, profile_id):
     profile_user = get_object_or_404(UserExt, id=profile_id)
@@ -155,6 +155,18 @@ def create_club(request):
     
     # Redirect Unknown Users
     return HttpResponseRedirect(reverse("readmore_app:login"))
+
+def search_results(request):
+    if request.method == 'POST':
+        search_query = request.POST["search_query"]
+        results1 = UserExt.objects.filter(username__istartswith=search_query)
+        results2 = UserExt.objects.filter(username__icontains=search_query)
+        search_results = results1 | results2
+        print(results1)
+        return render(request, "readmore_app/search_results.html", {"search": search_query, "user_search_results": search_results})
+    else:
+        raise Http404()
+
     
 def club(request, club_id=None):
     """
