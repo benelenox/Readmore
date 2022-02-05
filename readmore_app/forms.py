@@ -34,13 +34,6 @@ class register(forms.Form):
         else:
             return username
     
-    def clean_birthdate(self):
-        birthdate = self.cleaned_data['birthdate']
-        if type(birthdate) is type(None):
-            raise ValidationError("Birthdate must be entered in the form MM/DD/YYYY.")
-        elif birthdate > date.today() - timedelta(days=1095) or birthdate < date(1900, 1, 1):
-            raise ValidationError("A valid birthdate must be provided.")
-    
     def clean_email(self):
         email = self.cleaned_data['email']
         if UserExt.objects.filter(email=email.lower()).exists():
@@ -51,6 +44,11 @@ class register(forms.Form):
     # this really should be clean_password but this validation requires two fields
     def clean(self):
         cleaned_data=super().clean()
+        birthdate = self.cleaned_data['birthdate']
+        if type(birthdate) is type(None):
+            raise ValidationError("Birthdate must be entered in the form MM/DD/YYYY.")
+        elif birthdate > date.today() - timedelta(days=1095) or birthdate < date(1900, 1, 1):
+            raise ValidationError("A valid birthdate must be provided.")
         password = cleaned_data.get('password')
         confirm_password = cleaned_data.get('confirm_password')
         if not re.match("^[^ ]{8}[^ ]*$", password):
