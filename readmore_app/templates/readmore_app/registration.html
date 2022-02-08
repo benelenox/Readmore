@@ -5,6 +5,7 @@ Readmore - Register
 {% endblock %}
 
 {% block content %}
+<main id="registration">
 <div class="form">
     <h1>Register For an Account</h1>
     <form action="{% url 'readmore_app:registration' %}" method="post">
@@ -12,7 +13,7 @@ Readmore - Register
         <table >
             {{ form.as_table }}
             <tr>
-                <td style="text-align: left;" colspan=2><input type="submit" name="Register"></td>
+                <td style="text-align: left;" colspan=2><input type="submit" value="Register"></td>
             </tr>
         </table>
         

@@ -1,16 +1,71 @@
+/* #7074ac */
+html{
+    height: 100%;
+}
 body{
     font-family: OCR A Std, monospace;
-    margin-top: 0;
-    margin-left: 0;
+    margin:0;    
 }
+a{
+    text-decoration: none; 
+}
+.form{
+    z-index: 1;
+    margin-top:50px;
+    margin-left:30%;
+    text-transform: uppercase;
+    font-family:Arial, Helvetica, sans-serif;
+    font-weight: 20px;
+    color:#FFEFCA;
+    text-align: left;
+}
+
+.form a{
+    
+}
+h2.logo{
+    color:#e2e2db;
+    font-family:Arial, Helvetica, sans-serif;
+    font-weight:800px;
+    margin-left: 20px;
+    font-size:32px;
+    margin-top: 6px;
+}
+
+.container{
+    display:flex;
+    flex-flow: column;
+}
+#registration {
+    box-shadow:inset 2000px 0 0 0 rgba(112, 116, 172, .5);
+    background-image: url(studygroup.jpg);
+    background-size:cover;
+    bottom:0px;
+    position:absolute;
+    min-height:100%;
+    min-width:100%;
+    z-index: -1;
+    
+}
+
+#login {
+    box-shadow:inset 2000px 0 0 0 rgba(112, 116, 172, .5);
+    background-image: url(studygroup.jpg);
+    background-size:cover;
+    bottom:0px;
+    position:absolute;
+    min-height:100%;
+    min-width:100%;
+}
+
 a{
     text-decoration: none; 
 }
 form{
     text-transform: uppercase;
-    font-family: Courier New, monospace;
-    font-weight: 50px;
-    color:#9092a1;
+    font-family: Arial, Helvetica, sans-serif;
+    font-weight: 10px;
+    color:#FFEFCA;
     text-align: left;
 }
 h2.logo{
@@ -19,49 +74,99 @@ h2.logo{
     font-weight:800px;
     margin-left: 20px;
     font-size:32px;
-    margin-top: 0;
-  
-   
+    margin-top: 6px;
 }
 
-
+input[type=submit]{
+    height: 24px;
+    border:none;
+    color: white;
+    background-color:#008A65;
+    min-width: 80px;
+    float: left;
+}
 
 main{
-    margin-top: 0;
+    background-image: url(studygroup.jpg);
+    background-size:cover;
+    display: flex;
+    
 }
 
-#dropdown {position: absolute; display: none; background-color: #dde0ff; padding: 0px; z-index: 1; top:45px;}
-#drop .dropaw {display: block; width: 90%; position: relative; text-align: center;  color: #3b3e66;}
-#drop {float: right; display: flex; flex-direction: column; padding: 10px;}
-#drop:hover #dropdown {display:flex; flex-direction: column; z-index: 1;}
+#drop .dropaw {
+    display:block;
+    font-family: Arial, Helvetica, sans-serif;
+    margin-top: 0;
+    margin-left: 0;
+    width: 90%; 
+    font-size:small;
+    background-color: #1FC198;
+    color:white;
+    position: relative; 
+    text-align: center;  
+    
+}
+
+#drop .dropaw:hover{
+    background-color:#E6F4F1;
+    color: #3b3e66;
+}
+#dropdown {
+    position: absolute; 
+    display: none; 
+    background-color: #1FC198;
+    color:white;
+    padding: 0px; 
+    z-index: 1; 
+    top:45px;
+    
+}
+
+
+
+#drop { 
+    display: flex; 
+    flex-direction: column; 
+    padding: 10px;
+}
+
+#drop:hover #dropdown {
+    margin-left:30px;
+    min-width:200px;
+    display:flex; 
+    flex-direction: column; 
+    z-index: 0;
+}
 
 div.sidebar {
-    margin-right:12px;
     position: relative; 
     text-align: center; 
     background: #97bdf7; 
     float:left; 
     width:20%; 
     height:800px; 
-    margin-left:-6px;
-    margin-top:-12;
+    
+    
 }
 .sidebar a {
-    
+    margin: 2px 2px 2px 2px;
+    border-radius: 4px;
     color: #e2e2db; 
     height: 30px; 
     display:block; 
     width:auto; 
     border:none; 
     padding: 10px; 
-    background: #6781a8; 
-    padding-top: 20px;  
-    margin-bottom:2px;
+    padding-top: 18px ; 
+    background: #4b4e75; 
 }
 .sidebar a:hover {
+    border: 3px #cecec8;
+    margin-left: -2px;
     background: #dee7e9; 
     color:#3b3e66;
     transition: all 0.4s;
+
 }
 
 div.navbar {
@@ -70,13 +175,14 @@ div.navbar {
     justify-content: space-between;
     border: none; 
     position: relative; 
-    margin-left:-21px; 
     height:45px; 
-    background: #11171f; 
-    left: 15px;
-    margin-right:6px;
+    background: #414364; 
+
 }
 .navbar a {
+    min-width: 120px;
+    text-align: center;
+    border-radius: 4px;
     font-size: medium;
     height: 23px; 
     display:inline; 
@@ -94,4 +200,4 @@ div.navbar {
     transition: all 0.4s;
 }
 
-.error {margin-top: 20px; position:relative; color:red;font-size:24;padding:10px;border:1px solid black;border-radius:5px; background:rgba(255, 25, 25, 0.3);}
+.error {margin-top: 20px; position:relative; color:red;font-size:24;padding:10px;border:1px solid black;border-radius:5px; background:rgba(255, 25, 25, 0.3);} 
