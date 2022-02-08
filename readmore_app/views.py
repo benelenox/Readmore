@@ -162,7 +162,6 @@ def search_results(request):
         results1 = UserExt.objects.filter(username__istartswith=search_query)
         results2 = UserExt.objects.filter(username__icontains=search_query)
         search_results = results1 | results2
-        print(results1)
         return render(request, "readmore_app/search_results.html", {"search": search_query, "user_search_results": search_results})
     else:
         raise Http404()

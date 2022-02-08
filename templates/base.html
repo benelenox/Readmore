@@ -15,7 +15,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1">
   
   </head>
-  <body >
+  <body>
     <div class="container" >
       <header>
             <div class="navbar">
@@ -51,19 +51,20 @@
               </div>
             </div>
       </header>
-      
-        {% if user.is_authenticated %}
-        <div class="sidebar">
-            <a href="{% url 'readmore_app:index' %}">Home</a>
-        </div>
-        <main style="margin:0;">
-        {% else %}
-        
-        {% endif %}
-        {% block content %}
-          Where content goes
-        {% endblock %}
-        </main></div></body>
+        <div class="content-container">
+            {% if user.is_authenticated %}
+            <div class="sidebar">
+                <a href="{% url 'readmore_app:index' %}">Home</a>
+            </div>
+            <main style="margin:0;">
+            {% endif %}
+            {% block content %}
+              Where content goes
+            {% endblock %}
+            </main>
+        <div>
+    </div>
+  </body>
   <script>
   {% block js %}
   {% endblock %}
