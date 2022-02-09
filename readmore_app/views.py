@@ -25,6 +25,135 @@ def profile(request, profile_id):
     else:
         return render(request, "readmore_app/profile.html", {'profile_user': profile_user})
 
+def notifications(request):
+    notifications = Notification.objects.filter(notification_user = UserExt.objects.get(pk=request.user.id)).order_by('-notification_time')
+    return render(request, "readmore_app/notifications.html", {"notifications": notifications, 'luser': UserExt.objects.get(pk=request.user.id)})
+
+def index(request):
+    # If the user isn't logged in, redirect to login page
+    if not request.user.is_authenticated:
+        return HttpResponseRedirect(reverse("readmore_app:login"))
+    return render(request, "readmore_app/index.html", {})
+
+def login(request, account_created=None):
+    if request.user.is_authenticated:
+        return HttpResponseRedirect(reverse("readmore_app:index"))
+    form = loginform()
+    if request.method == 'POST':
+        form = loginform(request.POST)
+        if form.is_valid():
+            cased_username = UserExt.objects.get(username__iexact=form.cleaned_data['username'])
+            if not authenticate(username=cased_username, password=form.cleaned_data['password']):
+                return render(request, "readmore_app/login.html", {'form': form, 'optional_message': "Invalid login information."})
+            else:
+                log_in(request, authenticate(username=cased_username, password=form.cleaned_data['password']))
+                return HttpResponseRedirect(reverse("readmore_app:index"))
+    context = {'form': form}
+    if account_created:
+        context['optional_message'] = "Account has been created."
+    return render(request, 'readmore_app/login.html', context)
+
+def registration(request):
+    form = regform()
+    if request.method == 'POST':
+        form = regform(request.POST)
+        if form.is_valid():
+            new_user = UserExt()
+            new_user.username = form.cleaned_data['username']
+            new_user.set_password(form.cleaned_data['password'])
+            new_user.first_name = form.cleaned_data['first_name']
+            new_user.last_name = form.cleaned_data['last_name']
+            new_user.email = form.cleaned_data['email'].lower()
+            new_user.user_birthdate = form.cleaned_data['birthdate']
+            new_user.save()
+            return redirect(reverse('readmore_app:login_account_created', kwargs={'account_created':1}))
+    if request.user.is_authenticated:
+        return HttpResponseRedirect(reverse("readmore_app:index"))
+    return render(request, 'readmore_app/registration.html', {'form': form})
+
+def logout(request):
+    log_out(request)
+    return HttpResponseRedirect(reverse("readmore_app:login"))
+
+def create_club(request):
+    """
+    The creation page for book clubs
+    """
+    
+    if request.user.is_authenticated:
+        form = clubform()
+        # Create a Book Club
+        if request.method == 'POST':
+            form = clubform(request.POST)
+            if form.is_valid():
+                new_club = Club()
+                new_club.club_name = form.cleaned_data['name']
+                new_club.club_description = form.cleaned_data['description']
+                new_club.club_owner = UserExt.objects.get(pk=request.user.id)
+                new_club.save()
+                new_club.club_users.add(new_club.club_owner)
+                new_club.save()
+                return redirect(reverse('readmore_app:club', kwargs={ 'club_id': new_club.club_id }))
+                
+        # Display the Book Club Creation Form
+        return render(request, "readmore_app/create_club.html", { 'form': form })
+    
+    # Redirect Unknown Users
+    return HttpResponseRedirect(reverse("readmore_app:login"))
+
+def search_results(request):
+    if request.method == 'POST':
+        search_query = request.POST["search_query"]
+        results1 = UserExt.objects.filter(username__istartswith=search_query)
+        results2 = UserExt.objects.filter(username__icontains=search_query)
+        search_results = results1 | results2
+        return render(request, "readmore_app/search_results.html", {"search": search_query, "user_search_results": search_results})
+    else:
+        raise Http404()
+
+def book_clubs(request):
+    if request.user.is_authenticated:
+        real_user = UserExt.objects.get(pk=request.user.id)
+        book_club_list = Club.objects.filter(club_users__in=[real_user])
+        return render(request, "readmore_app/book_clubs.html", {"real_user": real_user, "book_club_list": book_club_list})
+    else:
+        return redirect(reverse('readmore_app:login'))
+    
+def club(request, club_id):
+    """
+    The home page for book clubs
+    """
+    if request.user.is_authenticated:
+        club = get_object_or_404(Club, club_id=club_id)
+        real_user = get_object_or_404(UserExt, id=request.user.id)
+        return render(request, "readmore_app/club_home.html", {"real_user": real_user, "club": club})
+    else:
+        return redirect(reverse('readmore_app:login'))
+
+def club_members(request, club_id):
+    if request.user.is_authenticated:
+        club = get_object_or_404(Club, club_id=club_id)
+        real_user = get_object_or_404(UserExt, id=request.user.id)
+        return render(request, "readmore_app/club_members_list.html", {"real_user": real_user, "club": club})
+    else:
+        return redirect(reverse('readmore_app:login'))
+
+def invite_to_club(request, club_id):
+    if request.user.is_authenticated:
+        club = get_object_or_404(Club, club_id=club_id)
+        real_user = get_object_or_404(UserExt, id=request.user.id)
+        if club.club_owner != real_user:
+            return redirect(reverse('readmore_app:club', kwargs={'club_id': club.club_id}))
+        return render(request, "readmore_app/invite_to_club.html", {"real_user": real_user, "club": club})
+    else:
+        return redirect(reverse('readmore_app:login'))
+
+""" 
+*************************************
+* AJAX METHODS ONLY AFTER THIS POINT 
+*************************************
+"""
+
 @csrf_exempt
 def process_friend(request):
     if request.method == "POST":
@@ -68,108 +197,82 @@ def process_friend(request):
             real_user.user_friends.remove(profile_user)
             return HttpResponse("")
 
+def leave_club(request, club_id):
+    real_user = UserExt.objects.get(pk=request.user.id)
+    club = Club.objects.get(pk=club_id)
+    if club.club_owner == real_user:
+        club_users = club.club_users.all()
+        for member in club_users:
+            if member != real_user:
+                notify_member = Notification()
+                notify_member.notification_user = member
+                notify_member.notification_title = "A Book Club You Are a Member of Has Been Deleted"
+                notify_member.notification_message = f"The owner of the book club {club.club_name} has deleted this book club."
+                notify_member.save()
+        club.delete()
+        return HttpResponse("")
+    else:
+        club.club_users.remove(real_user)
+        club.save()
+        notify_owner = Notification()
+        notify_owner.notification_user = club.club_owner
+        notify_owner.notification_title = f"{real_user.username} Has Left Your Book Club"
+        notify_owner.notification_link = f'/readmore/club/{club.club_id}'
+        notify_owner.notification_link_text = club.club_name
+        notify_owner.notification_message = f"{real_user.username} has left your book club, {club.club_name}."
+        notify_owner.save()
+        return HttpResponse("")
+
+def delete_notification(request, notification_id):
+    Notification.objects.filter(notification_id=notification_id).delete()
+    return HttpResponse("")
+
 def get_friend_count(request, user_id):
     this_user = get_object_or_404(UserExt, id=user_id)
     num_friends = this_user.user_friends.all().count()
     return HttpResponse(str(num_friends))
-    
-def delete_notification(request, notification_id):
-    Notification.objects.filter(notification_id=notification_id).delete()
 
-def notifications(request):
-    notifications = Notification.objects.filter(notification_user = UserExt.objects.get(pk=request.user.id))
-    return render(request, "readmore_app/notifications.html", {"notifications": notifications, 'luser': UserExt.objects.get(pk=request.user.id)})
+def kick_member(request, club_id, member_id):
+    real_user = UserExt.objects.get(pk=request.user.id)
+    club = Club.objects.get(pk=club_id)
+    member = UserExt.objects.get(pk=member_id)
+    if club.club_owner == real_user:
+        club.club_users.remove(member)
+        club.save()
+        notify_member = Notification()
+        notify_member.notification_user = member
+        notify_member.notification_title = "You Have Been Kicked From A Book Club"
+        notify_member.notification_message = f"The owner of the book club {club.club_name} has kicked you from this book club."
+        notify_member.save()
+    return HttpResponse("")
 
-def index(request):
-    # If the user isn't logged in, redirect to login page
-    if not request.user.is_authenticated:
-        return HttpResponseRedirect(reverse("readmore_app:login"))
-    return render(request, "readmore_app/index.html", {})
+def invite_member(request, club_id, friend_id):
+    real_user = UserExt.objects.get(pk=request.user.id)
+    club = Club.objects.get(pk=club_id)
+    member = UserExt.objects.get(pk=friend_id)
+    if club.club_owner == real_user:
+        club.club_pending_invites.add(member)
+        notify_member = Notification()
+        notify_member.notification_user = member
+        notify_member.notification_title = "You Have Been Invited To A Book Club"
+        notify_member.notification_message = f"You have been invited to the book club {club.club_name} by {real_user.username}.  To accept the invitation, click the above link to the book club's homepage and click the 'Join' button."
+        notify_member.notification_link = f"/readmore/club/{club.club_id}/"
+        notify_member.notification_link_text = club.club_name
+        notify_member.save()
+    return HttpResponse("")
 
-def login(request, account_created=None):
-    form = loginform()
-    if request.method == 'POST':
-        form = loginform(request.POST)
-        if form.is_valid():
-            cased_username = UserExt.objects.get(username__iexact=form.cleaned_data['username'])
-            if not authenticate(username=cased_username, password=form.cleaned_data['password']):
-                return render(request, "readmore_app/login.html", {'form': form, 'optional_message': "Invalid login information."})
-            else:
-                log_in(request, authenticate(username=cased_username, password=form.cleaned_data['password']))
-                return HttpResponseRedirect(reverse("readmore_app:index"))
-    
-    context = {'form': form}
-    if account_created:
-        context['optional_message'] = "Account has been created."
-    return render(request, 'readmore_app/login.html', context)
-
-def registration(request):
-    form = regform()
-    if request.method == 'POST':
-        form = regform(request.POST)
-        if form.is_valid():
-            new_user = UserExt()
-            new_user.username = form.cleaned_data['username']
-            new_user.set_password(form.cleaned_data['password'])
-            new_user.first_name = form.cleaned_data['first_name']
-            new_user.last_name = form.cleaned_data['last_name']
-            new_user.email = form.cleaned_data['email'].lower()
-            new_user.user_birthdate = form.cleaned_data['birthdate']
-            new_user.save()
-            return redirect(reverse('readmore_app:login_account_created', kwargs={'account_created':1}))
-    if request.user.is_authenticated:
-        return HttpResponseRedirect(reverse("readmore_app:index"))
-    return render(request, 'readmore_app/registration.html', {'form': form})
-
-def logout(request):
-    log_out(request)
-    return HttpResponseRedirect(reverse("readmore_app:login"))
-
-def create_club(request):
-    """
-    The creation page for book clubs
-    """
-    
-    if request.user.is_authenticated:
-        form = clubform()
-        
-        # Create a Book Club
-        if request.method == 'POST':
-            form = clubform(request.POST)
-            
-            if form.is_valid():
-                new_club = Club()
-                
-                new_club.club_name = form.cleaned_data['name']
-                new_club.club_description = form.cleaned_data['description']
-                new_club.club_owner = UserExt.objects.get(pk=request.user.id)
-                new_club.save()
-                new_club.club_users.add(new_club.club_owner)
-                new_club.save()
-                
-                
-                return redirect(reverse('readmore_app:club', kwargs={ 'club_id': new_club.club_id }))
-                
-        # Display the Book Club Creation Form
-        return render(request, "readmore_app/create_club.html", { 'form': form })
-    
-    # Redirect Unknown Users
-    return HttpResponseRedirect(reverse("readmore_app:login"))
-
-def search_results(request):
-    if request.method == 'POST':
-        search_query = request.POST["search_query"]
-        results1 = UserExt.objects.filter(username__istartswith=search_query)
-        results2 = UserExt.objects.filter(username__icontains=search_query)
-        search_results = results1 | results2
-        return render(request, "readmore_app/search_results.html", {"search": search_query, "user_search_results": search_results})
-    else:
-        raise Http404()
-
-    
-def club(request, club_id=None):
-    """
-    The home page for book clubs
-    """
-    
-    return index(request) # Temporary
+def join_club(request, club_id):
+    real_user = UserExt.objects.get(pk=request.user.id)
+    club = Club.objects.get(pk=club_id)
+    if real_user in club.club_pending_invites.all():
+        club.club_pending_invites.remove(real_user)
+        club.club_users.add(real_user)
+        club.save()
+        notify_owner = Notification()
+        notify_owner.notification_user = club.club_owner
+        notify_owner.notification_title = f"{real_user.username} Has Joined Your Book Club"
+        notify_owner.notification_link = f'/readmore/club/{club.club_id}'
+        notify_owner.notification_link_text = club.club_name
+        notify_owner.notification_message = f"{real_user.username} has joined your book club, {club.club_name}."
+        notify_owner.save()
+    return HttpResponse("")

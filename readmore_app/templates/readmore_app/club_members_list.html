@@ -1,0 +1,40 @@
+{% extends parent_template|default:"base.html" %}
+{% load static %}
+
+{% block title %}
+Readmore - {{ club.club_name }}
+{% endblock %}
+
+{% block content %}
+<div>
+    <h1>{{ club.club_name }} Members</h1>
+    <table>
+    {% for member in club.club_users.all %}
+        <tr id="member{{ member.id }}">
+            <td style="padding-left: 20px;">
+                <p><a href="{% url 'readmore_app:profile' member.id %}">@{{ member.username }}</a></p>
+            </td>
+            <td style="padding-left: 20px;">
+                {% if club.club_owner == real_user and member.id != real_user.id %}
+                <p><button onclick="kickMember({{ member.id }}, {{ club.club_id }});">Kick User</button></p>
+                {% endif %}
+            </td>
+        </tr>
+        <tr id="member{{ member.id }}underline"><td colspan="2" bgcolor="lightgray"><td></tr>
+    {% endfor %}
+    </table>
+    <a class="anchor_button" style="top: 20px; left: 20px; position: relative;" href="{% url 'readmore_app:club' club.club_id %}">Back To Club Home</a>
+</div>
+{% endblock %}
+
+{% block js %}
+function kickMember(member_id, club_id) {
+    const tr = document.getElementById("member" + member_id);
+    const underline = document.getElementById("member" + member_id + "underline");
+    tr.parentNode.removeChild(tr);
+    underline.parentNode.removeChild(underline);
+    const xhrkickmember = new XMLHttpRequest();
+    xhrkickmember.open("GET", "/readmore/ajax/kick_member/" + club_id + "/" + member_id + "/");
+    xhrkickmember.send();
+}
+{% endblock %}

@@ -1,0 +1,38 @@
+{% extends parent_template|default:"base.html" %}
+{% load static %}
+
+{% block title %}
+Readmore - {{ club.club_name }}
+{% endblock %}
+
+{% block content %}
+<div class="book_club">
+    <h1 style="display: inline-block;">{{ club.club_name }}</h1>
+    <div id="joindiv" style="display: inline-block;">
+    {% if real_user in club.club_users.all %}
+    <h3 style="margin-left: 30px; display: inline-block;">[Joined]</h3>
+    {% elif real_user in club.club_pending_invites.all %}
+    <button onclick="joinClub();">Join</button>
+    {% endif %}
+    </div>
+    <div style="height:42px;">
+    <p><a href="{% url 'readmore_app:club_members' club.club_id %}" style="margin-right:200px;">{{ club.club_users.all.count }} Members</a></p>
+    {% if real_user == club.club_owner %}
+    <p><a class="anchor_button" href="{% url 'readmore_app:invite_to_club' club.club_id %}">Invite Users</a></p>
+    {% endif %}
+    </div>
+    <div>
+        <p>{{ club.club_description }}</p>
+    </div>
+</div>
+{% endblock %}
+
+{% block js %}
+function joinClub() {
+    const joindiv = document.getElementById("joindiv");
+    joindiv.innerHTML = `<h3 style="margin-left: 30px; display: inline-block;">[Joined]</h3>`
+    const xhrjoinclub = new XMLHttpRequest();
+    xhrjoinclub.open("GET", "/readmore/ajax/join_club/{{ club.club_id }}/");
+    xhrjoinclub.send();
+}
+{% endblock %}

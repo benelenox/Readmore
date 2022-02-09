@@ -34,7 +34,7 @@
                 <a href="{% url 'readmore_app:logout' %}" >Logout</a>
                 <div id="drop">
                     {% num_notifications user.id as has_notifications %}
-                    <a style="margin-top: -10px;"><span id="notification_dot" style="color: red;">{% if has_notifications %}●{% endif %}</span>{{ user.username }}</a>
+                    <a  href="{% url 'readmore_app:profile' user.id %}" style="margin-top: -10px;"><span id="notification_dot" style="color: red;">{% if has_notifications %}●{% endif %}</span>{{ user.username }}</a>
                     <div id="dropdown">
                         <a class="dropaw" href="{% url 'readmore_app:notifications' %}">(<span id="num_notifications">{% num_notifications user.id %}</span>) Notifications</a>
                         <a class="dropaw" href="#">Link 2</a>
@@ -55,6 +55,7 @@
             {% if user.is_authenticated %}
             <div class="sidebar">
                 <a href="{% url 'readmore_app:index' %}">Home</a>
+                <a href="{% url 'readmore_app:book_clubs' %}">Book Clubs</a>
             </div>
             <main style="margin:0;">
             {% endif %}

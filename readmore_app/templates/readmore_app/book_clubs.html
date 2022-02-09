@@ -1,0 +1,49 @@
+{% extends parent_template|default:"base.html" %}
+{% load static %}
+
+{% block title %}
+Readmore - Book Clubs
+{% endblock %}
+
+{% block content %}
+<div>
+    <h1>My Book Clubs</h1>
+    <a class="anchor_button" href="{% url 'readmore_app:create_club' %}">Create A Book Club</a>
+    <br><br>
+    <table id="club_list_table">
+    {% if not book_club_list %}
+        <tr><td>No Book Clubs Here.  Try Creating Your Own.</td></tr>
+    {% else %}
+    {% for book_club in book_club_list %}
+        <tr class="book_club_listing" id="club{{ book_club.club_id }}">
+            <td style="padding-left: 20px;">
+                <p><a href="{% url 'readmore_app:club' book_club.club_id %}">{{ book_club.club_name }}</a></p>
+            </td>
+            <td style="padding-left: 20px;">
+                <p><button onclick="leaveClub({{ book_club.club_id }});">{% if book_club.club_owner != real_user %}Leave Book Club{% else %}Delete Book Club{% endif %}</button></p>
+            </td>
+        </tr>
+        <tr id="club{{ book_club.club_id }}underline"><td colspan="2" bgcolor="lightgray"><td></tr>
+    {% endfor %}
+    {% endif %}
+    </table>
+</div>
+{% endblock %}
+
+{% block js %}
+function leaveClub(club_id) {
+    const tr = document.getElementById("club" + club_id);
+    const underline = document.getElementById("club" + club_id + "underline");
+    tr.parentNode.removeChild(tr);
+    underline.parentNode.removeChild(underline);
+    const xhrleaveclub = new XMLHttpRequest();
+    xhrleaveclub.open("GET", "/readmore/ajax/leave_club/" + club_id + "/");
+    xhrleaveclub.send();
+    
+    let num_clubs = document.getElementsByClassName('book_club_listing').length;
+    if (num_clubs == 0) {
+        let table = document.getElementById("club_list_table");
+        table.innerHTML = "<tr><td>No Book Clubs Here.  Try Creating Your Own.</td></tr>";
+    }
+}
+{% endblock %}

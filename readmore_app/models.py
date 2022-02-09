@@ -35,3 +35,4 @@ class Club(models.Model):
     club_owner = models.ForeignKey(UserExt, on_delete=models.CASCADE)
     club_users = models.ManyToManyField(UserExt, related_name="users")
     club_library = models.ManyToManyField('Book', blank=True, related_name="library")
+    club_pending_invites = models.ManyToManyField('UserExt', related_name="pending_invites")
