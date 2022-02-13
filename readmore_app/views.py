@@ -1,4 +1,5 @@
 import re
+import requests
 from datetime import datetime
 from django.views.decorators.csrf import csrf_exempt
 from django.shortcuts import render, redirect, get_object_or_404
@@ -7,7 +8,6 @@ from django.http import HttpResponse, HttpResponseRedirect, Http404
 from .models import UserExt, Notification, Club
 from .forms import register as regform, login as loginform, club as clubform
 from django.contrib.auth import authenticate, login as log_in, logout as log_out
-
 
 def friend_list(request, profile_id):
     profile_user = get_object_or_404(UserExt, id=profile_id)
@@ -147,6 +147,25 @@ def invite_to_club(request, club_id):
         return render(request, "readmore_app/invite_to_club.html", {"real_user": real_user, "club": club})
     else:
         return redirect(reverse('readmore_app:login'))
+
+def view_book(request, book_isbn, book_volume_index=0):
+    """
+    The page for viewing books
+    """
+    
+    if request.user.is_authenticated:
+        book_api_key = 'AIzaSyCrRXmYA10KFK9bFearnoAGZ8Suzn1aFgI'
+        book_info = requests.get('https://www.googleapis.com/books/v1/volumes?q=isbn' + book_isbn + '&startIndex=' + str(book_volume_index) + '&key=' + book_api_key).json()
+        real_user = get_object_or_404(UserExt, id=request.user.id)
+
+        book = None
+        if 'items' in book_info.keys():
+            book = book_info['items'][0]
+
+        return render(request, "readmore_app/view_book.html", {"real_user": real_user, "book": book})
+        
+    # Redirect Unknown Users
+    return redirect(reverse('readmore_app:login'))
 
 """ 
 *************************************
