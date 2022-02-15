@@ -1,0 +1,32 @@
+{% extends parent_template|default:"base.html" %}
+
+{% block title %}
+{% if book != None %}
+Readmore - {{ book.volumeInfo.title }}
+{% else %}
+Readmore - Book Not Found
+{% endif %}
+{% endblock %}
+
+{% block content %}
+<div class="book_club">
+	{% if book != None %}
+    <h1>{{ book.volumeInfo.title }}</h1>
+    <h2>{{ book.volumeInfo.subtitle }}</h2>
+	<img src="{{ book.volumeInfo.imageLinks.thumbnail }}" alt="Image of Book Cover"> 
+    <h2>Description</h2>
+	<p>{{ book.volumeInfo.description }}</p>
+    <h2>Forums</h2>
+	<h2>Reviews <button onclick="addReview();">Add Review</button></h2>
+	<p>Reviews go here when implemented.</p>
+    {% else %}
+	<h1>Book Not Found</h1>
+    {% endif %}
+</div>
+{% endblock %}
+
+{% block js %}
+function addReview() {
+    const addreviewdiv = document.getElementById("addreviewdiv");
+}
+{% endblock %}
