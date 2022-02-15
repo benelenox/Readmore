@@ -4,7 +4,7 @@ from django.views.decorators.csrf import csrf_exempt
 from django.shortcuts import render, redirect, get_object_or_404
 from django.urls import reverse
 from django.http import HttpResponse, HttpResponseRedirect, Http404
-from .models import UserExt, Notification, Club
+from .models import UserExt, Notification, Club, ClubChat
 from .forms import register as regform, login as loginform, club as clubform
 from django.contrib.auth import authenticate, login as log_in, logout as log_out
 
@@ -145,6 +145,17 @@ def invite_to_club(request, club_id):
         if club.club_owner != real_user:
             return redirect(reverse('readmore_app:club', kwargs={'club_id': club.club_id}))
         return render(request, "readmore_app/invite_to_club.html", {"real_user": real_user, "club": club})
+    else:
+        return redirect(reverse('readmore_app:login'))
+
+def club_chat(request, club_id):
+    if request.user.is_authenticated:
+        real_user = UserExt.objects.get(pk=request.user.id)
+        club = Club.objects.get(pk=club_id)
+        if real_user not in club.club_users.all():
+            return redirect(reverse('readmore_app:index'))
+        club_chats = ClubChat.objects.filter(chat_destination=club).order_by('chat_time')
+        return render(request, "readmore_app/club_chat.html", {"real_user": real_user, "club": club, 'club_chats': club_chats})
     else:
         return redirect(reverse('readmore_app:login'))
 

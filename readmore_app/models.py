@@ -33,6 +33,16 @@ class Club(models.Model):
     club_name = models.CharField(max_length=100)
     club_description = models.TextField(blank=True)
     club_owner = models.ForeignKey(UserExt, on_delete=models.CASCADE)
-    club_users = models.ManyToManyField(UserExt, related_name="users")
+    club_users = models.ManyToManyField(UserExt, related_name="user_clubs")
     club_library = models.ManyToManyField('Book', blank=True, related_name="library")
     club_pending_invites = models.ManyToManyField('UserExt', related_name="pending_invites")
+
+class Chat(models.Model):
+    chat_id = models.AutoField(primary_key=True)
+    chat_user = models.ForeignKey(UserExt, null=True, on_delete=models.SET_NULL)
+    chat_time = models.DateTimeField(auto_now_add=True)
+    chat_type = models.CharField(default="chat", blank=False, null=False, max_length=20)
+    chat_message = models.TextField()
+
+class ClubChat(Chat):
+    chat_destination = models.ForeignKey(Club, on_delete=models.CASCADE)

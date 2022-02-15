@@ -1,0 +1,89 @@
+{% extends parent_template|default:"base.html" %}
+{% load static %}
+
+{% block title %}
+Readmore - {{ club.club_name }}
+{% endblock %}
+
+{% block content %}
+<div>
+    <h1>{{ club.club_name }} Chatroom</h1>
+    <div id="chatdiv">
+    <table id="chat_table">
+    {% for chat in club_chats %}
+        <tr {% if chat.chat_type == 'info' %}class="joinleavemessage"{% endif %}>
+            <td>
+                {% if chat.chat_user %}<p>{{ chat.chat_user }}</p>{% endif %}
+                <p>{{ chat.chat_time|date:'m/d/Y h:i A' }}</p>
+            </td>
+            <td>
+                <p>{{ chat.chat_message }}</p>
+            </td>
+        </tr>
+    {% endfor %}
+    </table>
+    </div>
+    <textarea style="display: inline-block; max-width: 1100px; max-height: 100px;" id="message" name="message" rows="4" cols="50"></textarea>
+    <button id="send" style="display: inline-block;">Send</button>
+{% endblock %}
+
+{% block js %}
+const table = document.getElementById("chat_table");
+const textarea = document.getElementById("message");
+const send_button = document.getElementById("send");
+const socket = new WebSocket('ws://' + window.location.host + '/ws/chat/' + {{ club.club_id }} + '/');
+
+const scrollDown = function() {
+    var elem = document.getElementById('chatdiv');
+    elem.scrollTop = elem.scrollHeight;
+}
+
+scrollDown()
+
+function escapeHtml(unsafe)
+{
+    return unsafe
+         .replace(/&/g, "&amp;")
+         .replace(/</g, "&lt;")
+         .replace(/>/g, "&gt;")
+         .replace(/"/g, "&quot;")
+         .replace(/'/g, "&#039;");
+ }
+
+socket.onmessage = function(response) {
+    var json = JSON.parse(response.data);
+    var message = escapeHtml(json.message);
+    var time = escapeHtml(json.time);
+    var user = escapeHtml(json.user);
+    var type = json.type;
+    if (type == "chat_message"){
+        var chat = `<tr><td><p>${user}</p><p>${time}</p></td><td><p>${message}</p></td></tr>`;
+    } else if (type == "join" || type == "leave") {
+        var chat = `<tr class="joinleavemessage"><td><p>${time}</p></td><td><p>${message}</p></td></tr>`;
+    }
+    table.innerHTML += chat;
+    scrollDown()
+};
+
+socket.onclose = function(e) {
+    console.error('Chat socket closed unexpectedly');
+};
+
+function submit(event){
+    if(event.which === 13 || event.which == 1){
+        event.preventDefault();
+        if (!(/\S/.test(textarea.value))){
+            return;
+        }
+        let message = textarea.value;
+        textarea.value = "";
+        socket.send(JSON.stringify({
+            'message': message,
+            'user': {{ user.id }},
+            'club': {{ club.club_id }}
+        }));
+    }
+};
+textarea.addEventListener('keypress', submit);
+send_button.addEventListener('click', submit);
+{% endblock %}

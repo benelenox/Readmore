@@ -11,6 +11,7 @@ urlpatterns = [
 	path('profile/<int:profile_id>/', views.profile, name='profile'),
     path('create_club/', views.create_club, name='create_club'),
     path('club/<int:club_id>/', views.club, name='club'),
+    path('club_chat/<int:club_id>/', views.club_chat, name="club_chat"),
     path('friend_list/<int:profile_id>/', views.friend_list, name='friend_list'),
     path('search_results/', views.search_results, name="search_results"),
     path('book_clubs/', views.book_clubs, name="book_clubs"),
