@@ -36,6 +36,10 @@ class Club(models.Model):
     club_users = models.ManyToManyField(UserExt, related_name="user_clubs")
     club_library = models.ManyToManyField('Book', blank=True, related_name="library")
     club_pending_invites = models.ManyToManyField('UserExt', related_name="pending_invites")
+    club_library = models.ManyToManyField('ClubBook', related_name='clubs')
+    
+class ClubBook(models.Model):
+    isbn = models.CharField(max_length=20)
 
 class Chat(models.Model):
     chat_id = models.AutoField(primary_key=True)
