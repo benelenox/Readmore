@@ -101,13 +101,13 @@ def create_club(request):
     # Redirect Unknown Users
     return HttpResponseRedirect(reverse("readmore_app:login"))
 
-def search_results(request):
+def user_search_results(request):
     if request.method == 'POST':
         search_query = request.POST["search_query"]
         results1 = UserExt.objects.filter(username__istartswith=search_query)
         results2 = UserExt.objects.filter(username__icontains=search_query)
         search_results = results1 | results2
-        return render(request, "readmore_app/search_results.html", {"search": search_query, "user_search_results": search_results})
+        return render(request, "readmore_app/user_search_results.html", {"search": search_query, "user_search_results": search_results})
     else:
         raise Http404()
 
@@ -159,14 +159,14 @@ def club_chat(request, club_id):
     else:
         return redirect(reverse('readmore_app:login'))
 
-def view_book(request, book_isbn, book_volume_index=0):
+def view_book(request, book_isbn):
     """
     The page for viewing books
     """
     
     if request.user.is_authenticated:
         book_api_key = 'AIzaSyCrRXmYA10KFK9bFearnoAGZ8Suzn1aFgI'
-        book_info = requests.get('https://www.googleapis.com/books/v1/volumes?q=isbn' + book_isbn + '&startIndex=' + str(book_volume_index) + '&key=' + book_api_key).json()
+        book_info = requests.get(f'https://www.googleapis.com/books/v1/volumes?q=+isbn:{book_isbn}&key={book_api_key}').json()
         real_user = get_object_or_404(UserExt, id=request.user.id)
 
         book = None
@@ -177,6 +177,35 @@ def view_book(request, book_isbn, book_volume_index=0):
         
     # Redirect Unknown Users
     return redirect(reverse('readmore_app:login'))
+
+def search_book(request):
+    if not request.user.is_authenticated: return redirect(reverse('readmore_app:login'))
+    if request.method == "POST":
+        query = request.POST['search_query']
+        type = request.POST['search_type']
+        
+        book_api_key = 'AIzaSyCrRXmYA10KFK9bFearnoAGZ8Suzn1aFgI'
+        real_user = get_object_or_404(UserExt, id=request.user.id)
+        
+        if type == "general":
+            books_info = requests.get(f'https://www.googleapis.com/books/v1/volumes?q={query}&maxResults=40&key={book_api_key}').json()
+        elif type == "title":
+            books_info = requests.get(f'https://www.googleapis.com/books/v1/volumes?q=+intitle:{query}&maxResults=40&key={book_api_key}').json()
+        elif type == "author":
+            books_info = requests.get(f'https://www.googleapis.com/books/v1/volumes?q=+inauthor:{query}&maxResults=40&key={book_api_key}').json()
+        elif type == "isbn":
+            books_info = requests.get(f'https://www.googleapis.com/books/v1/volumes?q=+isbn:{query}&maxResults=40&key={book_api_key}').json()
+
+        if 'items' in books_info.keys():
+            books = books_info['items']
+        else:
+            books = []
+        
+        books = [books[i:i+3] for i in range(0, len(books), 3)]
+        
+        return render(request, "readmore_app/search_book.html", {"real_user": real_user, "books": books, 'search': True})
+    else:
+        return render(request, "readmore_app/search_book.html", {'search': False})
 
 """ 
 *************************************

@@ -9,18 +9,55 @@ Readmore - Book Not Found
 {% endblock %}
 
 {% block content %}
-<div class="book_club">
-	{% if book != None %}
+<div>
+    {% if book != None %}
     <h1>{{ book.volumeInfo.title }}</h1>
     <h2>{{ book.volumeInfo.subtitle }}</h2>
-	<img src="{{ book.volumeInfo.imageLinks.thumbnail }}" alt="Image of Book Cover"> 
-    <h2>Description</h2>
-	<p>{{ book.volumeInfo.description }}</p>
+    <table id="view_book_table">
+    <tr>
+        <td style="width: 20%;" rowspan=5>
+            <img width=300px src="{{ book.volumeInfo.imageLinks.thumbnail }}" alt="Image of Book Cover"> 
+        </td>
+        <td style="width:200px;" align="center" rowspan=5>
+            <div style="margin-bottom: 50%;">
+            Rating: 
+            <br>
+            <div class="stars" style="--rating:{{ book.volumeInfo.averageRating }};"></div>
+            </div>
+        </td>
+        <td>
+            Author{{ book.volumeInfo.authors|length|pluralize:"s" }}:
+                        <br>
+                        {% for author in book.volumeInfo.authors %}
+                        <span style="margin-left: 3%;">{{ author }}<span>
+                        <br>
+                        {% endfor %}
+        </td>
+    </tr>
+    <tr>
+        <td>Publisher: {{ book.volumeInfo.publisher }}</td>
+    </tr>
+    <tr>
+        <td>Publication Date: {{ book.volumeInfo.publishedDate }}</td>
+    </tr>
+    <tr>
+        <td>ISBN13: {{ book.volumeInfo.industryIdentifiers.0.identifier }}</td>
+    </tr>
+    <tr>
+        <td>ISBN10: {{ book.volumeInfo.industryIdentifiers.1.identifier }}</td>
+    </tr>
+    <tr>
+        <td colspan=3>
+            <h2>Description</h2>
+            <p>{{ book.volumeInfo.description }}</p>
+        </td>
+    </tr>
+    </table>
     <h2>Forums</h2>
 	<h2>Reviews <button onclick="addReview();">Add Review</button></h2>
 	<p>Reviews go here when implemented.</p>
     {% else %}
-	<h1>Book Not Found</h1>
+        <h1>Book Not Found</h1>
     {% endif %}
 </div>
 {% endblock %}

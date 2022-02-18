@@ -13,12 +13,12 @@ urlpatterns = [
     path('club/<int:club_id>/', views.club, name='club'),
     path('club_chat/<int:club_id>/', views.club_chat, name="club_chat"),
     path('friend_list/<int:profile_id>/', views.friend_list, name='friend_list'),
-    path('search_results/', views.search_results, name="search_results"),
+    path('user_search_results/', views.user_search_results, name="user_search_results"),
     path('book_clubs/', views.book_clubs, name="book_clubs"),
     path('club_members/<int:club_id>/', views.club_members, name='club_members'),
     path('invite_to_club/<int:club_id>/', views.invite_to_club, name='invite_to_club'),
     path('view_book/<str:book_isbn>/', views.view_book, name='view_book'),
-    path('view_book/<str:book_isbn>/<int:book_volume_index>/', views.view_book, name='view_book_volume'),
+    path('search_book/', views.search_book, name="search_book"),
 ]
 
 # AJAX url patterns

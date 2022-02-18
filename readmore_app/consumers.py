@@ -63,12 +63,9 @@ class ChatConsumer(WebsocketConsumer):
     def receive(self, text_data):
         text_data_json = json.loads(text_data)
         message = text_data_json['message']
-        user_id = text_data_json['user']
-        
-        real_user = UserExt.objects.get(pk=int(user_id))
         
         new_chat = ClubChat()
-        new_chat.chat_user = real_user
+        new_chat.chat_user = self.user
         new_chat.chat_message = message
         new_chat.chat_destination = self.club
         new_chat.save()
@@ -79,7 +76,7 @@ class ChatConsumer(WebsocketConsumer):
             {
                 'type': 'chat_message',
                 'message': message,
-                'user': real_user.username,
+                'user': self.user.username,
                 'time': datetime.strftime(new_chat.chat_time, "%m/%d/%Y %I:%M %p")
             }
         )

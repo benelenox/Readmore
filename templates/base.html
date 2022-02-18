@@ -41,11 +41,11 @@
                         <a class="dropaw" href="#">Link 3</a>
                     </div>
                 </div>
-                <form style="display: inline; left: 0px; position: relative; top:7px;" class="link" method="POST" action="{% url 'readmore_app:search_results' %}">
+                <form style="display: inline; left: 0px; position: relative; top:7px;" class="link" method="POST" action="{% url 'readmore_app:user_search_results' %}">
                   {% csrf_token %}
                   <input type="image" width="20px" style="margin: 0px 6px 0px 8px; position:relative; top: 3px;" src="{% static 'readmore_app/logo_search.png' %}">
-                  <input type="text" name="search_query" style="margin: 0px 10px 6px 0px;">
-              </form>
+                  <input type="text" placeholder="Search User" name="search_query" style="margin: 0px 10px 6px 0px;">
+                </form>
                 {% endif %}
                 <div></div>
               </div>
@@ -56,6 +56,7 @@
             <div class="sidebar">
                 <a href="{% url 'readmore_app:index' %}">Home</a>
                 <a href="{% url 'readmore_app:book_clubs' %}">Book Clubs</a>
+                <a href="{% url 'readmore_app:search_book' %}">Search Books</a>
             </div>
             <main style="margin:0;">
             {% endif %}

@@ -79,8 +79,6 @@ function submit(event){
         textarea.value = "";
         socket.send(JSON.stringify({
             'message': message,
-            'user': {{ user.id }},
-            'club': {{ club.club_id }}
         }));
     }
 };

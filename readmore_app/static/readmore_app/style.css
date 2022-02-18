@@ -10,6 +10,11 @@ a{
     text-decoration: none; 
 }
 .form{
+    text-transform: uppercase;
+    font-family: Arial, Helvetica, sans-serif;
+    font-weight: 10px;
+    color:#309070;
+    text-align: left;
     z-index: 1;
     margin-top:50px;
     margin-left:30%;
@@ -62,13 +67,7 @@ h2.logo{
     position:absolute;
     min-height:100%;
     min-width:100%;
-}
-form{
-    text-transform: uppercase;
-    font-family: Arial, Helvetica, sans-serif;
-    font-weight: 10px;
-    color:#309070;
-    text-align: left;
+    z-index: -1;
 }
 h2.logo{
     color:#e2e2db;
@@ -79,7 +78,7 @@ h2.logo{
     margin-top: 6px;
 }
 
-input[type=submit]{
+.submit{
     height: 24px;
     border:none;
     color: white;
@@ -264,6 +263,33 @@ div.subnav {
     background: #dee7e9; 
     color:#3b3e66;
     transition: all 0.4s;
+}
+
+#search_button {
+    width: 20vw;
+    height: 40px;
+    border-radius: 10px;
+    margin-top: 10px;
+}
+.stars {
+  --percent: calc((var(--rating) - 0.025 ) / 5 * 100%);
+  
+  display: inline-block;
+  font-size: 40px;
+  font-family: Times;
+  line-height: 1;
+  
+}
+.stars:before {
+    content: '★★★★★';
+    letter-spacing: 3px;
+    background: linear-gradient(90deg, #ffd000 var(--percent), #e1e1e1 var(--percent));
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+}
+
+.book_search_link {
+    color: inherit;
 }
 
 .error {margin-top: 20px; position:relative; color:red;font-size:24;padding:10px;border:1px solid black;border-radius:5px; background:rgba(255, 25, 25, 0.3);}

@@ -5,7 +5,7 @@ Readmore - Login
 {% endblock %}
 
 {% block content %}
-<main  id="login">
+<main id="login">
 
 <div class="form">
     {% if optional_message %}
@@ -18,11 +18,11 @@ Readmore - Login
         <table>
         {{ form.as_table }}
         <tr>
-            <td colspan=2 style="text-align: center"><input type="submit" value="Login"></td>
+            <td colspan=2 style="text-align: center"><input class="submit" type="submit" value="Login"></td>
         </tr>
         </table>
     </form>
-    <p>not a subscriber to readmore?</p>
+    <p>Not a Subscriber to Readmore?</p>
     <a href="{% url 'readmore_app:registration' %}" style="color:white;text-shadow: 4px;">Register For an Account</a>
 </div>
 {% endblock %}

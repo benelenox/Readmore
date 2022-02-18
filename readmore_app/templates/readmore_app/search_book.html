@@ -1,0 +1,69 @@
+{% extends parent_template|default:"base.html" %}
+{% load static %}
+
+{% block title %}
+Readmore - Search Book
+{% endblock %}
+
+{% block content %}
+<div>
+    <center>
+    <h1>Search Books</h1>
+    <form action="{% url 'readmore_app:search_book' %}" method="POST">
+    {% csrf_token %}
+        <input style="width: 50vw;" type="text" name="search_query" required/>
+        <select style="padding: 5px; border-radius: 5px;" name="search_type">
+            <option value="general" selected>General Search</option>
+            <option value="title">Title</option>
+            <option value="author">Author</option>
+            <option value="isbn">ISBN</option>
+        </select>
+        <br>
+        <input id="search_button" type="submit" value="Search" />
+    </form>
+    </center>
+    {% if search %}
+        {% if not books %}
+        <h2>No Books Found Matching Search Terms</h2>
+        {% else %}
+        <table>
+            {% for short_list in books %}
+            <tr>
+                {% for book in short_list %}
+                <td style="width: 30vw;">
+                <a class="book_search_link" href="{% url 'readmore_app:view_book' book.volumeInfo.industryIdentifiers.0.identifier %}">
+                    <table>
+                    <tr>
+                        <td rowspan=3><img src="{{ book.volumeInfo.imageLinks.smallThumbnail }}" alt="{{ book.volumeInfo.title }} Cover Image" /></td>
+                        <td colspan=2>
+                        <p>{{ book.volumeInfo.title }}</p>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>
+                            Author{{ book.volumeInfo.authors|length|pluralize:"s" }}
+                        </td>
+                        <td>
+                            <p>
+                            {% for author in book.volumeInfo.authors %}
+                            <span>{{ author }}</span>
+                            </p>
+                            {% endfor %}
+                        </td>
+                    </tr>
+                    <tr>
+                        <td colspan=2>ISBN: {{book.volumeInfo.industryIdentifiers.0.identifier }}</td>
+                    </tr>
+                    <tr><td align="center" colspan=3><div class="stars" style="--rating:{{ book.volumeInfo.averageRating }};"></div></td></tr>
+                    </table>
+               </a>
+                </td>
+                
+                {% endfor %}
+            </tr>
+            {% endfor %}
+        </table>
+        {% endif %}
+    {% endif %}
+</div>
+{% endblock %}
