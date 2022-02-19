@@ -12,7 +12,7 @@ Readmore - Search Book
     <form action="{% url 'readmore_app:search_book' %}" method="POST">
     {% csrf_token %}
         <input style="width: 50vw;" type="text" name="search_query" required/>
-        <select style="padding: 5px; border-radius: 5px;" name="search_type">
+        <select style="padding: 5px; border-radius: 5px; border:none;" name="search_type">
             <option value="general" selected>General Search</option>
             <option value="title">Title</option>
             <option value="author">Author</option>
@@ -26,7 +26,7 @@ Readmore - Search Book
         {% if not books %}
         <h2>No Books Found Matching Search Terms</h2>
         {% else %}
-        <table>
+        <table class="table" id="book_search_results">
             {% for short_list in books %}
             <tr>
                 {% for book in short_list %}
@@ -36,23 +36,23 @@ Readmore - Search Book
                     <tr>
                         <td rowspan=3><img src="{{ book.volumeInfo.imageLinks.smallThumbnail }}" alt="{{ book.volumeInfo.title }} Cover Image" /></td>
                         <td colspan=2>
-                        <p>{{ book.volumeInfo.title }}</p>
+                        <p style="font-size:18px;">{{ book.volumeInfo.title }}</p>
                         </td>
                     </tr>
                     <tr>
-                        <td>
+                        <td style="font-size:12px;">
                             Author{{ book.volumeInfo.authors|length|pluralize:"s" }}
                         </td>
                         <td>
-                            <p>
+                            <p style="font-size:12px;">
                             {% for author in book.volumeInfo.authors %}
-                            <span>{{ author }}</span>
+                            <span style="font-size:12px;">{{ author }}</span>
                             </p>
                             {% endfor %}
                         </td>
                     </tr>
                     <tr>
-                        <td colspan=2>ISBN: {{book.volumeInfo.industryIdentifiers.0.identifier }}</td>
+                        <td colspan=2 style="font-size:12px;">ISBN: {{book.volumeInfo.industryIdentifiers.0.identifier }}</td>
                     </tr>
                     <tr><td align="center" colspan=3><div class="stars" style="--rating:{{ book.volumeInfo.averageRating }};"></div></td></tr>
                     </table>

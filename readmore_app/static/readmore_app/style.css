@@ -1,29 +1,49 @@
 /* #7074ac */
 html{
-    height: 100%;
+    height: 100vh;
 }
 body{
     font-family: OCR A Std, monospace;
-    margin:0;    
+    margin:0; 
+    height:100vh;   
 }
 a{
     text-decoration: none; 
 }
 .form{
+    background-color: #F9F8FF;
+    padding:30px;
     text-transform: uppercase;
     font-family: Arial, Helvetica, sans-serif;
     font-weight: 10px;
     color:#309070;
     text-align: left;
     z-index: 1;
-    margin-top:50px;
-    margin-left:30%;
+    margin-top:50%;
+    margin-left:50%;
+    transform:translate(-55%, -50%);
     text-transform: uppercase;
     font-family:Arial, Helvetica, sans-serif;
     font-weight: 20px;
 }
 
-.form a{
+
+
+#search_button{
+    border-radius: 0px;
+    border: none;
+    color: white;
+    background-color:#008A65;
+}
+#book_search_results{
+    display:flex;
+    overflow: scroll;
+    margin-left: -40px;
+}
+#book_search_results td{
+    background-color: aliceblue;
+    color: #7074ac;
+    font-family:Arial, Helvetica, sans-serif;
     
 }
 h2.logo{
@@ -59,6 +79,7 @@ h2.logo{
     
 }
 
+
 #login {
     box-shadow:inset 2000px 0 0 0 rgba(112, 116, 172, .5);
     background-image: url(studygroup.jpg);
@@ -84,14 +105,18 @@ h2.logo{
     color: white;
     background-color:#008A65;
     min-width: 80px;
+    margin-top: 10px;
+    padding: 4px;
 }
 
 main{
     background-image: url(white_background.jpg);
+    background-attachment:fixed;
     background-size:cover;
     display: flex;
     width: 100%;
-    height: 100vh;
+    min-height: 100%;
+    height: 100% auto;
     color:#309070;
 }
 
@@ -148,7 +173,8 @@ div.sidebar {
     background: #97bdf7; 
     float:left; 
     width:20%; 
-    height:100vh;
+    min-height:100vh;
+    height:100% auto;
     
 }
 .sidebar a {
