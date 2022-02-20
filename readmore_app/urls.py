@@ -19,6 +19,7 @@ urlpatterns = [
     path('invite_to_club/<int:club_id>/', views.invite_to_club, name='invite_to_club'),
     path('view_book/<str:book_isbn>/', views.view_book, name='view_book'),
     path('search_book/', views.search_book, name="search_book"),
+    path('club_library/<int:club_id>/', views.club_library, name="club_library"),
 ]
 
 # AJAX url patterns

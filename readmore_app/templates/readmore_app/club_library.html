@@ -1,0 +1,50 @@
+{% extends parent_template|default:"base.html" %}
+{% load static %}
+
+{% block title %}
+Readmore - {{ club.club_name }}
+{% endblock %}
+
+{% block content %}
+    <table class="table" id="book_search_results">
+
+            {% for shortlist in club.club_library.all %}
+            <tr>
+                <td>{{ shortlist.isbn }}</td>
+            </tr>
+            <!--<tr>
+                {% for book in short_list %}
+                <td style="width: 30vw;">
+                <a class="book_search_link" href="{% url 'readmore_app:view_book' book.volumeInfo.industryIdentifiers.0.identifier %}">
+                    <table>
+                    <tr>
+                        <td rowspan=3><img src="{{ book.volumeInfo.imageLinks.smallThumbnail }}" alt="{{ book.volumeInfo.title }} Cover Image" /></td>
+                        <td colspan=2>
+                        <p style="font-size:18px;">{{ book.volumeInfo.title }}</p>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td style="font-size:12px;">
+                            Author{{ book.volumeInfo.authors|length|pluralize:"s" }}
+                        </td>
+                        <td>
+                            <p style="font-size:12px;">
+                            {% for author in book.volumeInfo.authors %}
+                            <span style="font-size:12px;">{{ author }}</span>
+                            </p>
+                            {% endfor %}
+                        </td>
+                    </tr>
+                    <tr>
+                        <td colspan=2 style="font-size:12px;">ISBN: {{book.volumeInfo.industryIdentifiers.0.identifier }}</td>
+                    </tr>
+                    <tr><td align="center" colspan=3><div class="stars" style="--rating:{{ book.volumeInfo.averageRating }};"></div></td></tr>
+                    </table>
+               </a>
+                </td>
+
+                {% endfor %}
+            </tr>-->
+            {% endfor %}
+        </table>
+{% endblock %}

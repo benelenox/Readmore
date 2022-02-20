@@ -207,6 +207,14 @@ def search_book(request):
     else:
         return render(request, "readmore_app/search_book.html", {'search': False})
 
+
+def club_library(request, club_id):
+    if request.user.is_authenticated:
+        real_user = UserExt.objects.get(pk=request.user.id)
+        club = Club.objects.get(pk=club_id)
+        return render(request, "readmore_app/club_library.html", {"real_user": real_user, "club": club})
+    else:
+        return redirect(reverse("readmore_app:login"))
 """ 
 *************************************
 * AJAX METHODS ONLY AFTER THIS POINT 

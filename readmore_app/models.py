@@ -40,6 +40,7 @@ class Club(models.Model):
     
 class ClubBook(models.Model):
     isbn = models.CharField(max_length=20)
+    time = models.DateTimeField(auto_now_add=True)
 
 class Chat(models.Model):
     chat_id = models.AutoField(primary_key=True)
