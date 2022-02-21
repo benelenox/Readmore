@@ -26,11 +26,11 @@ Readmore - Search Book
         {% if not books %}
         <h2>No Books Found Matching Search Terms</h2>
         {% else %}
-        <table>
+        <table class="book_search_results">
             {% for short_list in books %}
             <tr>
                 {% for book in short_list %}
-                <td style="width: 30vw;">
+                <td style="width: 30vw; background-color:#dee7e9;">
                 <a class="book_search_link" href="{% url 'readmore_app:view_book' book.volumeInfo.industryIdentifiers.0.identifier %}">
                     <table>
                     <tr>
