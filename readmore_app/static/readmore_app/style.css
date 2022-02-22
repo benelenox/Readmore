@@ -36,15 +36,25 @@ a{
 }
 #book_search_results{
     display:flex;
-    overflow: scroll;
     margin-left: -40px;
 }
 #book_search_results td{
-    background-color: aliceblue;
+    background-color: rgba(240, 248, 255, 0.3);
     color: #7074ac;
     font-family:Arial, Helvetica, sans-serif;
-    
 }
+
+#club_library_table {
+    display:flex;
+}
+
+#club_library_table td {
+    background-color: rgba(240, 248, 255, 0.3);
+    color: #7074ac;
+    font-family:Arial, Helvetica, sans-serif;
+    display: inline-block;
+}
+
 h2.logo{
     color:#e2e2db;
     font-family:Arial, Helvetica, sans-serif;

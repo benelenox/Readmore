@@ -5,7 +5,8 @@ from django.views.decorators.csrf import csrf_exempt
 from django.shortcuts import render, redirect, get_object_or_404
 from django.urls import reverse
 from django.http import HttpResponse, HttpResponseRedirect, Http404
-from .models import UserExt, Notification, Club, ClubChat
+from .models import UserExt, Notification, Club, ClubChat, ClubBook
+from .pseudomodels import Book
 from .forms import register as regform, login as loginform, club as clubform
 from django.contrib.auth import authenticate, login as log_in, logout as log_out
 
@@ -184,23 +185,9 @@ def search_book(request):
         query = request.POST['search_query']
         type = request.POST['search_type']
         
-        book_api_key = 'AIzaSyCrRXmYA10KFK9bFearnoAGZ8Suzn1aFgI'
         real_user = get_object_or_404(UserExt, id=request.user.id)
         
-        if type == "general":
-            books_info = requests.get(f'https://www.googleapis.com/books/v1/volumes?q={query}&maxResults=40&key={book_api_key}').json()
-        elif type == "title":
-            books_info = requests.get(f'https://www.googleapis.com/books/v1/volumes?q=+intitle:{query}&maxResults=40&key={book_api_key}').json()
-        elif type == "author":
-            books_info = requests.get(f'https://www.googleapis.com/books/v1/volumes?q=+inauthor:{query}&maxResults=40&key={book_api_key}').json()
-        elif type == "isbn":
-            books_info = requests.get(f'https://www.googleapis.com/books/v1/volumes?q=+isbn:{query}&maxResults=40&key={book_api_key}').json()
-
-        if 'items' in books_info.keys():
-            books = books_info['items']
-        else:
-            books = []
-        
+        books = Book.search_googlebooks(query, type)
         books = [books[i:i+3] for i in range(0, len(books), 3)]
         
         return render(request, "readmore_app/search_book.html", {"real_user": real_user, "books": books, 'search': True})
@@ -212,7 +199,20 @@ def club_library(request, club_id):
     if request.user.is_authenticated:
         real_user = UserExt.objects.get(pk=request.user.id)
         club = Club.objects.get(pk=club_id)
-        return render(request, "readmore_app/club_library.html", {"real_user": real_user, "club": club})
+        club_library = Book.booklike_to_book(club.club_library.all())
+        club_library = [club_library[i:i+3] for i in range(0, len(club_library), 3)]
+        club_library_isbns = [book.isbn for book in club.club_library.all()]
+        print(club_library[0][1].small_thumbnail)
+        if request.method != "POST":
+            return render(request, "readmore_app/club_library.html", {"real_user": real_user, "club": club, "club_library": club_library, "search": False})
+        else:
+            query = request.POST['search_query']
+            type = request.POST['search_type']
+            
+            books = Book.search_googlebooks(query, type)
+            books = [books[i:i+3] for i in range(0, len(books), 3)]
+            
+            return render(request, "readmore_app/club_library.html", {"real_user": real_user, "club": club, "club_library": club_library, "club_library_isbns": club_library_isbns, "books": books, 'search': True})
     else:
         return redirect(reverse("readmore_app:login"))
 """ 
@@ -343,3 +343,60 @@ def join_club(request, club_id):
         notify_owner.notification_message = f"{real_user.username} has joined your book club, {club.club_name}."
         notify_owner.save()
     return HttpResponse("")
+
+def add_to_library(request, club_id, isbn):
+    if Book(isbn).book_data:
+        real_user = UserExt.objects.get(pk=request.user.id)
+        club = Club.objects.get(pk=club_id)
+        if isbn in [obj.isbn for obj in club.club_library.all()]:
+            return HttpResponse("")
+        if real_user == club.club_owner:
+            new_club_book = ClubBook()
+            new_club_book.isbn = isbn
+            new_club_book.save()
+            club.club_library.add(new_club_book)
+            club.save()
+            book = Book.booklike_to_book(new_club_book)
+            template = f"""<td id="clubbook{book.id}" style="width: 20%;">
+            <a class="book_search_link" href="/readmore/view_book/{book.isbn13}">
+                <table>
+                <tr>
+                    <td rowspan=3><img src="{book.small_thumbnail}" alt="{book.title} Cover Image" /></td>
+                    <td colspan=2>
+                    <p style="font-size:18px;">{book.title}</p>
+                    </td>
+                </tr>
+                <tr>
+                    <td style="font-size:12px;">
+                        Author{'s' if len(book.authors) > 1 else ''}
+                    </td>
+                    <td>
+                        <p style="font-size:12px;">
+                        {''.join('<span style="font-size:12px;">'+author+'</span>' for author in book.authors)}
+                        </p>
+                    </td>
+                </tr>
+                <tr>
+                    <td colspan=2 style="font-size:12px;">ISBN: {book.isbn13}</td>
+                </tr>
+                <tr><td align="center" colspan=3><div class="stars" style="--rating:{book.rating};"></div></td></tr>
+                </table>
+           </a>
+           <center>
+           <button onclick="removeBook({new_club_book.id});">Remove From Club Library</button>
+           </center>
+           </td>"""
+            return HttpResponse(template)
+    return HttpResponse("error")
+
+def remove_from_library(request, club_id, club_book_id):
+    real_user = UserExt.objects.get(pk=request.user.id)
+    club = Club.objects.get(pk=club_id)
+    if real_user == club.club_owner:
+        club_book = ClubBook.objects.get(pk=club_book_id)
+        isbn = club_book.isbn
+        club.club_library.remove(club_book)
+        club.save()
+        club_book.delete()
+        return HttpResponse(isbn)
+    return HttpResponse("error")

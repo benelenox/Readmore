@@ -32,5 +32,7 @@ urlpatterns.extend(
     path('ajax/kick_member/<int:club_id>/<int:member_id>/', views.kick_member, name="kick_member"),
     path('ajax/invite_member/<int:club_id>/<int:friend_id>/', views.invite_member, name="invite_member"),
     path('ajax/join_club/<int:club_id>/', views.join_club, name="join_club"),
+    path('ajax/remove_from_library/<int:club_id>/<int:club_book_id>/', views.remove_from_library, name='remove_from_library'),
+    path('ajax/add_to_library/<int:club_id>/<str:isbn>/', views.add_to_library, name='add_to_library'),
     ]
 )

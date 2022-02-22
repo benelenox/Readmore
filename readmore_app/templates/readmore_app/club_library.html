@@ -6,13 +6,76 @@ Readmore - {{ club.club_name }}
 {% endblock %}
 
 {% block content %}
-    <table class="table" id="book_search_results">
-
-            {% for shortlist in club.club_library.all %}
+<div style="display: flex; flex-direction: column; width: 80vw;">
+<a style="margin-top: 50px; position: absolute;" href="{% url 'readmore_app:club' club.club_id %}">Back To Club Home</a>
+<div id="library">
+    <center>
+    <h1>My Club Library</h1>
+    <h2>Club Books</h2>
+    </center>
+    <table class="table" id="club_library_table">
+        <tr id="row" style="">
+        {% for shortlist in club_library %}
+            {% for book in shortlist %}
+            <td id="clubbook{{ book.id }}" style="width: 20%;">
+            <a class="book_search_link" href="{% url 'readmore_app:view_book' book.isbn13 %}">
+                <table>
+                <tr>
+                    <td rowspan=3><img src="{{ book.small_thumbnail }}" alt="{{ book.title }} Cover Image" /></td>
+                    <td colspan=2>
+                    <p style="font-size:18px;">{{ book.title }}</p>
+                    </td>
+                </tr>
+                <tr>
+                    <td style="font-size:12px;">
+                        Author{{ book.authors|length|pluralize:"s" }}
+                    </td>
+                    <td>
+                        <p style="font-size:12px;">
+                        {% for author in book.authors %}
+                        <span style="font-size:12px;">{{ author }}</span>
+                        </p>
+                        {% endfor %}
+                    </td>
+                </tr>
+                <tr>
+                    <td colspan=2 style="font-size:12px;">ISBN: {{book.isbn13 }}</td>
+                </tr>
+                <tr><td align="center" colspan=3><div class="stars" style="--rating:{{ book.rating }};"></div></td></tr>
+                </table>
+           </a>
+           <center>
+           <button onclick="removeBook('{{ book.id }}');">Remove From Club Library</button>
+           </center>
+           </td>
+            {% endfor %}
+        {% endfor %}
+        </tr>
+    </table>
+</div>
+<div id="search_add">
+    <center>
+    <h2>Search Books</h2>
+    <form style="{% if not search %}margin-bottom: 250px;{% endif %}" action="{% url 'readmore_app:club_library' club.club_id %}" method="POST">
+    {% csrf_token %}
+        <input style="width: 50vw;" type="text" name="search_query" required/>
+        <select style="padding: 5px; border-radius: 5px; border:none;" name="search_type">
+            <option value="general" selected>General Search</option>
+            <option value="title">Title</option>
+            <option value="author">Author</option>
+            <option value="isbn">ISBN</option>
+        </select>
+        <br>
+        <input id="search_button" type="submit" value="Search" />
+    </form>
+    </center>
+    {% if search %}
+        {% if not books %}
+        <h2>No Books Found Matching Search Terms</h2>
+        {% else %}
+        <table class="table" id="book_search_results">
+            {% for short_list in books %}
             <tr>
-                <td>{{ shortlist.isbn }}</td>
-            </tr>
-            <!--<tr>
                 {% for book in short_list %}
                 <td style="width: 30vw;">
                 <a class="book_search_link" href="{% url 'readmore_app:view_book' book.volumeInfo.industryIdentifiers.0.identifier %}">
@@ -41,10 +104,45 @@ Readmore - {{ club.club_name }}
                     <tr><td align="center" colspan=3><div class="stars" style="--rating:{{ book.volumeInfo.averageRating }};"></div></td></tr>
                     </table>
                </a>
-                </td>
-
+               <center>
+               <button style="{% if book.volumeInfo.industryIdentifiers.0.identifier in club_library_isbns %}display: none;{% endif %}" id="add{{ book.volumeInfo.industryIdentifiers.0.identifier }}" onclick="addBook('{{ book.volumeInfo.industryIdentifiers.0.identifier }}');">Add To Club Library</button>
+               </center>
+               </td>
+                
                 {% endfor %}
-            </tr>-->
+            </tr>
             {% endfor %}
         </table>
+        {% endif %}
+    {% endif %}
+</div>
+</div>
+{% endblock %}
+
+{% block js %}
+function addBook(isbn) {
+    const addbutton = document.getElementById("add" + isbn);
+    const xhraddbook = new XMLHttpRequest();
+    xhraddbook.onload = function(){
+        const row = document.getElementById("row");
+        row.innerHTML += this.responseText;
+        addbutton.style.display = "none";
+    }
+    xhraddbook.open("GET", "/readmore/ajax/add_to_library/{{ club.club_id }}/" + isbn + "/");
+    xhraddbook.send();
+}
+
+function removeBook(clubbook_id) {
+    const td = document.getElementById("clubbook" + clubbook_id);
+    const xhrremovebook = new XMLHttpRequest();
+    xhrremovebook.onload = function(){
+        td.parentNode.removeChild(td);
+        const button = document.getElementById("add" + this.responseText);
+        if (button != null) {
+            button.style.display = "inline-block";
+        }
+    }
+    xhrremovebook.open("GET", "/readmore/ajax/remove_from_library/{{ club.club_id }}/" + clubbook_id + "/");
+    xhrremovebook.send();
+}
 {% endblock %}
