@@ -5,9 +5,9 @@ from django.views.decorators.csrf import csrf_exempt
 from django.shortcuts import render, redirect, get_object_or_404
 from django.urls import reverse
 from django.http import HttpResponse, HttpResponseRedirect, Http404
-from .models import UserExt, Notification, Club, ClubChat, ClubBook
+from .models import UserExt, Notification, Club, ClubChat, ClubBook, ClubPost
 from .pseudomodels import Book
-from .forms import register as regform, login as loginform, club as clubform
+from .forms import register as regform, login as loginform, club as clubform, club_post as clubpostform
 from django.contrib.auth import authenticate, login as log_in, logout as log_out
 
 def friend_list(request, profile_id):
@@ -127,7 +127,8 @@ def club(request, club_id):
     if request.user.is_authenticated:
         club = get_object_or_404(Club, club_id=club_id)
         real_user = get_object_or_404(UserExt, id=request.user.id)
-        return render(request, "readmore_app/club_home.html", {"real_user": real_user, "club": club})
+        club_posts = ClubPost.objects.filter(post_club = club).order_by('-post_date')
+        return render(request, "readmore_app/club_home.html", {"real_user": real_user, "club": club, 'club_posts': club_posts})
     else:
         return redirect(reverse('readmore_app:login'))
 
@@ -202,7 +203,6 @@ def club_library(request, club_id):
         club_library = Book.booklike_to_book(club.club_library.all())
         club_library = [club_library[i:i+3] for i in range(0, len(club_library), 3)]
         club_library_isbns = [book.isbn for book in club.club_library.all()]
-        print(club_library[0][1].small_thumbnail)
         if request.method != "POST":
             return render(request, "readmore_app/club_library.html", {"real_user": real_user, "club": club, "club_library": club_library, "search": False})
         else:
@@ -215,6 +215,30 @@ def club_library(request, club_id):
             return render(request, "readmore_app/club_library.html", {"real_user": real_user, "club": club, "club_library": club_library, "club_library_isbns": club_library_isbns, "books": books, 'search': True})
     else:
         return redirect(reverse("readmore_app:login"))
+
+def create_club_post(request, club_id):
+    if request.user.is_authenticated:
+        real_user = UserExt.objects.get(pk=request.user.id)
+        club = Club.objects.get(pk=club_id)
+        form = clubpostform()
+        if real_user not in club.club_users.all():
+            return redirect(reverse("readmore_app:index"))
+        if request.method != 'POST':
+            return render(request, 'readmore_app/create_club_post.html', {'form': form, 'club': club})
+        else:
+            form = clubpostform(request.POST)
+            if form.is_valid():
+                new_post = ClubPost()
+                new_post.post_user = real_user
+                new_post.post_title = form.cleaned_data['title']
+                new_post.post_text = form.cleaned_data['text']
+                new_post.post_img = form.cleaned_data['image']
+                new_post.post_club = club
+                new_post.save()
+                return redirect(reverse('readmore_app:club', kwargs={'club_id': club.club_id}))
+    else:
+        return redirect(reverse("readmore_app:login"))
+
 """ 
 *************************************
 * AJAX METHODS ONLY AFTER THIS POINT 

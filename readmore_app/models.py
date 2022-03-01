@@ -43,3 +43,21 @@ class Chat(models.Model):
 
 class ClubChat(Chat):
     chat_destination = models.ForeignKey(Club, on_delete=models.CASCADE)
+
+class Post(models.Model):
+    post_id = models.AutoField(primary_key=True)
+    post_user = models.ForeignKey(UserExt, models.DO_NOTHING)
+    post_title = models.TextField()
+    post_text = models.TextField()
+    post_img = models.TextField(blank=True)
+    post_likes = models.ManyToManyField(UserExt, related_name="likes")
+    post_date = models.DateTimeField(auto_now_add=True)
+    
+    def date_formatted(self):
+        return self.post_date.strftime("%m/%d/%Y %I:%M:%S %p")
+    
+    def get_likes(self):
+        return len(self.post_likes.all()) - len(self.post_dislikes.all())
+
+class ClubPost(Post):
+    post_club = models.ForeignKey(Club, on_delete=models.CASCADE)

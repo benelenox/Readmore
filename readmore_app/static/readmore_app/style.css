@@ -18,15 +18,32 @@ a{
     font-weight: 10px;
     color:#309070;
     text-align: left;
-    margin-top:50%;
-    margin-left:50%;
-    transform:translate(-55%, -40%);
+    margin-left:30%;
     text-transform: uppercase;
     font-family:Arial, Helvetica, sans-serif;
     font-weight: 20px;
 }
 
+.clubpost {
+    margin-bottom: 50px;
+    background: #9baaf2;
+    border-radius: 30px;
+    padding-bottom: 30px;
+    padding-top: 30px;
+}
 
+.post_text {
+    text-align: left;
+    width: 75%;
+    background: #b1cdf0;
+    border-radius: 10px;
+    padding: 15px;
+    margin-top: 15px;
+}
+
+.book_club {
+    width: 100%;
+}
 
 #search_button{
     border-radius: 0px;

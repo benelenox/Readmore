@@ -20,6 +20,7 @@ urlpatterns = [
     path('view_book/<str:book_isbn>/', views.view_book, name='view_book'),
     path('search_book/', views.search_book, name="search_book"),
     path('club_library/<int:club_id>/', views.club_library, name="club_library"),
+    path('create_club_post/<int:club_id>/', views.create_club_post, name="create_club_post"),
 ]
 
 # AJAX url patterns

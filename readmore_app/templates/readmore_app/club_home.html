@@ -28,7 +28,33 @@ Readmore - {{ club.club_name }}
     </div>
     <div>
         <p>{{ club.club_description }}</p>
+        {% if real_user in club.club_users.all %}
+        <p><a href="{% url 'readmore_app:create_club_post' club.club_id %}">Create Post</a></p>
+        {% endif %}
     </div>
+    <center>
+    <div class="postlist">
+    {% if not club_posts %}
+        <p>No posts have been made to this club</p>
+    {% else %}
+        {% for post in club_posts %}
+            <div class="clubpost">
+                <h2 style="margin: 10px;">{{ post.post_title }}</h2>
+                <h5 style="margin: 2px;">Post By: <a href="{% url 'readmore_app:profile' post.post_user.id %}">{{ post.post_user.username }}</a></h5>
+                <h6 style="margin: 2px;">{{ post.date_formatted }}</h6>
+                {% if post.post_img %}
+                <img style="max-width: 500px;" src="{{ post.post_img }}"/>
+                {% endif %}
+                {% if post.post_text %}
+                <div class="post_text">
+                <p>{{ post.post_text }}</p>
+                {% endif %}
+                </div>
+            </div>
+        {% endfor %}
+    {% endif %}
+    </div>
+    </center>
 </div>
 {% endblock %}
 

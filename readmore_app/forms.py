@@ -5,6 +5,12 @@ from .models import UserExt
 import re
 from datetime import date, timedelta
 
+class club_post(forms.Form):
+    title = forms.CharField(widget=forms.TextInput(attrs={'size':50}), validators=[validators.RegexValidator(regex="^[a-zA-Z_\-0-9].{2,99}$", message="A valid post title must be provided.")])
+    image = forms.CharField(required=False, widget=forms.TextInput(attrs={'size':50}))
+    text = forms.CharField(widget=forms.Textarea(attrs={'cols': 50}), required=False)
+    
+
 class login(forms.Form):
     username = forms.CharField()
     password = forms.CharField(widget = forms.PasswordInput)
