@@ -3,7 +3,7 @@ from django.core import validators
 from django.core.exceptions import ValidationError
 from .models import UserExt
 import re
-from datetime import date, timedelta
+from datetime import date, timedelta, datetime
 
 class club_post(forms.Form):
     title = forms.CharField(widget=forms.TextInput(attrs={'size':50}), validators=[validators.RegexValidator(regex="^[a-zA-Z_\-0-9].{2,99}$", message="A valid post title must be provided.")])
@@ -27,7 +27,7 @@ class register(forms.Form):
     first_name = forms.CharField(validators=[validators.RegexValidator(regex="^[a-zA-Z -]+$", message="Invalid entry for first name.")])
     last_name = forms.CharField(validators=[validators.RegexValidator(regex="^[a-zA-Z -]+$", message="Invalid entry for last name.")])
     email = forms.EmailField(validators=[validators.EmailValidator(message="A valid email must be provided.")])
-    birthdate = forms.DateField()
+    birthdate = forms.DateField(widget=forms.SelectDateWidget(years=[*range(1900, datetime.now().year)]))
     password = forms.CharField(widget = forms.PasswordInput)
     confirm_password = forms.CharField(widget = forms.PasswordInput)
     

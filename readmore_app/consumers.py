@@ -77,7 +77,7 @@ class ChatConsumer(WebsocketConsumer):
                 'type': 'chat_message',
                 'message': message,
                 'user': self.user.username,
-                'time': datetime.strftime(new_chat.chat_time, "%m/%d/%Y %I:%M %p")
+                'time': datetime.strftime(datetime.now(), "%m/%d/%Y %I:%M %p")
             }
         )
 
