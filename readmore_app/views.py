@@ -5,9 +5,9 @@ from django.views.decorators.csrf import csrf_exempt
 from django.shortcuts import render, redirect, get_object_or_404
 from django.urls import reverse
 from django.http import HttpResponse, HttpResponseRedirect, Http404
-from .models import UserExt, Notification, Club, ClubChat, ClubBook, ClubPost
+from .models import UserExt, Notification, Club, ClubChat, ClubBook, ClubPost, ReadingLogBook
 from .pseudomodels import Book
-from .forms import register as regform, login as loginform, club as clubform, club_post as clubpostform
+from .forms import register as regform, login as loginform, club as clubform, club_post as clubpostform, reading_log as readinglogform
 from django.contrib.auth import authenticate, login as log_in, logout as log_out
 
 def friend_list(request, profile_id):
@@ -238,6 +238,36 @@ def create_club_post(request, club_id):
                 return redirect(reverse('readmore_app:club', kwargs={'club_id': club.club_id}))
     else:
         return redirect(reverse("readmore_app:login"))
+
+def reading_log(request):
+    """
+    The page for a user's reading log
+    """
+    
+    if request.user.is_authenticated:
+        form = readinglogform()
+        real_user = UserExt.objects.get(pk=request.user.id)
+		
+        # Add to the Reading Log
+        if request.method == 'POST':
+            form = readinglogform(request.POST)
+            if form.is_valid():
+                form_isbn = form.cleaned_data['isbn']
+                book_list = Book.search_googlebooks(form_isbn, 'isbn')
+                if len(book_list) > 0:
+                    new_reading_log_book = ReadingLogBook()
+                    new_reading_log_book.isbn = form_isbn
+                    new_reading_log_book.save()
+                    real_user.user_reading_log.add(new_reading_log_book)
+                    real_user.save()
+                    
+        # Display the Reading Log Add Book Form & Table
+        reading_log = Book.booklike_to_book(real_user.user_reading_log.all())
+        reading_log = [reading_log[i:i+3] for i in range(0, len(reading_log), 3)]
+        return render(request, "readmore_app/reading_log.html", {'user': real_user, 'form': form, 'reading_log': reading_log})
+    
+    # Redirect Unknown Users
+    return HttpResponseRedirect(reverse("readmore_app:login"))
 
 """ 
 *************************************

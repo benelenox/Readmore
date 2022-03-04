@@ -67,3 +67,6 @@ class register(forms.Form):
 class club(forms.Form):
 	name = forms.CharField(validators=[validators.RegexValidator(regex="^[a-zA-Z_\-0-9].{2,99}$", message="A valid book club name must be provided.")])
 	description = forms.CharField(widget=forms.Textarea, required=False)
+	
+class reading_log(forms.Form):
+	isbn = forms.CharField(validators=[validators.RegexValidator(regex="^(?=(?:[0-9]){10}(?:(?:[0-9]){3})?$)[0-9]+$", message="Invalid entry for ISBN.")])
