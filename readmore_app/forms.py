@@ -35,7 +35,7 @@ class register(forms.Form):
         username = self.cleaned_data['username']
         if UserExt.objects.filter(username__iexact=username).exists():
             raise ValidationError("Username already in use.")
-        if not username or not re.match("^[a-zA-Z_\-0-9]+.*$", username):
+        if not username or not re.match("^[a-zA-Z_\-0-9]+[a-zA-Z_\-0-9]*$", username):
             raise ValidationError("A valid username must be provided.")
         else:
             return username

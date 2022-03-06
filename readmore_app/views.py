@@ -104,7 +104,7 @@ def create_club(request):
 
 def user_search_results(request):
     if request.method == 'POST':
-        search_query = request.POST["search_query"]
+        search_query = request.POST["search_query"].strip()
         results1 = UserExt.objects.filter(username__istartswith=search_query)
         results2 = UserExt.objects.filter(username__icontains=search_query)
         search_results = results1 | results2
@@ -454,3 +454,17 @@ def remove_from_library(request, club_id, club_book_id):
         club_book.delete()
         return HttpResponse(isbn)
     return HttpResponse("error")
+
+def do_like(request, post_id):
+    real_user = UserExt.objects.get(pk=request.user.id)
+    post = ClubPost.objects.get(pk=post_id)
+    if real_user in post.post_likes.all():
+        post.post_likes.remove(real_user)
+        post.save()
+        return HttpResponse(f"unlike {post.post_likes.count()}")
+    else:
+        post.post_likes.add(real_user)
+        post.save()
+        return HttpResponse(f"like {post.post_likes.count()}")
+    
+    
