@@ -8,7 +8,7 @@ from datetime import date, timedelta, datetime
 class club_post(forms.Form):
     title = forms.CharField(widget=forms.TextInput(attrs={'size':50}), validators=[validators.RegexValidator(regex="^[a-zA-Z_\-0-9].{2,99}$", message="A valid post title must be provided.")])
     image = forms.CharField(required=False, widget=forms.TextInput(attrs={'size':50}))
-    text = forms.CharField(widget=forms.Textarea(attrs={'cols': 50}), required=False)
+    text = forms.CharField(widget=forms.Textarea(attrs={'cols': 50, 'style': 'resize: vertical;'}), required=False)
     
 
 class login(forms.Form):
@@ -66,7 +66,7 @@ class register(forms.Form):
 
 class club(forms.Form):
 	name = forms.CharField(validators=[validators.RegexValidator(regex="^[a-zA-Z_\-0-9].{2,99}$", message="A valid book club name must be provided.")])
-	description = forms.CharField(widget=forms.Textarea, required=False)
+	description = forms.CharField(widget=forms.Textarea(attrs={'cols': 50, 'style': 'resize: vertical;'}), required=False)
 	
 class reading_log(forms.Form):
 	isbn = forms.CharField(validators=[validators.RegexValidator(regex="^(?=(?:[0-9]){10}(?:(?:[0-9]){3})?$)[0-9]+$", message="Invalid entry for ISBN.")])

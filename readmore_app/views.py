@@ -233,6 +233,7 @@ def create_club_post(request, club_id):
                 new_post.post_title = form.cleaned_data['title']
                 new_post.post_text = form.cleaned_data['text']
                 new_post.post_img = form.cleaned_data['image']
+                new_post.post_date = datetime.now()
                 new_post.post_club = club
                 new_post.save()
                 return redirect(reverse('readmore_app:club', kwargs={'club_id': club.club_id}))
@@ -253,8 +254,8 @@ def reading_log(request):
             form = readinglogform(request.POST)
             if form.is_valid():
                 form_isbn = form.cleaned_data['isbn']
-                book_list = Book.search_googlebooks(form_isbn, 'isbn')
-                if len(book_list) > 0:
+                book = Book(form_isbn)
+                if book.title and form_isbn not in real_user.reading_log_isbns():
                     new_reading_log_book = ReadingLogBook()
                     new_reading_log_book.isbn = form_isbn
                     new_reading_log_book.save()
@@ -264,10 +265,18 @@ def reading_log(request):
         # Display the Reading Log Add Book Form & Table
         reading_log = Book.booklike_to_book(real_user.user_reading_log.all())
         reading_log = [reading_log[i:i+3] for i in range(0, len(reading_log), 3)]
-        return render(request, "readmore_app/reading_log.html", {'user': real_user, 'form': form, 'reading_log': reading_log})
+        return render(request, "readmore_app/reading_log.html", {'real_user': real_user, 'form': form, 'reading_log': reading_log})
     
     # Redirect Unknown Users
     return HttpResponseRedirect(reverse("readmore_app:login"))
+
+def view_post(request, post_id):
+    if request.user.is_authenticated:
+        real_user = UserExt.objects.get(pk=request.user.id)
+        post = get_object_or_404(ClubPost, post_id=post_id)
+        return render(request, "readmore_app/view_post.html", {'real_user': real_user, 'post': post})
+    else:
+        return redirect(reverse("readmore_app:login"))
 
 """ 
 *************************************
@@ -411,20 +420,23 @@ def add_to_library(request, club_id, isbn):
             club.club_library.add(new_club_book)
             club.save()
             book = Book.booklike_to_book(new_club_book)
-            template = f"""<td id="clubbook{book.id}" style="width: 20%;">
+            template = f"""
+            <td id="clubbook{book.id}" style="width: 20%; margin: 40px;">
             <a class="book_search_link" href="/readmore/view_book/{book.isbn13}">
-                <table>
+                <table style="width: 250px;" class="libbookind">
                 <tr>
-                    <td rowspan=3><img src="{book.small_thumbnail}" alt="{book.title} Cover Image" /></td>
-                    <td colspan=2>
+                    <td style="width: 40%;" colspan=2><img width="100px" src="{book.small_thumbnail}" alt="{book.title} Cover Image" /></td>
+                    <td style="width: 40%;">
+                    <center>
                     <p style="font-size:18px;">{book.title}</p>
+                    </center>
                     </td>
                 </tr>
                 <tr>
-                    <td style="font-size:12px;">
+                    <td style="font-size:12px; width: 28%;">
                         Author{'s' if len(book.authors) > 1 else ''}
                     </td>
-                    <td>
+                    <td style="width: 50%;">
                         <p style="font-size:12px;">
                         {''.join('<span style="font-size:12px;">'+author+'</span>' for author in book.authors)}
                         </p>
@@ -433,13 +445,14 @@ def add_to_library(request, club_id, isbn):
                 <tr>
                     <td colspan=2 style="font-size:12px;">ISBN: {book.isbn13}</td>
                 </tr>
-                <tr><td align="center" colspan=3><div class="stars" style="--rating:{book.rating};"></div></td></tr>
+                <tr><td align="center" colspan=2><div class="stars" style="--rating:{book.rating};"></div></td></tr>
                 </table>
            </a>
            <center>
            <button onclick="removeBook({new_club_book.id});">Remove From Club Library</button>
            </center>
-           </td>"""
+           </td>
+            """
             return HttpResponse(template)
     return HttpResponse("error")
 

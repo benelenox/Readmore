@@ -1,11 +1,14 @@
 {% extends parent_template|default:"base.html" %}
 {% load static %}
+{% load extras %}
 
 {% block title %}
 Readmore - {{ club.club_name }}
 {% endblock %}
 
 {% block content %}
+<style>
+</style>
 <div style="display: flex; flex-direction: column; width: 80vw;">
 <a style="margin-top: 50px; position: absolute;" href="{% url 'readmore_app:club' club.club_id %}">Back To Club Home</a>
 <div id="library">
@@ -17,20 +20,22 @@ Readmore - {{ club.club_name }}
         <tr id="row" style="">
         {% for shortlist in club_library %}
             {% for book in shortlist %}
-            <td id="clubbook{{ book.id }}" style="width: 20%;">
+            <td id="clubbook{{ book.id }}" style="width: 20%; margin: 40px;">
             <a class="book_search_link" href="{% url 'readmore_app:view_book' book.isbn13 %}">
-                <table>
+                <table style="width: 250px;" class="libbookind">
                 <tr>
-                    <td rowspan=3><img src="{{ book.small_thumbnail }}" alt="{{ book.title }} Cover Image" /></td>
-                    <td colspan=2>
+                    <td style="width: 40%;" colspan=2><img width="100px" src="{{ book.small_thumbnail }}" alt="{{ book.title }} Cover Image" /></td>
+                    <td style="width: 40%;">
+                    <center>
                     <p style="font-size:18px;">{{ book.title }}</p>
+                    </center>
                     </td>
                 </tr>
                 <tr>
-                    <td style="font-size:12px;">
+                    <td style="font-size:12px; width: 28%;">
                         Author{{ book.authors|length|pluralize:"s" }}
                     </td>
-                    <td>
+                    <td style="width: 50%;">
                         <p style="font-size:12px;">
                         {% for author in book.authors %}
                         <span style="font-size:12px;">{{ author }}</span>
@@ -41,7 +46,7 @@ Readmore - {{ club.club_name }}
                 <tr>
                     <td colspan=2 style="font-size:12px;">ISBN: {{book.isbn13 }}</td>
                 </tr>
-                <tr><td align="center" colspan=3><div class="stars" style="--rating:{{ book.rating }};"></div></td></tr>
+                <tr><td align="center" colspan=2><div class="stars" style="--rating:{{ book.rating }};"></div></td></tr>
                 </table>
            </a>
            <center>
@@ -99,7 +104,7 @@ Readmore - {{ club.club_name }}
                         </td>
                     </tr>
                     <tr>
-                        <td colspan=2 style="font-size:12px;">ISBN: {{book.volumeInfo.industryIdentifiers.0.identifier }}</td>
+                        <td colspan=2 style="font-size:12px;">ISBN: {% get_isbn_thirteen book.volumeInfo.industryIdentifiers %}</td>
                     </tr>
                     <tr><td align="center" colspan=3><div class="stars" style="--rating:{{ book.volumeInfo.averageRating }};"></div></td></tr>
                     </table>

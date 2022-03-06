@@ -11,6 +11,9 @@ class UserExt(User):
 	
     def num_notifications(self):
         return Notification.objects.filter(notification_user=self).count()
+        
+    def reading_log_isbns(self):
+        return [book.isbn for book in self.user_reading_log.all()]
 
 class Notification(models.Model):
     notification_id = models.AutoField(primary_key=True)
@@ -33,6 +36,10 @@ class Club(models.Model):
 
 class ClubBook(models.Model):
     isbn = models.CharField(max_length=20)
+    time = models.DateTimeField(auto_now_add=True)
+
+class ReadingLogBook(models.Model):
+    isbn = models.CharField(max_length=13)
     time = models.DateTimeField(auto_now_add=True)
 
 class Chat(models.Model):
@@ -62,6 +69,6 @@ class Post(models.Model):
 
 class ClubPost(Post):
     post_club = models.ForeignKey(Club, on_delete=models.CASCADE)
-	
-class ReadingLogBook(models.Model):
-	isbn = models.CharField(max_length=13)
+
+class Comment(Post):
+    post_parent = models.ForeignKey(Post, on_delete=models.CASCADE, related_name="comments")
