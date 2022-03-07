@@ -39,7 +39,7 @@ Readmore - {{ club.club_name }}
     {% else %}
         {% for post in club_posts %}
             <div class="clubpost">
-                <span style="margin-right: 10%; position: absolute; margin-left: 35%;">
+                <span class="likes">
                     <span id="nlikes{{ post.post_id }}">{{ post.post_likes.count }}</span>
                     <input id="likeimage{{post.post_id}}" onclick="doLike({{post.post_id}});" style="width: 20px;" type="image" src="{% if real_user in post.post_likes.all %}{% static 'readmore_app/thumbs_up.png' %}{% else %}{% static 'readmore_app/thumbs_up_gray.png' %}{% endif %}" />
                 </span>

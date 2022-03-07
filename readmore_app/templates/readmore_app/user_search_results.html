@@ -6,7 +6,7 @@ Readmore - Search Results
 {% endblock %}
 
 {% block content %}
-<div style="width: 80%;">
+<div class="basic_card">
     <h1 style="word-wrap: break-word; width: 100%">Search Results For: {{ search }}</h1>
     <table>
     {% if not user_search_results.count %}
@@ -15,7 +15,7 @@ Readmore - Search Results
     {% for user_found in user_search_results %}
         <tr>
             <td>
-                <p><a href="{% url 'readmore_app:profile' user_found.id %}">@{{ user_found.username }}</a></p>
+                <p><a href="{% url 'readmore_app:profile' user_found.id %}" class="anchor_button">@{{ user_found.username }}</a></p>
                 <hr>
             </td>
         </tr>

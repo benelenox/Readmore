@@ -20,15 +20,15 @@ Readmore - {{ club.club_name }}
         <tr id="row">
         {% for shortlist in club_library %}
             {% for book in shortlist %}
-            <td id="clubbook{{ book.id }}" style="width: 30vw;height: 30vh;position:relative;" >
+            <td id="clubbook{{ book.id }}" style="width: 30vw;height: 30vh;position:relative;" class="book_card">
             <a class="book_search_link" href="{% url 'readmore_app:view_book' book.isbn13 %}">
-                <table style="width: 250px;" class="libbookind">
+                <table >
                 <tr>
                     <td style="width: 40%;" colspan=2><img width="100px" src="{{ book.small_thumbnail }}" alt="{{ book.title }} Cover Image" /></td>
                     <td style="width: 40%;">
-                    <center>
+                    
                     <p style="font-size:18px;">{{ book.title }}</p>
-                    </center>
+                    
                     </td>
                 </tr>
                 <tr>
