@@ -17,8 +17,15 @@ class Book:
         self.publisher = self.book_data.get('publisher', '')
         self.published_date = self.book_data.get('publishedDate', '')
         self.description = self.book_data.get('description', '')
-        self.isbn10 = self.book_data.get("industryIdentifiers", [{}])[0].get('identifier', '')
-        self.isbn13 = self.book_data.get("industryIdentifiers", [{},{}])[1].get('identifier', '')
+        
+        identifiers = self.book_data.get("industryIdentifiers")
+        if identifiers:
+            for id in identifiers:
+                if id['type'] == 'ISBN_13':
+                    setattr(self, 'isbn13', id['identifier'])
+                if id['type'] == 'ISBN_10':
+                    setattr(self, 'isbn10', id['identifier'])
+        
         self.page_count = self.book_data.get('pageCount', '')
         self.categories = self.book_data.get('categories', '')
         self.rating = self.book_data.get('averageRating', '')

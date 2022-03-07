@@ -7,7 +7,7 @@ Readmore - {{ club.club_name }}
 
 {% block content %}
 <div class="basic_card" style="width:100%; margin:2em;">
-    <h1 style="display: inline-block;">{{ club.club_name }}</h1>
+    <h1 style="display: inline-block; word-wrap: break-word; width: 100%;">{{ club.club_name }}</h1>
     <div id="joindiv" style="display: inline-block;">
     {% if real_user in club.club_users.all %}
     <h3 style="margin-left: 30px; display: inline-block;">[Joined]</h3>
@@ -39,9 +39,13 @@ Readmore - {{ club.club_name }}
     {% else %}
         {% for post in club_posts %}
             <div class="clubpost">
+                <span style="margin-right: 10%; position: absolute; margin-left: 35%;">
+                    <span id="nlikes{{ post.post_id }}">{{ post.post_likes.count }}</span>
+                    <input id="likeimage{{post.post_id}}" onclick="doLike({{post.post_id}});" style="width: 20px;" type="image" src="{% if real_user in post.post_likes.all %}{% static 'readmore_app/thumbs_up.png' %}{% else %}{% static 'readmore_app/thumbs_up_gray.png' %}{% endif %}" />
+                </span>
                 <h2 style="margin: 10px;">{{ post.post_title }}</h2>
                 <h5 style="margin: 2px;">Post By: <a href="{% url 'readmore_app:profile' post.post_user.id %}">{{ post.post_user.username }}</a></h5>
-                <h6 style="margin: 2px;">{{ post.date_formatted }}</h6>
+                <h6 style="margin: 2px;">{{ post.post_date|date:"m/d/Y h:i:s A" }}</h6>
                 {% if post.post_img %}
                 <img style="max-width: 500px;" src="{{ post.post_img }}"/>
                 {% endif %}
@@ -61,9 +65,26 @@ Readmore - {{ club.club_name }}
 {% block js %}
 function joinClub() {
     const joindiv = document.getElementById("joindiv");
-    joindiv.innerHTML = `<h3 style="margin-left: 30px; display: inline-block;">[Joined]</h3>`
+    joindiv.innerHTML = `<h3 style="margin-left: 30px; display: inline-block;">[Joined]</h3>`;
     const xhrjoinclub = new XMLHttpRequest();
     xhrjoinclub.open("GET", "/readmore/ajax/join_club/{{ club.club_id }}/");
     xhrjoinclub.send();
+}
+
+function doLike(post_id) {
+    const image = document.getElementById("likeimage" + post_id);
+    const nlikes = document.getElementById("nlikes" + post_id);
+    const xhrlike = new XMLHttpRequest();
+    xhrlike.onload = function() {
+        [new_image, num_likes] = this.responseText.split(' ');
+        if (new_image == "unlike") {
+            image.src = "/static/readmore_app/thumbs_up_gray.png";
+        } else if (new_image == "like") {
+            image.src = "/static/readmore_app/thumbs_up.png";
+        }
+        nlikes.innerHTML = num_likes;
+    }
+    xhrlike.open("GET", `/readmore/ajax/dolike/${post_id}/`);
+    xhrlike.send();
 }
 {% endblock %}

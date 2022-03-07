@@ -21,6 +21,8 @@ urlpatterns = [
     path('search_book/', views.search_book, name="search_book"),
     path('club_library/<int:club_id>/', views.club_library, name="club_library"),
     path('create_club_post/<int:club_id>/', views.create_club_post, name="create_club_post"),
+	path('reading_log/', views.reading_log, name='reading_log'),
+    path('view_post/<int:post_id>/', views.view_post, name='view_post'),
 ]
 
 # AJAX url patterns
@@ -35,5 +37,6 @@ urlpatterns.extend(
     path('ajax/join_club/<int:club_id>/', views.join_club, name="join_club"),
     path('ajax/remove_from_library/<int:club_id>/<int:club_book_id>/', views.remove_from_library, name='remove_from_library'),
     path('ajax/add_to_library/<int:club_id>/<str:isbn>/', views.add_to_library, name='add_to_library'),
+    path('ajax/dolike/<int:post_id>/', views.do_like, name="do_like"),
     ]
 )

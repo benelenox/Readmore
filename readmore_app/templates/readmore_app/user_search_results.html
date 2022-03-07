@@ -6,8 +6,8 @@ Readmore - Search Results
 {% endblock %}
 
 {% block content %}
-<div>
-    <h1>Search Results For: {{ search }}</h1>
+<div style="width: 80%;">
+    <h1 style="word-wrap: break-word; width: 100%">Search Results For: {{ search }}</h1>
     <table>
     {% if not user_search_results.count %}
         <tr><td>No results matching search</td></tr>

@@ -10,3 +10,19 @@ def num_notifications(user_id):
         return Notification.objects.filter(notification_user=this_user).count()
     except Exception as e:
         return ""
+
+@register.simple_tag
+def get_isbn_thirteen(identifiers):
+    print(identifiers)
+    for id in identifiers:
+        if id['type'] == "ISBN_13":
+            return id['identifier']
+    return None
+
+@register.simple_tag
+def get_isbn_ten(identifiers):
+    for id in identifiers:
+        if id['type'] == "ISBN_10":
+            return id['identifier']
+    return None
+

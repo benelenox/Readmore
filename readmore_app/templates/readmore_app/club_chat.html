@@ -49,17 +49,23 @@ function escapeHtml(unsafe)
          .replace(/"/g, "&quot;")
          .replace(/'/g, "&#039;");
  }
+ 
+function pad(num, size) {
+    num = num.toString();
+    while (num.length < size) num = "0" + num;
+    return num;
+}
 
 socket.onmessage = function(response) {
     var json = JSON.parse(response.data);
     var message = escapeHtml(json.message);
-    var time = escapeHtml(json.time);
+    var messagetime = escapeHtml(json.time);
     var user = escapeHtml(json.user);
     var type = json.type;
     if (type == "chat_message"){
-        var chat = `<tr><td><p>${user}</p><p>${time}</p></td><td><p>${message}</p></td></tr>`;
+        var chat = `<tr><td><p>${user}</p><p>${messagetime}</p></td><td><p>${message}</p></td></tr>`;
     } else if (type == "join" || type == "leave") {
-        var chat = `<tr class="joinleavemessage"><td><p>${time}</p></td><td><p>${message}</p></td></tr>`;
+        var chat = `<tr class="joinleavemessage"><td><p>${messagetime}</p></td><td><p>${message}</p></td></tr>`;
     }
     table.innerHTML += chat;
     scrollDown()

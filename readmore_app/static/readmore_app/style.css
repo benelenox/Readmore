@@ -26,6 +26,16 @@ a{
     left: 13%;
 }
 
+
+
+div.createform > * {
+    margin-left: 30%;
+    margin-top: 50px;
+}
+div.createform h1 {
+    margin-left: 35%;
+}
+
 .clubpost {
     margin-bottom: 50px;
     background: #e4e0c5;
@@ -33,6 +43,7 @@ a{
     padding-bottom: 30px;
     padding-top: 30px;
     box-shadow: 1px 1px 1px;
+    width: 98%;
 }
 
 .post_text {
@@ -58,6 +69,9 @@ a{
     border-style: solid;
     padding: 20px;
     margin-bottom:2em;
+}
+.book_club {
+    width: 80vw;
 }
 
 #search_button{
@@ -173,6 +187,8 @@ main{
 }
 
 main > * { margin-left: 50px; }
+
+main > div { width: 100%; }
 
 #drop .dropaw {
     display:block;
