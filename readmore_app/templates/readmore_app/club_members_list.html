@@ -6,13 +6,13 @@ Readmore - {{ club.club_name }}
 {% endblock %}
 
 {% block content %}
-<div>
+<div class="table_card">
     <h1>{{ club.club_name }} Members</h1>
     <table>
     {% for member in club.club_users.all %}
         <tr id="member{{ member.id }}">
             <td style="padding-left: 20px;">
-                <p><a href="{% url 'readmore_app:profile' member.id %}">@{{ member.username }}</a></p>
+                <p><a href="{% url 'readmore_app:profile' member.id %}" class="anchor_button">@{{ member.username }}</a></p>
             </td>
             <td style="padding-left: 20px;">
                 {% if club.club_owner == real_user and member.id != real_user.id %}

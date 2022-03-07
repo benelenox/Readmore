@@ -5,7 +5,7 @@ Readmore - Create Post
 {% endblock %}
 
 {% block content %}
-<div class="form">
+<div class="form" style="margin-top:10%">
     <h1>Create a Post</h1>
     <form action="{% url 'readmore_app:create_club_post' club.club_id %}" method="post">
         {% csrf_token %}

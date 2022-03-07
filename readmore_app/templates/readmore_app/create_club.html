@@ -5,7 +5,7 @@ Readmore - Create a Book Club
 {% endblock %}
 
 {% block content %}
-<div class="form">
+<div class="form" style="margin-top:10%;">
     <h1>Create a Book Club</h1>
     <form action="{% url 'readmore_app:create_club' %}" method="post">
     {% csrf_token %}

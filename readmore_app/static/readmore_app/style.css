@@ -3,7 +3,7 @@ html{
     height: 100vh;
 }
 body{
-    font-family: OCR A Std, monospace;
+    font-family: Garamond, Georgia, serif;
     margin:0; 
     height:100vh;   
 }
@@ -11,65 +11,94 @@ a{
     text-decoration: none; 
 }
 .form{
-    background-color: #F9F8FF;
-    padding:30px;
+    height: fit-content;
+    width: fit-content;
+    background-color: #f3f4f8;
+    padding: 30px;
+    margin: auto;
+    color: #21352f;
     text-transform: uppercase;
-    font-family: Arial, Helvetica, sans-serif;
-    font-weight: 10px;
-    color:#309070;
-    text-align: left;
-    margin-left:30%;
-    text-transform: uppercase;
-    font-family:Arial, Helvetica, sans-serif;
-    font-weight: 20px;
+}
+
+.book_action{
+    position: absolute;
+    bottom: 2%;
+    left: 13%;
 }
 
 .clubpost {
     margin-bottom: 50px;
-    background: #9baaf2;
-    border-radius: 30px;
+    background: #e4e0c5;
+    border-radius: 2px;
     padding-bottom: 30px;
     padding-top: 30px;
+    box-shadow: 1px 1px 1px;
 }
 
 .post_text {
     text-align: left;
     width: 75%;
-    background: #b1cdf0;
-    border-radius: 10px;
+    background: #f8f8fa;
+    border-radius: 2px;
     padding: 15px;
     margin-top: 15px;
+    box-shadow: 1px 1px 1px;
 }
 
-.book_club {
-    width: 100%;
+.table_card{
+    display: inline-table;
+    box-shadow: 2px 2px 2px#7074ac;
+    border-color: black;
+    width: 50%;
+    margin-left: 10em;
+    background-color: white;
+    margin-top: 1em;
+    height: 70%;
+    overflow: auto;
+    border-style: solid;
+    padding: 20px;
+    margin-bottom:2em;
 }
 
 #search_button{
-    border-radius: 0px;
+    border-radius: 3px;
     border: none;
     color: white;
-    background-color:#008A65;
+    background-color:#47947f;
+    width: 20vw;
+    height: 40px;
+    margin-top: 10px;
 }
 #book_search_results{
     display:flex;
     margin-left: -40px;
 }
 #book_search_results td{
-    background-color: rgba(240, 248, 255, 0.3);
-    color: #7074ac;
+    color: #eff0f5;
     font-family:Arial, Helvetica, sans-serif;
+}
+.book_card{
+    background: #a5a5aa;
+    border-collapse: collapse;
+    border: 0px;
+    width: 100%;
+    height: 100%;
 }
 
 #club_library_table {
-    display:flex;
+    display: flex;
+    overflow: overlay;
+    margin-left: -3%;
+    margin-right: 2%;
+    color: #eff0f5
 }
 
 #club_library_table td {
-    background-color: rgba(240, 248, 255, 0.3);
-    color: #7074ac;
-    font-family:Arial, Helvetica, sans-serif;
-    display: inline-block;
+    background: #a5a5aa;
+    border-collapse: collapse;
+    border: 0px;
+    width: 100%;
+    height: 100%;
 }
 
 h2.logo{
@@ -101,7 +130,6 @@ h2.logo{
     position:absolute;
     min-height:100%;
     min-width:100%;
-    
 }
 
 
@@ -141,7 +169,7 @@ main{
     width: 100%;
     min-height: 100%;
     height: 100% auto;
-    color:#309070;
+    color: #232D5E;
 }
 
 main > * { margin-left: 50px; }
@@ -156,8 +184,7 @@ main > * { margin-left: 50px; }
     background-color: #1FC198;
     color:white;
     position: relative; 
-    text-align: center;  
-    
+    text-align: center;      
 }
 
 #drop .dropaw:hover{
@@ -171,11 +198,8 @@ main > * { margin-left: 50px; }
     color:white;
     padding: 0px; 
     z-index: 1; 
-    top:45px;
-    
+    top:45px;   
 }
-
-
 
 #drop { 
     display: flex; 
@@ -191,11 +215,66 @@ main > * { margin-left: 50px; }
     z-index: 0;
 }
 
+.basic_card{
+    border-radius: 2px;
+    box-shadow: 2px 2px 2px#7074ac;
+    border-color: black;
+    width: 50%;
+    margin-left: 10em;
+    background-color: white;
+    margin-top: 3em;
+    height: 80%;
+    overflow: auto;
+    border-style: solid;
+    border-width: 1px;
+    padding: 20px;
+}
+              
+.like{
+    float:right;
+    background: #e35343;
+    border: none;
+    padding: 3px
+px
+ 8px;
+    padding-top: 5px;
+}
+.anchor_button{
+    border-radius: 2px;
+    color: #e2e2db;
+    height: 30px;
+    width: auto;
+    border: none;
+    padding: 10px;
+    background: #4b4e75;
+}
+
+.anchor_button:hover{
+    background:#e2e2db;
+    color: #4b4e75;
+}
+
+
+.book_club_listing td p a{
+    border-radius: 2px;
+    color: #e2e2db;
+    height: 30px;
+    width: auto;
+    border: none;
+    padding: 10px;
+    background: #4b4e75;
+}
+
+.anchor_button:hover{
+    background: #dee7e9; 
+    color:#3b3e66;
+    transition: all 0.4s;
+}
+
 div.sidebar {
     position: relative; 
     text-align: center; 
-    background: #97bdf7; 
-    float:left; 
+    background: #8d9ab8;
     width:20%; 
     min-height:100vh;
     height:100% auto;
@@ -264,18 +343,18 @@ div.navbar {
 }
 
 #chat_table td {
-    font-size: 10px;
+    font-size: 1em;
 }
 
 #chat_table tr td:first-child {
     border-bottom: 1px solid lightgray; 
-    padding-left: 10px;
+    padding-left: 1em;
 }
 
 #chat_table tr td:last-child {
     width: 130vh;
     border-bottom: 1px groove lightgray;
-    padding-right: 10px;
+    padding-right: 1em;
 }
 
 #chat_table tr td:first-child p:last-child {
@@ -289,7 +368,10 @@ div.navbar {
 
 div.subnav {
     background: #414364;
-    border-radius: 10px;
+    border-radius: 2px;
+    width: fit-content;
+    padding-left:5px;
+    padding-right:5px;
 }
 
 .subnav > p {
@@ -315,12 +397,7 @@ div.subnav {
     transition: all 0.4s;
 }
 
-#search_button {
-    width: 20vw;
-    height: 40px;
-    border-radius: 10px;
-    margin-top: 10px;
-}
+
 .stars {
   --percent: calc((var(--rating) - 0.025 ) / 5 * 100%);
   

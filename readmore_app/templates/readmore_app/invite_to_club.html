@@ -6,7 +6,7 @@ Readmore - {{ club.club_name }}
 {% endblock %}
 
 {% block content %}
-<div>
+<div class="basic_card">
     <h1> Invite Users to {{ club.club_name }}</h1>
     <table>
     {% for friend in real_user.user_friends.all %}

@@ -6,7 +6,7 @@ Readmore - {{ club.club_name }}
 {% endblock %}
 
 {% block content %}
-<div class="book_club">
+<div class="basic_card" style="width:100%; margin:2em;">
     <h1 style="display: inline-block;">{{ club.club_name }}</h1>
     <div id="joindiv" style="display: inline-block;">
     {% if real_user in club.club_users.all %}
@@ -29,7 +29,7 @@ Readmore - {{ club.club_name }}
     <div>
         <p>{{ club.club_description }}</p>
         {% if real_user in club.club_users.all %}
-        <p><a href="{% url 'readmore_app:create_club_post' club.club_id %}">Create Post</a></p>
+        <p><a href="{% url 'readmore_app:create_club_post' club.club_id %}" class="anchor_button">Create Post</a></p>
         {% endif %}
     </div>
     <center>
