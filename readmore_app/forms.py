@@ -10,6 +10,11 @@ class club_post(forms.Form):
     image = forms.CharField(required=False, widget=forms.TextInput(attrs={'size':50}))
     text = forms.CharField(widget=forms.Textarea(attrs={'cols': 50, 'style': 'resize: vertical;'}), required=False)
     
+class profile_post(forms.Form):
+    title = forms.CharField(widget=forms.TextInput(attrs={'size':50}), validators=[validators.RegexValidator(regex="^[a-zA-Z_\-0-9].{2,99}$", message="A valid post title must be provided.")])
+    image = forms.CharField(required=False, widget=forms.TextInput(attrs={'size':50}))
+    text = forms.CharField(widget=forms.Textarea(attrs={'cols': 50, 'style': 'resize: vertical;'}), required=False)
+	
 
 class login(forms.Form):
     username = forms.CharField()

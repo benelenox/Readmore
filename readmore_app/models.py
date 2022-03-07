@@ -8,7 +8,7 @@ class UserExt(User):
     user_bio = models.TextField()
     user_pending_friends = models.ManyToManyField('UserExt', related_name="pending_friends")
     user_reading_log = models.ManyToManyField('ReadingLogBook', related_name="reading_log")
-	
+    
     def num_notifications(self):
         return Notification.objects.filter(notification_user=self).count()
         
@@ -69,6 +69,9 @@ class Post(models.Model):
 
 class ClubPost(Post):
     post_club = models.ForeignKey(Club, on_delete=models.CASCADE)
+
+class ProfilePost(Post):
+    post_profile_user = models.ForeignKey(UserExt, on_delete=models.CASCADE)
 
 class Comment(Post):
     post_parent = models.ForeignKey(Post, on_delete=models.CASCADE, related_name="comments")

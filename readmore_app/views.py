@@ -5,9 +5,9 @@ from django.views.decorators.csrf import csrf_exempt
 from django.shortcuts import render, redirect, get_object_or_404
 from django.urls import reverse
 from django.http import HttpResponse, HttpResponseRedirect, Http404
-from .models import UserExt, Notification, Club, ClubChat, ClubBook, ClubPost, ReadingLogBook
+from .models import UserExt, Notification, Club, ClubChat, ClubBook, ClubPost, ReadingLogBook, ProfilePost, Post
 from .pseudomodels import Book
-from .forms import register as regform, login as loginform, club as clubform, club_post as clubpostform, reading_log as readinglogform
+from .forms import register as regform, login as loginform, club as clubform, club_post as clubpostform, reading_log as readinglogform, profile_post as profilepostform
 from django.contrib.auth import authenticate, login as log_in, logout as log_out
 
 def friend_list(request, profile_id):
@@ -22,9 +22,36 @@ def profile(request, profile_id):
     profile_user = get_object_or_404(UserExt, id=profile_id)
     if request.user.is_authenticated:
         real_user = UserExt.objects.get(pk=request.user.id)
-        return render(request, "readmore_app/profile.html", {'real_user': real_user, 'profile_user': profile_user})
+        profile_posts = ProfilePost.objects.filter(post_profile_user = profile_user).order_by('-post_date')
+        return render(request, "readmore_app/profile.html", {'real_user': real_user, 'profile_user': profile_user, 'profile_posts': profile_posts})
     else:
         return render(request, "readmore_app/profile.html", {'profile_user': profile_user})
+
+def create_profile_post(request, profile_id):
+    if request.user.is_authenticated:
+        real_user = UserExt.objects.get(pk=request.user.id)
+        profile_user = get_object_or_404(UserExt, id=profile_id)
+        form = profilepostform()
+        if real_user != profile_user and real_user not in profile_user.user_friends.all():
+            return redirect(reverse("readmore_app:index"))
+        if request.method != 'POST':
+            return render(request, 'readmore_app/create_profile_post.html', {'form': form, 'profile_user': profile_user})
+        else:
+            form = profilepostform(request.POST)
+            if form.is_valid():
+                new_post = ProfilePost()
+                new_post.post_user = real_user
+                new_post.post_title = form.cleaned_data['title']
+                new_post.post_text = form.cleaned_data['text']
+                new_post.post_img = form.cleaned_data['image']
+                new_post.post_date = datetime.now()
+                new_post.post_profile_user = profile_user
+                new_post.save()
+                return redirect(reverse('readmore_app:profile', kwargs={'profile_id': profile_user.id}))
+            else:
+                return render(request, 'readmore_app/create_profile_post.html', {'form': form, 'profile_user': profile_user})
+    else:
+        return redirect(reverse("readmore_app:login"))
 
 def notifications(request):
     notifications = Notification.objects.filter(notification_user = UserExt.objects.get(pk=request.user.id)).order_by('-notification_time')
@@ -237,6 +264,8 @@ def create_club_post(request, club_id):
                 new_post.post_club = club
                 new_post.save()
                 return redirect(reverse('readmore_app:club', kwargs={'club_id': club.club_id}))
+            else:
+                return render(request, 'readmore_app/create_club_post.html', {'form': form, 'club': club})
     else:
         return redirect(reverse("readmore_app:login"))
 
@@ -248,7 +277,7 @@ def reading_log(request):
     if request.user.is_authenticated:
         form = readinglogform()
         real_user = UserExt.objects.get(pk=request.user.id)
-		
+        
         # Add to the Reading Log
         if request.method == 'POST':
             form = readinglogform(request.POST)
@@ -273,7 +302,7 @@ def reading_log(request):
 def view_post(request, post_id):
     if request.user.is_authenticated:
         real_user = UserExt.objects.get(pk=request.user.id)
-        post = get_object_or_404(ClubPost, post_id=post_id)
+        post = get_object_or_404(Post, post_id=post_id)
         return render(request, "readmore_app/view_post.html", {'real_user': real_user, 'post': post})
     else:
         return redirect(reverse("readmore_app:login"))
@@ -470,7 +499,7 @@ def remove_from_library(request, club_id, club_book_id):
 
 def do_like(request, post_id):
     real_user = UserExt.objects.get(pk=request.user.id)
-    post = ClubPost.objects.get(pk=post_id)
+    post = Post.objects.get(pk=post_id)
     if real_user in post.post_likes.all():
         post.post_likes.remove(real_user)
         post.save()
