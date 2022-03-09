@@ -3,11 +3,13 @@
 {% load static %}
 
 {% block title %}
-Readmore - Book Not Found
+Readmore - View Post
 {% endblock %}
 
 {% block content %}
 <div>
+    {% if post.post_club %}<a href="{% url 'readmore_app:club' post.post_club.club_id %}"><h2>{{ post.post_club.club_name }}</h2></a>
+    {% elif post.post_profile_user %}<a href="{% url 'readmore_app:profile' post.post_profile_user.id %}"><h2>{{ post.post_profile_user.username }}'s Profile</h2></a>{% endif %}
     <div style="width: 98%; text-align: center;" class="clubpost">
         <span style="margin-right: 10%; position: absolute; margin-left: 35%;">
             <span id="nlikes{{ post.post_id }}">{{ post.post_likes.count }}</span>
@@ -15,7 +17,7 @@ Readmore - Book Not Found
         </span>
         <h2 style="margin: 10px;">{{ post.post_title }}</h2>
         <h5 style="margin: 2px;">Post By: <a href="{% url 'readmore_app:profile' post.post_user.id %}">{{ post.post_user.username }}</a></h5>
-        <h6 style="margin: 2px;">{{ post.date_formatted }}</h6>
+        <h6 style="margin: 2px;">{{ post.post_date|date:'m/d/Y h:i A' }}</h6>
         {% if post.post_img %}
         <img style="max-width: 500px;" src="{{ post.post_img }}"/>
         {% endif %}
@@ -27,29 +29,39 @@ Readmore - Book Not Found
         </center>
         {% endif %}
     </div>
-    <div class="comments">
+    <div id="commentslist" class="comments">
     <!-- REMEMBER TO SORT BY OLDEST COMMENTS -->
     {% for comment in post.comments.all %}
-        <div>
-            <span>{{ comment.post_user }}</span><span>{{ comment.text }}</span>
+        <div class="clubpost">
+        <span style="position: absolute; margin-left: 95%;">
+            <span id="nlikes{{ comment.post_id }}">{{ comment.post_likes.count }}</span>
+            <input id="likeimage{{comment.post_id}}" onclick="doLike({{comment.post_id}});" style="width: 20px;" type="image" src="{% if real_user in comment.post_likes.all %}{% static 'readmore_app/thumbs_up.png' %}{% else %}{% static 'readmore_app/thumbs_up_gray.png' %}{% endif %}" />
+        </span>
+        <table style="width: 93%;">
+            <tr>
+                <td class="comment_by">{{ comment.post_user }}<br><span style="font-size: 10px;">{{ comment.post_date|date:'m/d/Y h:i A' }}</span></td>
+                <td class="comment_text">{{ comment.post_text }}</td>
+            </tr>
+        </table>
         </div>
     {% endfor %}
     </div>
-    {% if real_user in post.post_club.club_users.all %}
+    {% if real_user in post.post_club.club_users.all or post.post_profile_user %}
     
     <div id="makeComment" style="display: none;">
         <center>
-        <textarea style="display: block; resize: none;" rows=8 cols=100 name="comment_text"></textarea>
-        <input style="margin: 10px;" type="submit" value="Submit" />
+        <textarea id="comment_text" style="display: block; resize: none;" rows=8 cols=100 name="comment_text"></textarea>
+        <input onclick="doComment();" style="margin: 10px;" type="submit" value="Submit" />
         </center>
     </div>
     
-    <button style="display: block;" id="commentButton" onclick="displayComment();">Comment on this Post</button>
+    <button style="display: block; margin-bottom: 200px;" id="commentButton" onclick="displayComment();">Comment on this Post</button>
     {% endif %}
 </div>
 {% endblock %}
 
 {% block js %}
+
 function doLike(post_id) {
     const image = document.getElementById("likeimage" + post_id);
     const nlikes = document.getElementById("nlikes" + post_id);
@@ -62,8 +74,9 @@ function doLike(post_id) {
             image.src = "/static/readmore_app/thumbs_up.png";
         }
         nlikes.innerHTML = num_likes;
+        console.log(this.responseText);
     }
-    xhrlike.open("GET", `/readmore/ajax/dolike/{{ post.post_id }}/`);
+    xhrlike.open("GET", `/readmore/ajax/dolike/${post_id}/`);
     xhrlike.send();
 }
 
@@ -72,5 +85,25 @@ function displayComment(){
     const commentDiv = document.getElementById("makeComment");
     commentButton.style.display = "none";
     commentDiv.style.display = "block";
+}
+
+function doComment(){
+    const comments = document.getElementById("commentslist");
+    const xhrcomment = new XMLHttpRequest();
+    const comment_text = document.getElementById("comment_text");
+    if (comment_text.value.trim() == '') return;
+    xhrcomment.onload = function() {
+        comments.innerHTML += this.responseText;
+    }
+    xhrcomment.open("POST", `/readmore/ajax/make_comment/{{ post.post_id }}/`);
+    xhrcomment.setRequestHeader("Content-Type", "application/json;charset=UTF-8");
+    xhrcomment.send(JSON.stringify({"comment_text": comment_text.value}));
+    
+    const commentButton = document.getElementById("commentButton");
+    const commentDiv = document.getElementById("makeComment");
+    commentButton.style.display = "block";
+    comment_text.value = "";
+    commentDiv.style.display = "none";
+    
 }
 {% endblock %}

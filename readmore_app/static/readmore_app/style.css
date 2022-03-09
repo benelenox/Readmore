@@ -27,7 +27,20 @@ a{
     left: 13%;
 }
 
+.comment_by {
+    text-align: center;
+    border-radius: 15px;
+    min-width: 15%;
+    padding: 15px;
+    background: #f7f0da;
+}
 
+.comment_text {
+    border-radius: 15px;
+    width: 70%;
+    padding: 25px;
+    background: #f7f0da;
+}
 
 div.createform > * {
     margin-left: 30%;

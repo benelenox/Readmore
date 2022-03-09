@@ -22,7 +22,7 @@ Readmore - {{ profile_user.username }}'s Profile
     </div>
     <!-- Implement User bio -->
     <div>
-        {% if real_user == profile_user or real_user in profile_user.user_friends.all %}
+        {% if real_user == profile_user %}
         <p><a href="{% url 'readmore_app:create_profile_post' profile_user.id %}" class="anchor_button">Create Post</a></p>
         {% endif %}
     </div>
@@ -37,7 +37,7 @@ Readmore - {{ profile_user.username }}'s Profile
                     <span id="nlikes{{ post.post_id }}">{{ post.post_likes.count }}</span>
                     <input id="likeimage{{post.post_id}}" onclick="doLike({{post.post_id}});" style="width: 20px;" type="image" src="{% if real_user in post.post_likes.all %}{% static 'readmore_app/thumbs_up.png' %}{% else %}{% static 'readmore_app/thumbs_up_gray.png' %}{% endif %}" />
                 </span>
-                <h2 style="margin: 10px;">{{ post.post_title }}</h2>
+                <a href="{% url 'readmore_app:view_post' post.post_id %}"><h2 style="margin: 10px;">{{ post.post_title }}</h2></a>
                 <h5 style="margin: 2px;">Post By: <a href="{% url 'readmore_app:profile' post.post_user.id %}">{{ post.post_user.username }}</a></h5>
                 <h6 style="margin: 2px;">{{ post.post_date|date:"m/d/Y h:i:s A" }}</h6>
                 {% if post.post_img %}

@@ -1,11 +1,12 @@
 import re
 import requests
+import json
 from datetime import datetime
 from django.views.decorators.csrf import csrf_exempt
 from django.shortcuts import render, redirect, get_object_or_404
 from django.urls import reverse
-from django.http import HttpResponse, HttpResponseRedirect, Http404
-from .models import UserExt, Notification, Club, ClubChat, ClubBook, ClubPost, ReadingLogBook, ProfilePost, Post
+from django.http import HttpResponse, HttpResponseRedirect, Http404, HttpResponseNotFound
+from .models import UserExt, Notification, Club, ClubChat, ClubBook, ClubPost, ReadingLogBook, ProfilePost, Post, Comment
 from .pseudomodels import Book
 from .forms import register as regform, login as loginform, club as clubform, club_post as clubpostform, reading_log as readinglogform, profile_post as profilepostform
 from django.contrib.auth import authenticate, login as log_in, logout as log_out
@@ -32,7 +33,7 @@ def create_profile_post(request, profile_id):
         real_user = UserExt.objects.get(pk=request.user.id)
         profile_user = get_object_or_404(UserExt, id=profile_id)
         form = profilepostform()
-        if real_user != profile_user and real_user not in profile_user.user_friends.all():
+        if real_user != profile_user:
             return redirect(reverse("readmore_app:index"))
         if request.method != 'POST':
             return render(request, 'readmore_app/create_profile_post.html', {'form': form, 'profile_user': profile_user})
@@ -137,7 +138,7 @@ def user_search_results(request):
         search_results = results1 | results2
         return render(request, "readmore_app/user_search_results.html", {"search": search_query, "user_search_results": search_results})
     else:
-        raise Http404()
+        raise HttpResponseNotFound()
 
 def book_clubs(request):
     if request.user.is_authenticated:
@@ -302,7 +303,14 @@ def reading_log(request):
 def view_post(request, post_id):
     if request.user.is_authenticated:
         real_user = UserExt.objects.get(pk=request.user.id)
-        post = get_object_or_404(Post, post_id=post_id)
+        post = None
+        try:
+            post = ClubPost.objects.get(pk=post_id)
+        except:
+            try:
+                post = ProfilePost.objects.get(pk=post_id)
+            except:
+                return HttpResponseNotFound()
         return render(request, "readmore_app/view_post.html", {'real_user': real_user, 'post': post})
     else:
         return redirect(reverse("readmore_app:login"))
@@ -508,5 +516,28 @@ def do_like(request, post_id):
         post.post_likes.add(real_user)
         post.save()
         return HttpResponse(f"like {post.post_likes.count()}")
-    
-    
+
+@csrf_exempt
+def make_comment(request, post_id):
+
+    escapeHtml = lambda unsafe: unsafe.replace("&", "&amp;").replace("<", "&lt;").replace(">", "&gt;").replace('"', "&quot;").replace("'", "&#039;");
+    real_user = UserExt.objects.get(pk=request.user.id)
+    post = Post.objects.get(pk=post_id)
+    data = json.loads(request.body)
+    new_comment = Comment()
+    new_comment.post_user = real_user
+    new_comment.post_text = data['comment_text']
+    new_comment.post_parent = post
+    new_comment.save()
+    return HttpResponse(f"""<div class="clubpost">
+        <span style="position: absolute; margin-left: 95%;">
+            <span id="nlikes{new_comment.post_id}">{new_comment.post_likes.count()}</span>
+            <input id="likeimage{new_comment.post_id}" onclick="doLike({new_comment.post_id});" style="width: 20px;" type="image" src="{'/static/readmore_app/thumbs_up.png' if real_user in new_comment.post_likes.all() else '/static/readmore_app/thumbs_up_gray.png'}" />
+        </span>
+        <table style="width: 93%;">
+            <tr>
+                <td class="comment_by">{new_comment.post_user}<br><span style="font-size: 10px;">{datetime.now().strftime("%m/%d/%Y %I:%M %p")}</span></td>
+                <td class="comment_text">{escapeHtml(new_comment.post_text)}</td>
+            </tr>
+        </table>
+        </div>""")
