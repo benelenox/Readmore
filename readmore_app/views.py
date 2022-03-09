@@ -541,3 +541,9 @@ def make_comment(request, post_id):
             </tr>
         </table>
         </div>""")
+
+# Sawyer - delete button - in progress
+# def delete_user_library_book(request, book_id):
+# 
+#   return HttpResponse("")
+
