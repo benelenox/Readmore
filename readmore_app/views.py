@@ -291,7 +291,8 @@ def reading_log(request):
                     new_reading_log_book.save()
                     real_user.user_reading_log.add(new_reading_log_book)
                     real_user.save()
-                    
+
+
         # Display the Reading Log Add Book Form & Table
         reading_log = Book.booklike_to_book(real_user.user_reading_log.all())
         reading_log = [reading_log[i:i+3] for i in range(0, len(reading_log), 3)]
@@ -542,8 +543,13 @@ def make_comment(request, post_id):
         </table>
         </div>""")
 
-# Sawyer - delete button - in progress
-# def delete_user_library_book(request, book_id):
-# 
-#   return HttpResponse("")
+
+def remove_from_user_library(request, book_id):
+    real_user = UserExt.objects.get(pk=request.user.id)
+    book = ReadingLogBook.objects.get(pk=book_id)
+    real_user.user_reading_log.remove(book)
+    book.delete()
+    return HttpResponse("")
+
+
 

@@ -40,5 +40,6 @@ urlpatterns.extend(
     path('ajax/add_to_library/<int:club_id>/<str:isbn>/', views.add_to_library, name='add_to_library'),
     path('ajax/dolike/<int:post_id>/', views.do_like, name="do_like"),
     path('ajax/make_comment/<int:post_id>/', views.make_comment, name="make_comment"),
+    path('ajax/remove_from_user_library/<int:book_id>/', views.remove_from_user_library, name='remove_from_user_library'),
     ]
 )

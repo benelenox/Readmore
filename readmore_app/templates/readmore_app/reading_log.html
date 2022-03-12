@@ -20,7 +20,7 @@ Readmore - Reading Log
                 <td style="text-align: left;" colspan=2><input type="submit" name="Add Book to Reading Log"></td>
             </tr>
         </table>
-        
+
     </form>
 	{% if reading_log %}
     <table class="table" id="club_library_table">
@@ -28,10 +28,10 @@ Readmore - Reading Log
         {% for shortlist in reading_log %}
             {% for book in shortlist %}
             <td id="reading_log_book{{ book.id }}" style="width: 20%;">
-            <a class="book_search_link" href="{% url 'readmore_app:view_book' book.isbn13 %}">
+
                 <table>
                 <tr>
-                    <td rowspan=3><img src="{{ book.small_thumbnail }}" alt="{{ book.title }} Cover Image" /></td>
+                    <a class="book_search_link" href="{% url 'readmore_app:view_book' book.isbn13 %}"><td rowspan=3><img src="{{ book.small_thumbnail }}" alt="{{ book.title }} Cover Image" /></td></a>
                     <td colspan=2>
                     <p style="font-size:18px;">{{ book.title }}</p>
                     </td>
@@ -52,12 +52,12 @@ Readmore - Reading Log
                 <tr>
                     <td>
                         <p>
-                            <button onclick="delete_user_library_book({{ book.id }});">Delete Book</button>
+                            <button onclick="delete_user_library_book('{{ book.id }}');">Delete Book</button>
                         </p>
                     </td>
                 </tr>
                 </table>
-            </a>
+
             </td>
             {% endfor %}
         {% endfor %}
@@ -68,4 +68,17 @@ Readmore - Reading Log
 	{% endif %}
 </div>
 </div>
+{% endblock %}
+
+
+{% block js %}
+function delete_user_library_book(book_id) {
+    const td = document.getElementById("reading_log_book" + book_id);
+    const xhrremoveuserbook = new XMLHttpRequest();
+    xhrremoveuserbook.onload = function(){
+        td.parentNode.removeChild(td);
+    }
+    xhrremoveuserbook.open("GET", `/readmore/ajax/remove_from_user_library/${book_id}/`);
+    xhrremoveuserbook.send();
+}
 {% endblock %}
