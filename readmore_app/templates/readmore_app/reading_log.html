@@ -28,7 +28,6 @@ Readmore - Reading Log
         {% for shortlist in reading_log %}
             {% for book in shortlist %}
             <td id="reading_log_book{{ book.id }}" style="width: 20%;">
-
                 <table>
                 <tr>
                     <a class="book_search_link" href="{% url 'readmore_app:view_book' book.isbn13 %}"><td rowspan=3><img src="{{ book.small_thumbnail }}" alt="{{ book.title }} Cover Image" /></td></a>
@@ -57,7 +56,6 @@ Readmore - Reading Log
                     </td>
                 </tr>
                 </table>
-
             </td>
             {% endfor %}
         {% endfor %}
@@ -75,10 +73,19 @@ Readmore - Reading Log
 function delete_user_library_book(book_id) {
     const td = document.getElementById("reading_log_book" + book_id);
     const xhrremoveuserbook = new XMLHttpRequest();
+    const row = document.getElementById('row');
+    const reading_log = document.getElementById('reading_log');
+    const table = document.getElementById("club_library_table");
     xhrremoveuserbook.onload = function(){
         td.parentNode.removeChild(td);
+        let hasChild = false;
+        if (row.childElementCount == 0) {
+            table.parentNode.removeChild(table);
+            reading_log.innerHTML += `<h3>No Books Found</h3>`;
+        }
     }
     xhrremoveuserbook.open("GET", `/readmore/ajax/remove_from_user_library/${book_id}/`);
     xhrremoveuserbook.send();
+    
 }
 {% endblock %}
