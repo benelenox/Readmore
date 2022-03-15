@@ -12,17 +12,6 @@ Readmore - Reading Log
     <center>
     <h1>My Reading Log</h1>
     </center>
-    <form action="{% url 'readmore_app:reading_log' %}" method="post">
-    {% csrf_token %}
-        <table>
-            {{ form.as_table }}
-            <tr>
-                <td style="text-align: left;" colspan=2><input type="submit" name="Add Book to Reading Log"></td>
-            </tr>
-        </table>
-
-    </form>
-	{% if reading_log %}
     <table class="table" id="club_library_table">
         <tr id="row" style="">
         {% for shortlist in reading_log %}
@@ -30,11 +19,14 @@ Readmore - Reading Log
             <td id="reading_log_book{{ book.id }}" style="width: 20%;">
                 <table>
                 <tr>
-                    <a class="book_search_link" href="{% url 'readmore_app:view_book' book.isbn13 %}"><td rowspan=3><img src="{{ book.small_thumbnail }}" alt="{{ book.title }} Cover Image" /></td></a>
+                    <a class="book_search_link" href="{% url 'readmore_app:view_book' book.isbn13 %}">
+						<td rowspan=3>
+							<img src="{{ book.small_thumbnail }}" alt="{{ book.title }} Cover Image" />
+						</td>
+					</a>
                     <td colspan=2>
-                    <p style="font-size:18px;">{{ book.title }}</p>
+						<p style="font-size:18px;">{{ book.title }}</p>
                     </td>
-
                 </tr>
                 <tr>
                     <td style="font-size:12px;">
@@ -61,27 +53,100 @@ Readmore - Reading Log
         {% endfor %}
         </tr>
     </table>
-	{% else %}
-	<h3>No Books Found</h3>
+	{% if not reading_log %}
+	<h3 id="nobooksfound">No Books Found</h3>
 	{% endif %}
+</div>
+<div id="search_add">
+    <center>
+    <h2>Search Books</h2>
+    <form style="{% if not search %}margin-bottom: 250px;{% endif %}" action="{% url 'readmore_app:reading_log' %}" method="POST">
+    {% csrf_token %}
+        <input style="width: 50vw;" type="text" name="search_query" required/>
+        <select style="padding: 5px; border-radius: 5px; border:none;" name="search_type">
+            <option value="general" selected>General Search</option>
+            <option value="title">Title</option>
+            <option value="author">Author</option>
+            <option value="isbn">ISBN</option>
+        </select>
+        <br>
+        <input id="search_button" type="submit" value="Search" />
+    </form>
+    </center>
+    {% if search %}
+        {% if not books %}
+        <h2>No Books Found Matching Search Terms</h2>
+        {% else %}
+        <table class="table" id="book_search_results" style="margin-right: 1%;">
+            {% for short_list in books %}
+            <tr>
+                {% for book in short_list %}
+                <td style="width: 30vw; height: 40vh;position:relative;"class="book_card">
+                <a class="book_search_link" href="{% url 'readmore_app:view_book' book.volumeInfo.industryIdentifiers.0.identifier %}">
+                    <table >
+                    <tr>
+                        <td rowspan=3><img src="{{ book.volumeInfo.imageLinks.smallThumbnail }}" alt="{{ book.volumeInfo.title }} Cover Image" /></td>
+                        <td colspan=2>
+                        <p style="font-size:18px;">{{ book.volumeInfo.title }}</p>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td style="font-size:12px;">
+                            Author{{ book.volumeInfo.authors|length|pluralize:"s" }}
+                        </td>
+                        <td>
+                            <p style="font-size:12px;">
+                            {% for author in book.volumeInfo.authors %}
+                            <span style="font-size:12px;">{{ author }}</span>
+                            </p>
+                            {% endfor %}
+                        </td>
+                    </tr>
+                    </table>
+               </a>
+               <center>
+               <button style="{% if book.volumeInfo.industryIdentifiers.0.identifier in reading_log_isbns %}display: none;{% endif %}left: 26%;" id="add{{ book.volumeInfo.industryIdentifiers.0.identifier }}" onclick="add_user_library_book('{{ book.volumeInfo.industryIdentifiers.0.identifier }}');" class="book_action">Add To Reading Log</button>
+               </center>
+               </td>
+                
+                {% endfor %}
+            </tr>
+            {% endfor %}
+        </table>
+        {% endif %}
+    {% endif %}
 </div>
 </div>
 {% endblock %}
 
 
 {% block js %}
+function add_user_library_book(isbn) {
+    const addbutton = document.getElementById("add" + isbn);
+    const xhraddbook = new XMLHttpRequest();
+    const row = document.getElementById("row");
+    const reading_log = document.getElementById("reading_log");
+    xhraddbook.onload = function(){
+		if (row.childElementCount == 0) {
+			reading_log.removeChild(document.getElementById("nobooksfound"));
+		}
+        row.innerHTML += this.responseText;
+        addbutton.style.display = "none";
+    }
+    xhraddbook.open("GET", "/readmore/ajax/add_to_user_library/" + isbn + "/");
+    xhraddbook.send();
+}
+
 function delete_user_library_book(book_id) {
     const td = document.getElementById("reading_log_book" + book_id);
     const xhrremoveuserbook = new XMLHttpRequest();
     const row = document.getElementById('row');
     const reading_log = document.getElementById('reading_log');
-    const table = document.getElementById("club_library_table");
     xhrremoveuserbook.onload = function(){
         td.parentNode.removeChild(td);
         let hasChild = false;
         if (row.childElementCount == 0) {
-            table.parentNode.removeChild(table);
-            reading_log.innerHTML += `<h3>No Books Found</h3>`;
+            reading_log.innerHTML += `<h3 id="nobooksfound">No Books Found</h3>`;
         }
     }
     xhrremoveuserbook.open("GET", `/readmore/ajax/remove_from_user_library/${book_id}/`);

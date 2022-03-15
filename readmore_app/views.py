@@ -276,27 +276,24 @@ def reading_log(request):
     """
     
     if request.user.is_authenticated:
-        form = readinglogform()
         real_user = UserExt.objects.get(pk=request.user.id)
-        
-        # Add to the Reading Log
-        if request.method == 'POST':
-            form = readinglogform(request.POST)
-            if form.is_valid():
-                form_isbn = form.cleaned_data['isbn']
-                book = Book(form_isbn)
-                if book.title and form_isbn not in real_user.reading_log_isbns():
-                    new_reading_log_book = ReadingLogBook()
-                    new_reading_log_book.isbn = form_isbn
-                    new_reading_log_book.save()
-                    real_user.user_reading_log.add(new_reading_log_book)
-                    real_user.save()
-
-
-        # Display the Reading Log Add Book Form & Table
         reading_log = Book.booklike_to_book(real_user.user_reading_log.all())
         reading_log = [reading_log[i:i+3] for i in range(0, len(reading_log), 3)]
-        return render(request, "readmore_app/reading_log.html", {'real_user': real_user, 'form': form, 'reading_log': reading_log})
+        reading_log_isbns = real_user.reading_log_isbns()
+        
+        # Display the Reading Log Table & Search Bar
+        if request.method != "POST":
+            return render(request, "readmore_app/reading_log.html", {"real_user": real_user, "reading_log": reading_log, "search": False})
+            
+        # Display the Reading Log Table & Search Bar w/ Search Results
+        else:
+            query = request.POST['search_query']
+            type = request.POST['search_type']
+            
+            books = Book.search_googlebooks(query, type)
+            books = [books[i:i+3] for i in range(0, len(books), 3)]
+            
+            return render(request, "readmore_app/reading_log.html", {"real_user": real_user, "reading_log": reading_log, "reading_log_isbns": reading_log_isbns, "books": books, 'search': True})
     
     # Redirect Unknown Users
     return HttpResponseRedirect(reverse("readmore_app:login"))
@@ -542,7 +539,53 @@ def make_comment(request, post_id):
             </tr>
         </table>
         </div>""")
-
+        
+def add_to_user_library(request, isbn):
+    if Book(isbn).book_data:
+        real_user = UserExt.objects.get(pk=request.user.id)
+        if isbn in real_user.reading_log_isbns():
+            return HttpResponse("")
+        new_reading_log_book = ReadingLogBook()
+        new_reading_log_book.isbn = isbn
+        new_reading_log_book.save()
+        real_user.user_reading_log.add(new_reading_log_book)
+        real_user.save()
+        book = Book.booklike_to_book(new_reading_log_book)
+        template = f"""
+        <td id="reading_log_book{book.id}" style="width: 20%;">
+            <table>
+            <tr>
+				<a class="book_search_link" href="/readmore/view_book/{book.isbn13}">
+					<td rowspan=3>
+						<img src="{book.small_thumbnail}" alt="{book.title} Cover Image" />
+					</td>
+				</a>
+                <td colspan=2>
+					<p style="font-size:18px;">{book.title}</p>
+                </td>
+            </tr>
+            <tr>
+                <td style="font-size:12px;">
+                    Author{'s' if len(book.authors) > 1 else ''}
+                </td>
+                <td>
+                    <p style="font-size:12px;">
+                    {''.join('<span style="font-size:12px;">'+author+'</span>' for author in book.authors)}
+                    </p>
+                </td>
+            </tr>
+            <tr>
+                <td>
+					<p>
+						<button onclick="delete_user_library_book({new_reading_log_book.id});">Delete Book</button>
+					</p>
+				</td>
+            </tr>
+            </table>
+       </td>
+        """
+        return HttpResponse(template)
+    return HttpResponse("error")
 
 def remove_from_user_library(request, book_id):
     real_user = UserExt.objects.get(pk=request.user.id)
