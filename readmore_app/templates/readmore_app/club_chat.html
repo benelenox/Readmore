@@ -6,12 +6,12 @@ Readmore - {{ club.club_name }}
 {% endblock %}
 
 {% block content %}
-<div>
+<div class="table_card">
     <h1>{{ club.club_name }} Chatroom</h1>
     <div id="chatdiv">
     <table id="chat_table">
     {% for chat in club_chats %}
-        <tr {% if chat.chat_type == 'info' %}class="joinleavemessage"{% endif %}>
+        <tr {% if chat.chat_type == 'info' %} class="joinleavemessage"{% endif %}>
             <td>
                 {% if chat.chat_user %}<p>{{ chat.chat_user }}</p>{% endif %}
                 <p>{{ chat.chat_time|date:'m/d/Y h:i A' }}</p>
@@ -24,7 +24,7 @@ Readmore - {{ club.club_name }}
     </table>
     </div>
     <textarea style="display: inline-block; max-width: 1100px; max-height: 100px;" id="message" name="message" rows="4" cols="50"></textarea>
-    <button id="send" style="display: inline-block;">Send</button>
+    <button id="send" style="display: inline-block;margin-left:5px;">Send</button>
 {% endblock %}
 
 {% block js %}
@@ -49,17 +49,23 @@ function escapeHtml(unsafe)
          .replace(/"/g, "&quot;")
          .replace(/'/g, "&#039;");
  }
+ 
+function pad(num, size) {
+    num = num.toString();
+    while (num.length < size) num = "0" + num;
+    return num;
+}
 
 socket.onmessage = function(response) {
     var json = JSON.parse(response.data);
     var message = escapeHtml(json.message);
-    var time = escapeHtml(json.time);
+    var messagetime = escapeHtml(json.time);
     var user = escapeHtml(json.user);
     var type = json.type;
     if (type == "chat_message"){
-        var chat = `<tr><td><p>${user}</p><p>${time}</p></td><td><p>${message}</p></td></tr>`;
+        var chat = `<tr><td><p>${user}</p><p>${messagetime}</p></td><td><p>${message}</p></td></tr>`;
     } else if (type == "join" || type == "leave") {
-        var chat = `<tr class="joinleavemessage"><td><p>${time}</p></td><td><p>${message}</p></td></tr>`;
+        var chat = `<tr class="joinleavemessage"><td><p>${messagetime}</p></td><td><p>${message}</p></td></tr>`;
     }
     table.innerHTML += chat;
     scrollDown()

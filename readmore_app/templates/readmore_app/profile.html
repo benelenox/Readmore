@@ -6,7 +6,7 @@ Readmore - {{ profile_user.username }}'s Profile
 {% endblock %}
 
 {% block content %}
-<div class="profile">
+<div class="profile basic_card">
     <h1>{{ profile_user.username }}'s Profile</h1>
     {% if user.is_authenticated and profile_user != real_user %}
         {% if real_user not in profile_user.user_friends.all and profile_user not in real_user.user_pending_friends.all %}
@@ -17,10 +17,43 @@ Readmore - {{ profile_user.username }}'s Profile
             <button id="friendbutton" onclick="friend({{ profile_user.id }}, 'remove');" name="user_id" value="{{ profile_user.id }}" class="friend">Remove Friend</button>
         {% endif %}
     {% endif %}
-    <div style="height:42px;">
-    <a href="{% url 'readmore_app:friend_list' profile_user.id %}" id="friendinfo" style="margin-right:200px;">{{ profile_user.user_friends.all.count }} Friends</a>
+    <div style="height:42px;margin-top: 2em;">
+    <a href="{% url 'readmore_app:friend_list' profile_user.id %}" id="friendinfo" class="anchor_button">{{ profile_user.user_friends.all.count }} Friends</a>
     </div>
     <!-- Implement User bio -->
+    <div>
+        {% if real_user == profile_user %}
+        <p><a href="{% url 'readmore_app:create_profile_post' profile_user.id %}" class="anchor_button">Create Post</a></p>
+        {% endif %}
+    </div>
+    <center>
+    <div class="postlist">
+    {% if not profile_posts %}
+        <p>No posts have been made to this profile</p>
+    {% else %}
+        {% for post in profile_posts %}
+            <div class="clubpost">
+                <span class="likes">
+                    <span id="nlikes{{ post.post_id }}">{{ post.post_likes.count }}</span>
+                    <input id="likeimage{{post.post_id}}" onclick="doLike({{post.post_id}});" style="width: 20px;" type="image" src="{% if real_user in post.post_likes.all %}{% static 'readmore_app/thumbs_up.png' %}{% else %}{% static 'readmore_app/thumbs_up_gray.png' %}{% endif %}" />
+                </span>
+                <a href="{% url 'readmore_app:view_post' post.post_id %}"><h2 style="margin: 10px;">{{ post.post_title }}</h2></a>
+                <h5 style="margin: 2px;">Post By: <a href="{% url 'readmore_app:profile' post.post_user.id %}">{{ post.post_user.username }}</a></h5>
+                <h6 style="margin: 2px;">{{ post.post_date|date:"m/d/Y h:i:s A" }}</h6>
+                {% if post.post_img %}
+                <img style="max-width: 500px;" src="{{ post.post_img }}"/>
+                {% endif %}
+                {% if post.post_text %}
+                <div class="post_text">
+                <p>{{ post.post_text }}</p>
+                </div>
+                {% endif %}
+            </div>
+        {% endfor %}
+    {% endif %}
+    </div>
+    </center>
+</div>
 {% endblock %}
 
 {% block js %}
@@ -65,4 +98,20 @@ function friend(user_id, type) {
     }, 500);
 }
 
+function doLike(post_id) {
+    const image = document.getElementById("likeimage" + post_id);
+    const nlikes = document.getElementById("nlikes" + post_id);
+    const xhrlike = new XMLHttpRequest();
+    xhrlike.onload = function() {
+        [new_image, num_likes] = this.responseText.split(' ');
+        if (new_image == "unlike") {
+            image.src = "/static/readmore_app/thumbs_up_gray.png";
+        } else if (new_image == "like") {
+            image.src = "/static/readmore_app/thumbs_up.png";
+        }
+        nlikes.innerHTML = num_likes;
+    }
+    xhrlike.open("GET", `/readmore/ajax/dolike/${post_id}/`);
+    xhrlike.send();
+}
 {% endblock %}

@@ -6,7 +6,7 @@ Readmore - Notifications
 {% endblock %}
 
 {% block content %}
-<div>
+<div class="basic_card">
     <h1>Notifications</h1>
     <table id="notification_table">
     {% if not notifications %}
@@ -16,10 +16,10 @@ Readmore - Notifications
         <tr class="notification" id="notification{{ notification.notification_id }}">
             <td>
                 <h3>{{ notification.notification_title }}</h3>
-                <button onclick="removeNotification({{ notification.notification_id }});" class="like"><img style="width: 10px;" src="{% static 'readmore_app/x_button.png' %}" /></button>
+                <button onclick="removeNotification({{ notification.notification_id }});" class="remove"><img style="width: 10px;" src="{% static 'readmore_app/x_button.png' %}" /></button>
                 <p style="font-size: 10px">{{ notification.notification_time }}</p>
                 {% if notification.notification_link %}
-                <p><a href="{{ notification.notification_link }}">{{ notification.notification_link_text }}</a></p>
+                <p><a href="{{ notification.notification_link }}" class="anchor_button">{{ notification.notification_link_text }}</a></p>
                 {% endif %}
                 <p>{{ notification.notification_message }}</p>
                 <hr>

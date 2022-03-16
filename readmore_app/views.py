@@ -1,12 +1,14 @@
 import re
 import requests
+import json
 from datetime import datetime
 from django.views.decorators.csrf import csrf_exempt
 from django.shortcuts import render, redirect, get_object_or_404
 from django.urls import reverse
-from django.http import HttpResponse, HttpResponseRedirect, Http404
-from .models import UserExt, Notification, Club, ClubChat
-from .forms import register as regform, login as loginform, club as clubform
+from django.http import HttpResponse, HttpResponseRedirect, Http404, HttpResponseNotFound
+from .models import UserExt, Notification, Club, ClubChat, ClubBook, ClubPost, ReadingLogBook, ProfilePost, Post, Comment
+from .pseudomodels import Book
+from .forms import register as regform, login as loginform, club as clubform, club_post as clubpostform, reading_log as readinglogform, profile_post as profilepostform
 from django.contrib.auth import authenticate, login as log_in, logout as log_out
 
 def friend_list(request, profile_id):
@@ -21,9 +23,36 @@ def profile(request, profile_id):
     profile_user = get_object_or_404(UserExt, id=profile_id)
     if request.user.is_authenticated:
         real_user = UserExt.objects.get(pk=request.user.id)
-        return render(request, "readmore_app/profile.html", {'real_user': real_user, 'profile_user': profile_user})
+        profile_posts = ProfilePost.objects.filter(post_profile_user = profile_user).order_by('-post_date')
+        return render(request, "readmore_app/profile.html", {'real_user': real_user, 'profile_user': profile_user, 'profile_posts': profile_posts})
     else:
         return render(request, "readmore_app/profile.html", {'profile_user': profile_user})
+
+def create_profile_post(request, profile_id):
+    if request.user.is_authenticated:
+        real_user = UserExt.objects.get(pk=request.user.id)
+        profile_user = get_object_or_404(UserExt, id=profile_id)
+        form = profilepostform()
+        if real_user != profile_user:
+            return redirect(reverse("readmore_app:index"))
+        if request.method != 'POST':
+            return render(request, 'readmore_app/create_profile_post.html', {'form': form, 'profile_user': profile_user})
+        else:
+            form = profilepostform(request.POST)
+            if form.is_valid():
+                new_post = ProfilePost()
+                new_post.post_user = real_user
+                new_post.post_title = form.cleaned_data['title']
+                new_post.post_text = form.cleaned_data['text']
+                new_post.post_img = form.cleaned_data['image']
+                new_post.post_date = datetime.now()
+                new_post.post_profile_user = profile_user
+                new_post.save()
+                return redirect(reverse('readmore_app:profile', kwargs={'profile_id': profile_user.id}))
+            else:
+                return render(request, 'readmore_app/create_profile_post.html', {'form': form, 'profile_user': profile_user})
+    else:
+        return redirect(reverse("readmore_app:login"))
 
 def notifications(request):
     notifications = Notification.objects.filter(notification_user = UserExt.objects.get(pk=request.user.id)).order_by('-notification_time')
@@ -103,13 +132,13 @@ def create_club(request):
 
 def user_search_results(request):
     if request.method == 'POST':
-        search_query = request.POST["search_query"]
+        search_query = request.POST["search_query"].strip()
         results1 = UserExt.objects.filter(username__istartswith=search_query)
         results2 = UserExt.objects.filter(username__icontains=search_query)
         search_results = results1 | results2
         return render(request, "readmore_app/user_search_results.html", {"search": search_query, "user_search_results": search_results})
     else:
-        raise Http404()
+        raise HttpResponseNotFound()
 
 def book_clubs(request):
     if request.user.is_authenticated:
@@ -126,7 +155,8 @@ def club(request, club_id):
     if request.user.is_authenticated:
         club = get_object_or_404(Club, club_id=club_id)
         real_user = get_object_or_404(UserExt, id=request.user.id)
-        return render(request, "readmore_app/club_home.html", {"real_user": real_user, "club": club})
+        club_posts = ClubPost.objects.filter(post_club = club).order_by('-post_date')
+        return render(request, "readmore_app/club_home.html", {"real_user": real_user, "club": club, 'club_posts': club_posts})
     else:
         return redirect(reverse('readmore_app:login'))
 
@@ -184,28 +214,107 @@ def search_book(request):
         query = request.POST['search_query']
         type = request.POST['search_type']
         
-        book_api_key = 'AIzaSyCrRXmYA10KFK9bFearnoAGZ8Suzn1aFgI'
         real_user = get_object_or_404(UserExt, id=request.user.id)
         
-        if type == "general":
-            books_info = requests.get(f'https://www.googleapis.com/books/v1/volumes?q={query}&maxResults=40&key={book_api_key}').json()
-        elif type == "title":
-            books_info = requests.get(f'https://www.googleapis.com/books/v1/volumes?q=+intitle:{query}&maxResults=40&key={book_api_key}').json()
-        elif type == "author":
-            books_info = requests.get(f'https://www.googleapis.com/books/v1/volumes?q=+inauthor:{query}&maxResults=40&key={book_api_key}').json()
-        elif type == "isbn":
-            books_info = requests.get(f'https://www.googleapis.com/books/v1/volumes?q=+isbn:{query}&maxResults=40&key={book_api_key}').json()
-
-        if 'items' in books_info.keys():
-            books = books_info['items']
-        else:
-            books = []
-        
+        books = Book.search_googlebooks(query, type)
         books = [books[i:i+3] for i in range(0, len(books), 3)]
         
         return render(request, "readmore_app/search_book.html", {"real_user": real_user, "books": books, 'search': True})
     else:
         return render(request, "readmore_app/search_book.html", {'search': False})
+
+
+def club_library(request, club_id):
+    if request.user.is_authenticated:
+        real_user = UserExt.objects.get(pk=request.user.id)
+        club = Club.objects.get(pk=club_id)
+        club_library = Book.booklike_to_book(club.club_library.all())
+        club_library = [club_library[i:i+3] for i in range(0, len(club_library), 3)]
+        club_library_isbns = [book.isbn for book in club.club_library.all()]
+        if request.method != "POST":
+            return render(request, "readmore_app/club_library.html", {"real_user": real_user, "club": club, "club_library": club_library, "search": False})
+        else:
+            query = request.POST['search_query']
+            type = request.POST['search_type']
+            
+            books = Book.search_googlebooks(query, type)
+            books = [books[i:i+3] for i in range(0, len(books), 3)]
+            
+            return render(request, "readmore_app/club_library.html", {"real_user": real_user, "club": club, "club_library": club_library, "club_library_isbns": club_library_isbns, "books": books, 'search': True})
+    else:
+        return redirect(reverse("readmore_app:login"))
+
+def create_club_post(request, club_id):
+    if request.user.is_authenticated:
+        real_user = UserExt.objects.get(pk=request.user.id)
+        club = Club.objects.get(pk=club_id)
+        form = clubpostform()
+        if real_user not in club.club_users.all():
+            return redirect(reverse("readmore_app:index"))
+        if request.method != 'POST':
+            return render(request, 'readmore_app/create_club_post.html', {'form': form, 'club': club})
+        else:
+            form = clubpostform(request.POST)
+            if form.is_valid():
+                new_post = ClubPost()
+                new_post.post_user = real_user
+                new_post.post_title = form.cleaned_data['title']
+                new_post.post_text = form.cleaned_data['text']
+                new_post.post_img = form.cleaned_data['image']
+                new_post.post_date = datetime.now()
+                new_post.post_club = club
+                new_post.save()
+                return redirect(reverse('readmore_app:club', kwargs={'club_id': club.club_id}))
+            else:
+                return render(request, 'readmore_app/create_club_post.html', {'form': form, 'club': club})
+    else:
+        return redirect(reverse("readmore_app:login"))
+
+def reading_log(request):
+    """
+    The page for a user's reading log
+    """
+    
+    if request.user.is_authenticated:
+        form = readinglogform()
+        real_user = UserExt.objects.get(pk=request.user.id)
+        
+        # Add to the Reading Log
+        if request.method == 'POST':
+            form = readinglogform(request.POST)
+            if form.is_valid():
+                form_isbn = form.cleaned_data['isbn']
+                book = Book(form_isbn)
+                if book.title and form_isbn not in real_user.reading_log_isbns():
+                    new_reading_log_book = ReadingLogBook()
+                    new_reading_log_book.isbn = form_isbn
+                    new_reading_log_book.save()
+                    real_user.user_reading_log.add(new_reading_log_book)
+                    real_user.save()
+
+
+        # Display the Reading Log Add Book Form & Table
+        reading_log = Book.booklike_to_book(real_user.user_reading_log.all())
+        reading_log = [reading_log[i:i+3] for i in range(0, len(reading_log), 3)]
+        return render(request, "readmore_app/reading_log.html", {'real_user': real_user, 'form': form, 'reading_log': reading_log})
+    
+    # Redirect Unknown Users
+    return HttpResponseRedirect(reverse("readmore_app:login"))
+
+def view_post(request, post_id):
+    if request.user.is_authenticated:
+        real_user = UserExt.objects.get(pk=request.user.id)
+        post = None
+        try:
+            post = ClubPost.objects.get(pk=post_id)
+        except:
+            try:
+                post = ProfilePost.objects.get(pk=post_id)
+            except:
+                return HttpResponseNotFound()
+        return render(request, "readmore_app/view_post.html", {'real_user': real_user, 'post': post})
+    else:
+        return redirect(reverse("readmore_app:login"))
 
 """ 
 *************************************
@@ -335,3 +444,112 @@ def join_club(request, club_id):
         notify_owner.notification_message = f"{real_user.username} has joined your book club, {club.club_name}."
         notify_owner.save()
     return HttpResponse("")
+
+def add_to_library(request, club_id, isbn):
+    if Book(isbn).book_data:
+        real_user = UserExt.objects.get(pk=request.user.id)
+        club = Club.objects.get(pk=club_id)
+        if isbn in [obj.isbn for obj in club.club_library.all()]:
+            return HttpResponse("")
+        if real_user == club.club_owner:
+            new_club_book = ClubBook()
+            new_club_book.isbn = isbn
+            new_club_book.save()
+            club.club_library.add(new_club_book)
+            club.save()
+            book = Book.booklike_to_book(new_club_book)
+            template = f"""
+            <td id="clubbook{book.id}" style="width: 20%; margin: 40px;">
+            <a class="book_search_link" href="/readmore/view_book/{book.isbn13}">
+                <table style="width: 250px;" class="libbookind">
+                <tr>
+                    <td style="width: 40%;" colspan=2><img width="100px" src="{book.small_thumbnail}" alt="{book.title} Cover Image" /></td>
+                    <td style="width: 40%;">
+                    <center>
+                    <p style="font-size:18px;">{book.title}</p>
+                    </center>
+                    </td>
+                </tr>
+                <tr>
+                    <td style="font-size:12px; width: 28%;">
+                        Author{'s' if len(book.authors) > 1 else ''}
+                    </td>
+                    <td style="width: 50%;">
+                        <p style="font-size:12px;">
+                        {''.join('<span style="font-size:12px;">'+author+'</span>' for author in book.authors)}
+                        </p>
+                    </td>
+                </tr>
+                <tr>
+                    <td colspan=2 style="font-size:12px;">ISBN: {book.isbn13}</td>
+                </tr>
+                <tr><td align="center" colspan=2><div class="stars" style="--rating:{book.rating};"></div></td></tr>
+                </table>
+           </a>
+           <center>
+           <button onclick="removeBook({new_club_book.id});">Remove From Club Library</button>
+           </center>
+           </td>
+            """
+            return HttpResponse(template)
+    return HttpResponse("error")
+
+def remove_from_library(request, club_id, club_book_id):
+    real_user = UserExt.objects.get(pk=request.user.id)
+    club = Club.objects.get(pk=club_id)
+    if real_user == club.club_owner:
+        club_book = ClubBook.objects.get(pk=club_book_id)
+        isbn = club_book.isbn
+        club.club_library.remove(club_book)
+        club.save()
+        club_book.delete()
+        return HttpResponse(isbn)
+    return HttpResponse("error")
+
+def do_like(request, post_id):
+    real_user = UserExt.objects.get(pk=request.user.id)
+    post = Post.objects.get(pk=post_id)
+    if real_user in post.post_likes.all():
+        post.post_likes.remove(real_user)
+        post.save()
+        return HttpResponse(f"unlike {post.post_likes.count()}")
+    else:
+        post.post_likes.add(real_user)
+        post.save()
+        return HttpResponse(f"like {post.post_likes.count()}")
+
+@csrf_exempt
+def make_comment(request, post_id):
+
+    escapeHtml = lambda unsafe: unsafe.replace("&", "&amp;").replace("<", "&lt;").replace(">", "&gt;").replace('"', "&quot;").replace("'", "&#039;");
+    real_user = UserExt.objects.get(pk=request.user.id)
+    post = Post.objects.get(pk=post_id)
+    data = json.loads(request.body)
+    new_comment = Comment()
+    new_comment.post_user = real_user
+    new_comment.post_text = data['comment_text']
+    new_comment.post_parent = post
+    new_comment.save()
+    return HttpResponse(f"""<div class="clubpost">
+        <span style="position: absolute; margin-left: 95%;">
+            <span id="nlikes{new_comment.post_id}">{new_comment.post_likes.count()}</span>
+            <input id="likeimage{new_comment.post_id}" onclick="doLike({new_comment.post_id});" style="width: 20px;" type="image" src="{'/static/readmore_app/thumbs_up.png' if real_user in new_comment.post_likes.all() else '/static/readmore_app/thumbs_up_gray.png'}" />
+        </span>
+        <table style="width: 93%;">
+            <tr>
+                <td class="comment_by">{new_comment.post_user}<br><span style="font-size: 10px;">{datetime.now().strftime("%m/%d/%Y %I:%M %p")}</span></td>
+                <td class="comment_text">{escapeHtml(new_comment.post_text)}</td>
+            </tr>
+        </table>
+        </div>""")
+
+
+def remove_from_user_library(request, book_id):
+    real_user = UserExt.objects.get(pk=request.user.id)
+    book = ReadingLogBook.objects.get(pk=book_id)
+    real_user.user_reading_log.remove(book)
+    book.delete()
+    return HttpResponse("")
+
+
+

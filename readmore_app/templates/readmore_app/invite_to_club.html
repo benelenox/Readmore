@@ -6,13 +6,13 @@ Readmore - {{ club.club_name }}
 {% endblock %}
 
 {% block content %}
-<div>
+<div class="basic_card">
     <h1> Invite Users to {{ club.club_name }}</h1>
     <table>
     {% for friend in real_user.user_friends.all %}
         <tr id="friend{{ friend.id }}">
             <td style="padding-left: 20px;">
-                <p><a href="{% url 'readmore_app:profile' friend.id %}">@{{ friend.username }}</a>{% if friend in club.club_users.all %}[Joined]{% endif %}</p>
+                <p><a href="{% url 'readmore_app:profile' friend.id %}" class="anchor_button">@{{ friend.username }}</a>{% if friend in club.club_users.all %}[Joined]{% endif %}</p>
             </td>
             <td style="padding-left: 20px;">
                 <p id="invitebutton">

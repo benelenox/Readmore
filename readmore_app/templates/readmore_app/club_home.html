@@ -6,8 +6,8 @@ Readmore - {{ club.club_name }}
 {% endblock %}
 
 {% block content %}
-<div class="book_club">
-    <h1 style="display: inline-block;">{{ club.club_name }}</h1>
+<div class="basic_card" style="width:100%; margin:2em;">
+    <h1 style="display: inline-block; word-wrap: break-word; width: 100%;">{{ club.club_name }}</h1>
     <div id="joindiv" style="display: inline-block;">
     {% if real_user in club.club_users.all %}
     <h3 style="margin-left: 30px; display: inline-block;">[Joined]</h3>
@@ -19,6 +19,8 @@ Readmore - {{ club.club_name }}
     <p style="display: inline-block"><a href="{% url 'readmore_app:club_members' club.club_id %}">{{ club.club_users.all.count }} Members</a></p>
     {% if real_user == club.club_owner %}
     <p style="display: inline-block"><a class="anchor_button" href="{% url 'readmore_app:invite_to_club' club.club_id %}">Invite Users</a></p>
+    <p style="display: inline-block"><a class="anchor_button" href="{% url 'readmore_app:club_library' club.club_id %}">Book Club Library</a></p>
+
     {% endif %}
     {% if real_user in club.club_users.all %}
     <p style="display: inline-block"><a class="anchor_button" href="{% url 'readmore_app:club_chat' club.club_id %}">Enter Book Club Chat</a></p>
@@ -26,16 +28,63 @@ Readmore - {{ club.club_name }}
     </div>
     <div>
         <p>{{ club.club_description }}</p>
+        {% if real_user in club.club_users.all %}
+        <p><a href="{% url 'readmore_app:create_club_post' club.club_id %}" class="anchor_button">Create Post</a></p>
+        {% endif %}
     </div>
+    <center>
+    <div class="postlist">
+    {% if not club_posts %}
+        <p>No posts have been made to this club</p>
+    {% else %}
+        {% for post in club_posts %}
+            <div class="clubpost">
+                <span class="likes">
+                    <span id="nlikes{{ post.post_id }}">{{ post.post_likes.count }}</span>
+                    <input id="likeimage{{post.post_id}}" onclick="doLike({{post.post_id}});" style="width: 20px;" type="image" src="{% if real_user in post.post_likes.all %}{% static 'readmore_app/thumbs_up.png' %}{% else %}{% static 'readmore_app/thumbs_up_gray.png' %}{% endif %}" />
+                </span>
+                <a href="{% url 'readmore_app:view_post' post.post_id %}"><h2 style="margin: 10px;">{{ post.post_title }}</h2></a>
+                <h5 style="margin: 2px;">Post By: <a href="{% url 'readmore_app:profile' post.post_user.id %}">{{ post.post_user.username }}</a></h5>
+                <h6 style="margin: 2px;">{{ post.post_date|date:"m/d/Y h:i:s A" }}</h6>
+                {% if post.post_img %}
+                <img style="max-width: 500px;" src="{{ post.post_img }}"/>
+                {% endif %}
+                {% if post.post_text %}
+                <div class="post_text">
+                <p>{{ post.post_text }}</p>
+                </div>
+                {% endif %}
+            </div>
+        {% endfor %}
+    {% endif %}
+    </div>
+    </center>
 </div>
 {% endblock %}
 
 {% block js %}
 function joinClub() {
     const joindiv = document.getElementById("joindiv");
-    joindiv.innerHTML = `<h3 style="margin-left: 30px; display: inline-block;">[Joined]</h3>`
+    joindiv.innerHTML = `<h3 style="margin-left: 30px; display: inline-block;">[Joined]</h3>`;
     const xhrjoinclub = new XMLHttpRequest();
     xhrjoinclub.open("GET", "/readmore/ajax/join_club/{{ club.club_id }}/");
     xhrjoinclub.send();
+}
+
+function doLike(post_id) {
+    const image = document.getElementById("likeimage" + post_id);
+    const nlikes = document.getElementById("nlikes" + post_id);
+    const xhrlike = new XMLHttpRequest();
+    xhrlike.onload = function() {
+        [new_image, num_likes] = this.responseText.split(' ');
+        if (new_image == "unlike") {
+            image.src = "/static/readmore_app/thumbs_up_gray.png";
+        } else if (new_image == "like") {
+            image.src = "/static/readmore_app/thumbs_up.png";
+        }
+        nlikes.innerHTML = num_likes;
+    }
+    xhrlike.open("GET", `/readmore/ajax/dolike/${post_id}/`);
+    xhrlike.send();
 }
 {% endblock %}

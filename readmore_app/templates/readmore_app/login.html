@@ -5,7 +5,7 @@ Readmore - Login
 {% endblock %}
 
 {% block content %}
-<main id="login">
+<main id="login" style="padding-left: 0px;">
 
 <div class="form">
     {% if optional_message %}
@@ -13,7 +13,7 @@ Readmore - Login
     {% endif %}
     <h1 style="font-size: 48px;">Readmore</h1>
     <h3>Login to join the discussion</h3>
-    <form action="{% url 'readmore_app:login' %}" method="post">
+    <form action="{% url 'readmore_app:login' %}" method="post" ">
     {% csrf_token %}
         <table>
         {{ form.as_table }}
@@ -23,6 +23,6 @@ Readmore - Login
         </table>
     </form>
     <p>Not a Subscriber to Readmore?</p>
-    <a href="{% url 'readmore_app:registration' %}" style="color:#309070;text-shadow: 4px;">Register For an Account</a>
+    <a href="{% url 'readmore_app:registration' %}" class="anchor_button">Register For an Account</a>
 </div>
 {% endblock %}

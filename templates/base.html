@@ -11,9 +11,9 @@
     </title>
     <link rel=stylesheet href="{% static 'readmore_app/style.css' %}">
     <link rel="icon" type="image/x-icon" href="{% static 'readmore_app/readmore.ico' %}">
+
     <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-  
   </head>
   <body>
     <div class="container" >
@@ -37,7 +37,7 @@
                     <a  href="{% url 'readmore_app:profile' user.id %}" style="margin-top: -10px;"><span id="notification_dot" style="color: red;">{% if has_notifications %}●{% endif %}</span>{{ user.username }}</a>
                     <div id="dropdown">
                         <a class="dropaw" href="{% url 'readmore_app:notifications' %}">(<span id="num_notifications">{% num_notifications user.id %}</span>) Notifications</a>
-                        <a class="dropaw" href="#">Link 2</a>
+                        <a class="dropaw" href="{% url 'readmore_app:reading_log' %}">My Reading Log</a>
                         <a class="dropaw" href="#">Link 3</a>
                     </div>
                 </div>
@@ -47,7 +47,7 @@
                   <input type="text" placeholder="Search User" name="search_query" style="margin: 0px 10px 6px 0px;">
                 </form>
                 {% endif %}
-                <div></div>
+
               </div>
             </div>
       </header>
@@ -64,11 +64,11 @@
               Where content goes
             {% endblock %}
             </main>
-        <div>
+        </div>
     </div>
   </body>
   <script>
-  {% block js %}
-  {% endblock %}
+    {% block js %}
+    {% endblock %}
   </script>
 </html>

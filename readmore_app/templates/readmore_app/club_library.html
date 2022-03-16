@@ -1,0 +1,158 @@
+{% extends parent_template|default:"base.html" %}
+{% load static %}
+{% load extras %}
+
+{% block title %}
+Readmore - {{ club.club_name }}
+{% endblock %}
+
+{% block content %}
+
+<div style="display: flex; flex-direction: column; width: 80vw;">
+<a style="margin-top: 50px; width:fit-content; padding-top: 1.2em;" class="anchor_button" href="{% url 'readmore_app:club' club.club_id %}">Back To Club Home</a>
+<div id="library">
+    <center>
+    <h1>My Club Library</h1>
+    <h2>Club Books</h2>
+    </center>
+    <table class="table" id="club_library_table">
+        <tr id="row">
+        {% for shortlist in club_library %}
+            {% for book in shortlist %}
+            
+            <td id="clubbook{{ book.id }}" style="height: 25em;position:relative;" class="book_card">
+            <a class="book_search_link" href="{% url 'readmore_app:view_book' book.isbn13 %}">
+                <div style="width: 16em;">
+                <div class="book_title">
+                    <div style="width: 40%;" colspan=2><img width="100px" height="140px" src="{{ book.small_thumbnail }}" alt="{{ book.title }} Cover Image" /></div>
+                    <div style="width: 100%; margin-left: 0.3em; margin-right: 0.8em;">
+                    
+                    <p style="font-size:18px;">{{ book.title }}</p>
+                    
+                    </div>
+                </div>
+                <div style="margin-top: 50%;margin-bottom: 20px;margin-left: 30px;height: 100px;">
+                    <div style="display:flex;">
+                        <div style="font-size:12px; width: 28%; margin-top: 12px;">
+                            Author{{ book.authors|length|pluralize:"s" }}
+                        </div>
+                        <div style="width: 50%;">
+                            <p style="font-size:12px;">
+                            {% for author in book.authors %}
+                            <span style="font-size:12px;">{{ author }}</span>
+                            </p>
+                            {% endfor %}
+                        </div>
+                    </div>
+                </div>
+                <div style="margin-left: 30px;">
+                    <div colspan=2 style="font-size:12px;">ISBN: {{book.isbn13 }}</div>
+                </div>
+                <div><div align="center" colspan=2><div class="stars" style="--rating:{{ book.rating }};"></div></div></div>
+            </div>
+           </a>
+           <center>
+           <button onclick="removeBook('{{ book.id }}');" class="book_action">Remove From Club Library</button>
+           </center>
+           </td>
+          
+            {% endfor %}
+        {% endfor %}
+        </tr>
+    </table>
+</div>
+<div id="search_add">
+    <center>
+    <h2>Search Books</h2>
+    <form style="{% if not search %}margin-bottom: 250px;{% endif %}" action="{% url 'readmore_app:club_library' club.club_id %}" method="POST">
+    {% csrf_token %}
+        <input style="width: 50vw;" type="text" name="search_query" required/>
+        <select style="padding: 5px; border-radius: 5px; border:none;" name="search_type">
+            <option value="general" selected>General Search</option>
+            <option value="title">Title</option>
+            <option value="author">Author</option>
+            <option value="isbn">ISBN</option>
+        </select>
+        <br>
+        <input id="search_button" type="submit" value="Search" />
+    </form>
+    </center>
+    {% if search %}
+        {% if not books %}
+        <h2>No Books Found Matching Search Terms</h2>
+        {% else %}
+        <table class="table" id="book_search_results" style="margin-right: 1%;">
+            {% for short_list in books %}
+            <tr>
+                {% for book in short_list %}
+                <td style="height: 25em;position:relative;outline: 1px solid #eff0f5; outline-offset: -5px;"class="book_card">
+                <a class="book_search_link" href="{% url 'readmore_app:view_book' book.volumeInfo.industryIdentifiers.0.identifier %}">
+                    <div style="width: 16em;">
+                    <div class="book_title">
+                        <div><img width="100px" height="140px" src="{{ book.volumeInfo.imageLinks.smallThumbnail }}" alt="{{ book.volumeInfo.title }} Cover Image" /></div>
+                        <div>
+                        <p style="font-size:18px;margin-right: 0.8em;margin-left: 0.3em;">{{ book.volumeInfo.title }}</p>
+                        </div>
+                    </div>
+                    <div style="margin-top: 50%; margin-bottom: 20px; margin-left: 30px;height: 100px;">
+                        <div style="display:flex;">
+                            <div style="font-size:12px; width: 28%; margin-top: 12px;">
+                                Author{{ book.volumeInfo.authors|length|pluralize:"s" }}
+                            </div>
+                            <div style="width:50%; margin-left:10px;">
+                                <p style="font-size:12px;">
+                                {% for author in book.volumeInfo.authors %}
+                                <span style="font-size:12px;">{{ author }}</span>
+                                </p>
+                                {% endfor %}
+                            </div>
+                        </div>
+                    </div>
+                    <div style="margin-left: 30px;">
+                        <div colspan=2 style="font-size:12px;">ISBN: {% get_isbn_thirteen book.volumeInfo.industryIdentifiers %}</div>
+                    </div>
+                    <div><div align="center" colspan=3><div class="stars" style="--rating:{{ book.volumeInfo.averageRating }};"></div></div></div>
+                </div>
+               </a>
+               <center>
+               <button style="{% if book.volumeInfo.industryIdentifiers.0.identifier in club_library_isbns %}display: none;{% endif %}left: 26%;" id="add{{ book.volumeInfo.industryIdentifiers.0.identifier }}" onclick="addBook('{{ book.volumeInfo.industryIdentifiers.0.identifier }}');" class="book_action">Add To Club Library</button>
+               </center>
+            </td>
+                
+                {% endfor %}
+            </tr>
+            {% endfor %}
+        </table>
+        {% endif %}
+    {% endif %}
+</div>
+</div>
+{% endblock %}
+
+{% block js %}
+function addBook(isbn) {
+    const addbutton = document.getElementById("add" + isbn);
+    const xhraddbook = new XMLHttpRequest();
+    xhraddbook.onload = function(){
+        const row = document.getElementById("row");
+        row.innerHTML += this.responseText;
+        addbutton.style.display = "none";
+    }
+    xhraddbook.open("GET", "/readmore/ajax/add_to_library/{{ club.club_id }}/" + isbn + "/");
+    xhraddbook.send();
+}
+
+function removeBook(clubbook_id) {
+    const td = document.getElementById("clubbook" + clubbook_id);
+    const xhrremovebook = new XMLHttpRequest();
+    xhrremovebook.onload = function(){
+        td.parentNode.removeChild(td);
+        const button = document.getElementById("add" + this.responseText);
+        if (button != null) {
+            button.style.display = "inline-block";
+        }
+    }
+    xhrremovebook.open("GET", "/readmore/ajax/remove_from_library/{{ club.club_id }}/" + clubbook_id + "/");
+    xhrremovebook.send();
+}
+{% endblock %}
