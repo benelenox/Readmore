@@ -87,7 +87,7 @@ Readmore - {{ club.club_name }}
                 {% for book in short_list %}
                 <td class="book_card">
                 <a class="book_search_link" href="{% url 'readmore_app:view_book' book.volumeInfo.industryIdentifiers.0.identifier %}">
-                    <div style="width: 16em;">
+                    <div style="width: 23vw;">
                     <div class="book_title">
                         <div><img width="100px" height="140px" src="{{ book.volumeInfo.imageLinks.smallThumbnail }}" alt="{{ book.volumeInfo.title }} Cover Image" /></div>
                         <div>

@@ -231,16 +231,19 @@ def club_library(request, club_id):
         club_library = Book.booklike_to_book(club.club_library.all())
         club_library = [club_library[i:i+3] for i in range(0, len(club_library), 3)]
         club_library_isbns = [book.isbn for book in club.club_library.all()]
-        if request.method != "POST":
-            return render(request, "readmore_app/club_library.html", {"real_user": real_user, "club": club, "club_library": club_library, "search": False})
+        if real_user == club.club_owner:
+            if request.method != "POST":
+                return render(request, "readmore_app/club_library.html", {"real_user": real_user, "club": club, "club_library": club_library, "search": False, "club_library_isbns": club_library_isbns})
+            else:
+                query = request.POST['search_query']
+                type = request.POST['search_type']
+                
+                books = Book.search_googlebooks(query, type)
+                books = [books[i:i+3] for i in range(0, len(books), 3)]
+                
+                return render(request, "readmore_app/club_library.html", {"real_user": real_user, "club": club, "club_library": club_library, "club_library_isbns": club_library_isbns, "books": books, 'search': True})
         else:
-            query = request.POST['search_query']
-            type = request.POST['search_type']
-            
-            books = Book.search_googlebooks(query, type)
-            books = [books[i:i+3] for i in range(0, len(books), 3)]
-            
-            return render(request, "readmore_app/club_library.html", {"real_user": real_user, "club": club, "club_library": club_library, "club_library_isbns": club_library_isbns, "books": books, 'search': True})
+            return render(request, "readmore_app/club_library_member_view.html", {"real_user": real_user, "club": club, "club_library": club_library, "club_library_isbns": club_library_isbns})
     else:
         return redirect(reverse("readmore_app:login"))
 
