@@ -20,7 +20,7 @@ Readmore - {{ club.club_name }}
         {% for shortlist in club_library %}
             {% for book in shortlist %}
             
-            <td id="clubbook{{ book.id }}" style="height: 25em;position:relative;" class="book_card">
+            <td id="clubbook{{ book.id }}"  class="book_card">
             <a class="book_search_link" href="{% url 'readmore_app:view_book' book.isbn13 %}">
                 <div style="width: 16em;">
                 <div class="book_title">
@@ -85,7 +85,7 @@ Readmore - {{ club.club_name }}
             {% for short_list in books %}
             <tr>
                 {% for book in short_list %}
-                <td style="height: 25em;position:relative;outline: 1px solid #eff0f5; outline-offset: -5px;"class="book_card">
+                <td class="book_card">
                 <a class="book_search_link" href="{% url 'readmore_app:view_book' book.volumeInfo.industryIdentifiers.0.identifier %}">
                     <div style="width: 16em;">
                     <div class="book_title">
