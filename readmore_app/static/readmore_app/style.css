@@ -1,14 +1,18 @@
 /* #7074ac */
-html{
-    height: 100vh;
-}
+
 body{
     font-family: Garamond, Georgia, serif;
     margin:0; 
-    height:100vh;   
+    
 }
 a{
     text-decoration: none; 
+}
+
+header{
+    position: fixed;
+    z-index: 1;
+    width: 100%;
 }
 .form{
     height: fit-content;
@@ -22,7 +26,7 @@ a{
 }
 
 .book_action{
-    position: absolute;
+    position:absolute;
     bottom: 2%;
     left: 13%;
 }
@@ -69,21 +73,26 @@ div.createform h1 {
     padding: 15px;
     margin-top: 15px;
     box-shadow: 2px 2px 2px#7074ac;
+    word-break: break-word;
 }
 
-.table_card{
+
+element.style {
+}
+
+.table_card {
     display: inline-table;
     box-shadow: 2px 2px 2px#7074ac;
     border-color: black;
-    width: 50%;
-    margin-left: 10em;
+    width: 70%;
+    margin-left: 7em;
     background-color: white;
     margin-top: 1em;
     height: 70%;
     overflow: auto;
     border-style: solid;
     padding: 20px;
-    margin-bottom:2em;
+    margin-bottom: 2em;
 }
 .book_club {
     width: 80vw;
@@ -104,8 +113,14 @@ div.createform h1 {
 }
 #book_search_results td{
     color: #eff0f5;
+    width: 18em;
     font-family:Arial, Helvetica, sans-serif;
 }
+
+#book_search_results tbody{
+    height:26em;
+}
+
 .book_card{
     background: #a5a5aa;
     border-collapse: collapse;
@@ -119,17 +134,38 @@ div.createform h1 {
     overflow: overlay;
     margin-left: -3%;
     margin-right: 2%;
-    color: #eff0f5
+    color: #eff0f5;
 }
 
 #club_library_table td {
     background: #a5a5aa;
     border-collapse: collapse;
     border: 0px;
-    width: 100%;
-    height: 100%;
+    width: 20em;
+    height: 25em;
+    margin: 0px;
+    padding: 0px;
+    font-family:Arial, Helvetica, sans-serif;
+    outline: 1px solid #eff0f5;
+    outline-offset: -5px;
 }
 
+#club_library_table tbody{
+    height:26em;
+}
+
+.book_title{
+    display: flex;
+    position: absolute;
+    top: 0px;
+    width: 100%;
+    flex-direction: row;
+    flex-wrap: nowrap;
+    align-content: center;
+    justify-content: start;
+    margin-top: 2%;
+    margin-left: 2%;
+}
 h2.logo{
     color:#e2e2db;
     font-family:Arial, Helvetica, sans-serif;
@@ -142,6 +178,7 @@ h2.logo{
 .container{
     display:flex;
     flex-flow: column;
+    height: inherit;
 }
 
 .content-container {
@@ -149,6 +186,8 @@ h2.logo{
     justify-content: start;
     flex-direction: row;
     flex-wrap: nowrap;
+    padding-top:45px;
+    height: 100vh;
 }
 
 #registration {
@@ -161,6 +200,9 @@ h2.logo{
     min-width:100%;
 }
 
+.submit{
+    margin-top:10px;
+}
 
 #login {
     box-shadow:inset 2000px 0 0 0 rgba(112, 116, 172, .5);
@@ -195,11 +237,18 @@ main{
     background-attachment:fixed;
     background-size:cover;
     display: flex;
-    width: 100%;
+    width: 80%;
     min-height: 100%;
     height: 100% auto;
     color: #232D5E;
+    padding-left: 21%;
+    overflow: auto;
 }
+.book_search_results{
+    height: 100% auto;
+    margin-right: 2%;
+}
+
 
 main > * { margin-left: 50px; }
 
@@ -276,9 +325,7 @@ main > div { width: 100%; }
     float:right;
     background: #e35343;
     border: none;
-    padding: 3px
-px
- 8px;
+    padding:8px;
     padding-top: 5px;
 }
 .anchor_button{
@@ -314,12 +361,13 @@ px
 }
 
 div.sidebar {
-    position: relative; 
+    position: fixed; 
     text-align: center; 
     background: #8d9ab8;
     width:20%; 
     min-height:100vh;
     height:100% auto;
+    
     
 }
 .sidebar a {
@@ -376,7 +424,7 @@ div.navbar {
 
 #chatdiv {
     overflow: scroll;
-    height: 70vh;
+    height: 63vh;
     width: 100%;
     overflow-x: hidden;
 }

@@ -31,11 +31,11 @@ Readmore - Search Book
             {% for short_list in books %}
             <tr>
                 {% for book in short_list %}
-                <td style="width: 30vw; height: 30vh;">
+                <td style="width: 30vw; height: 30vh;outline: 1px solid #eff0f5; outline-offset: -5px;">
                 <a class="book_search_link" href="{% url 'readmore_app:view_book' book.volumeInfo.industryIdentifiers.0.identifier %}">
                     <table class="book_card">
                     <tr>
-                        <td rowspan=3><img src="{{ book.volumeInfo.imageLinks.smallThumbnail }}" alt="{{ book.volumeInfo.title }} Cover Image"/></td>
+                        <td rowspan=3><img style="height: 180px;width: 130px; margin-left:10px;" src="{{ book.volumeInfo.imageLinks.smallThumbnail }}" alt="{{ book.volumeInfo.title }} Cover Image"/></td>
                         <td colspan=2>
                         <p style="font-size:18px;">{{ book.volumeInfo.title }}</p>
                         </td>

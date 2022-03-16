@@ -7,10 +7,9 @@ Readmore - {{ club.club_name }}
 {% endblock %}
 
 {% block content %}
-<style>
-</style>
+
 <div style="display: flex; flex-direction: column; width: 80vw;">
-<a style="margin-top: 50px; position: absolute; padding-top: 1.2em;" class="anchor_button" href="{% url 'readmore_app:club' club.club_id %}">Back To Club Home</a>
+<a style="margin-top: 50px; width:fit-content; padding-top: 1.2em;" class="anchor_button" href="{% url 'readmore_app:club' club.club_id %}">Back To Club Home</a>
 <div id="library">
     <center>
     <h1>My Club Library</h1>
@@ -20,39 +19,43 @@ Readmore - {{ club.club_name }}
         <tr id="row">
         {% for shortlist in club_library %}
             {% for book in shortlist %}
-            <td id="clubbook{{ book.id }}" style="width: 30vw;height: 30vh;position:relative;" class="book_card">
+            
+            <td id="clubbook{{ book.id }}" style="height: 25em;position:relative;" class="book_card">
             <a class="book_search_link" href="{% url 'readmore_app:view_book' book.isbn13 %}">
-                <table >
-                <tr>
-                    <td style="width: 40%;" colspan=2><img width="100px" src="{{ book.small_thumbnail }}" alt="{{ book.title }} Cover Image" /></td>
-                    <td style="width: 40%;">
+                <div style="width: 16em;">
+                <div class="book_title">
+                    <div style="width: 40%;" colspan=2><img width="100px" height="140px" src="{{ book.small_thumbnail }}" alt="{{ book.title }} Cover Image" /></div>
+                    <div style="width: 100%; margin-left: 0.3em; margin-right: 0.8em;">
                     
                     <p style="font-size:18px;">{{ book.title }}</p>
                     
-                    </td>
-                </tr>
-                <tr>
-                    <td style="font-size:12px; width: 28%;">
-                        Author{{ book.authors|length|pluralize:"s" }}
-                    </td>
-                    <td style="width: 50%;">
-                        <p style="font-size:12px;">
-                        {% for author in book.authors %}
-                        <span style="font-size:12px;">{{ author }}</span>
-                        </p>
-                        {% endfor %}
-                    </td>
-                </tr>
-                <tr>
-                    <td colspan=2 style="font-size:12px;">ISBN: {{book.isbn13 }}</td>
-                </tr>
-                <tr><td align="center" colspan=2><div class="stars" style="--rating:{{ book.rating }};"></div></td></tr>
-                </table>
+                    </div>
+                </div>
+                <div style="margin-top: 50%;margin-bottom: 20px;margin-left: 30px;height: 100px;">
+                    <div style="display:flex;">
+                        <div style="font-size:12px; width: 28%; margin-top: 12px;">
+                            Author{{ book.authors|length|pluralize:"s" }}
+                        </div>
+                        <div style="width: 50%;">
+                            <p style="font-size:12px;">
+                            {% for author in book.authors %}
+                            <span style="font-size:12px;">{{ author }}</span>
+                            </p>
+                            {% endfor %}
+                        </div>
+                    </div>
+                </div>
+                <div style="margin-left: 30px;">
+                    <div colspan=2 style="font-size:12px;">ISBN: {{book.isbn13 }}</div>
+                </div>
+                <div><div align="center" colspan=2><div class="stars" style="--rating:{{ book.rating }};"></div></div></div>
+            </div>
            </a>
            <center>
            <button onclick="removeBook('{{ book.id }}');" class="book_action">Remove From Club Library</button>
            </center>
            </td>
+          
             {% endfor %}
         {% endfor %}
         </tr>
@@ -82,37 +85,39 @@ Readmore - {{ club.club_name }}
             {% for short_list in books %}
             <tr>
                 {% for book in short_list %}
-                <td style="width: 30vw; height: 40vh;position:relative;"class="book_card">
+                <td style="height: 25em;position:relative;outline: 1px solid #eff0f5; outline-offset: -5px;"class="book_card">
                 <a class="book_search_link" href="{% url 'readmore_app:view_book' book.volumeInfo.industryIdentifiers.0.identifier %}">
-                    <table >
-                    <tr>
-                        <td rowspan=3><img src="{{ book.volumeInfo.imageLinks.smallThumbnail }}" alt="{{ book.volumeInfo.title }} Cover Image" /></td>
-                        <td colspan=2>
-                        <p style="font-size:18px;">{{ book.volumeInfo.title }}</p>
-                        </td>
-                    </tr>
-                    <tr>
-                        <td style="font-size:12px;">
-                            Author{{ book.volumeInfo.authors|length|pluralize:"s" }}
-                        </td>
-                        <td>
-                            <p style="font-size:12px;">
-                            {% for author in book.volumeInfo.authors %}
-                            <span style="font-size:12px;">{{ author }}</span>
-                            </p>
-                            {% endfor %}
-                        </td>
-                    </tr>
-                    <tr>
-                        <td colspan=2 style="font-size:12px;">ISBN: {% get_isbn_thirteen book.volumeInfo.industryIdentifiers %}</td>
-                    </tr>
-                    <tr><td align="center" colspan=3><div class="stars" style="--rating:{{ book.volumeInfo.averageRating }};"></div></td></tr>
-                    </table>
+                    <div style="width: 16em;">
+                    <div class="book_title">
+                        <div><img width="100px" height="140px" src="{{ book.volumeInfo.imageLinks.smallThumbnail }}" alt="{{ book.volumeInfo.title }} Cover Image" /></div>
+                        <div>
+                        <p style="font-size:18px;margin-right: 0.8em;margin-left: 0.3em;">{{ book.volumeInfo.title }}</p>
+                        </div>
+                    </div>
+                    <div style="margin-top: 50%; margin-bottom: 20px; margin-left: 30px;height: 100px;">
+                        <div style="display:flex;">
+                            <div style="font-size:12px; width: 28%; margin-top: 12px;">
+                                Author{{ book.volumeInfo.authors|length|pluralize:"s" }}
+                            </div>
+                            <div style="width:50%; margin-left:10px;">
+                                <p style="font-size:12px;">
+                                {% for author in book.volumeInfo.authors %}
+                                <span style="font-size:12px;">{{ author }}</span>
+                                </p>
+                                {% endfor %}
+                            </div>
+                        </div>
+                    </div>
+                    <div style="margin-left: 30px;">
+                        <div colspan=2 style="font-size:12px;">ISBN: {% get_isbn_thirteen book.volumeInfo.industryIdentifiers %}</div>
+                    </div>
+                    <div><div align="center" colspan=3><div class="stars" style="--rating:{{ book.volumeInfo.averageRating }};"></div></div></div>
+                </div>
                </a>
                <center>
                <button style="{% if book.volumeInfo.industryIdentifiers.0.identifier in club_library_isbns %}display: none;{% endif %}left: 26%;" id="add{{ book.volumeInfo.industryIdentifiers.0.identifier }}" onclick="addBook('{{ book.volumeInfo.industryIdentifiers.0.identifier }}');" class="book_action">Add To Club Library</button>
                </center>
-               </td>
+            </td>
                 
                 {% endfor %}
             </tr>
