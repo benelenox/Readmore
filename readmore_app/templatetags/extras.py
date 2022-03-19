@@ -13,7 +13,6 @@ def num_notifications(user_id):
 
 @register.simple_tag
 def get_isbn_thirteen(identifiers):
-    print(identifiers)
     for id in identifiers:
         if id['type'] == "ISBN_13":
             return id['identifier']

@@ -25,6 +25,41 @@ Readmore - {{ club.club_name }}
     <p style="display: inline-block"><a class="anchor_button" href="{% url 'readmore_app:club_chat' club.club_id %}">Enter Book Club Chat</a></p>
     {% endif %}
     </div>
+    {% if current_book %}
+    <div id="current_book" class="book_card_mv">
+        <h2 style="width: 100%; text-align: center; padding: 5px;">Current Book</h2>
+        <a class="book_search_link" href="{% url 'readmore_app:view_book' current_book.isbn13 %}">
+            <table>
+                <tr>
+                    <td style="padding: 15px;"><img width="100px" height="140px" src="{{ current_book.small_thumbnail }}" alt="{{ current_book.title }} Cover Image" /></td>
+                    <td style="padding: 10px;" colspan=2>
+                    
+                    <p style="font-size:18px;">{{ current_book.title }}</p>
+                    
+                    </td>
+                </tr>
+                <tr>
+                    <td></td>
+                    <td style="font-size:12px; padding-left: 15px; padding-top: 10px; padding-bottom: 15px;">
+                        Author{{ current_book.authors|length|pluralize:"s" }}
+                    </td>
+                    <td style="padding-top: 10px; padding-bottom: 15px;">
+                        <p style="font-size:12px;">
+                        {% for author in current_book.authors %}
+                        <span style="font-size:12px;">{{ author }}</span>
+                        </p>
+                        {% endfor %}
+                    </td>
+                </tr>
+                <tr>
+                    <td align="center" colspan=3 style="font-size:12px; padding-top: 10px; padding-bottom: 10px;">ISBN: {{ current_book.isbn13 }}</td>
+                </tr>
+                <tr><td style="padding-top: 10px;" colspan=3 align="center" colspan=2><div class="stars" style="--rating:{{ current_book.rating }};"></div></td></tr>
+            </table>
+       </a>
+       
+    </div>
+    {% endif %}
     <div>
         <p>{{ club.club_description }}</p>
         {% if real_user in club.club_users.all %}

@@ -156,7 +156,10 @@ def club(request, club_id):
         club = get_object_or_404(Club, club_id=club_id)
         real_user = get_object_or_404(UserExt, id=request.user.id)
         club_posts = ClubPost.objects.filter(post_club = club).order_by('-post_date')
-        return render(request, "readmore_app/club_home.html", {"real_user": real_user, "club": club, 'club_posts': club_posts})
+        current_book = False
+        if club.club_library.order_by('-time'):
+            current_book = Book(club.club_library.order_by('-time')[0].isbn)
+        return render(request, "readmore_app/club_home.html", {"real_user": real_user, "club": club, 'club_posts': club_posts, 'current_book': current_book})
     else:
         return redirect(reverse('readmore_app:login'))
 
@@ -215,10 +218,8 @@ def search_book(request):
         type = request.POST['search_type']
         
         real_user = get_object_or_404(UserExt, id=request.user.id)
-        
         books = Book.search_googlebooks(query, type)
         books = [books[i:i+3] for i in range(0, len(books), 3)]
-        
         return render(request, "readmore_app/search_book.html", {"real_user": real_user, "books": books, 'search': True})
     else:
         return render(request, "readmore_app/search_book.html", {'search': False})
