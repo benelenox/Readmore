@@ -15,7 +15,7 @@ Readmore - {{ club.club_name }}
                 <p><a href="{% url 'readmore_app:profile' friend.id %}" class="anchor_button">@{{ friend.username }}</a>{% if friend in club.club_users.all %}[Joined]{% endif %}</p>
             </td>
             <td style="padding-left: 20px;">
-                <p id="invitebutton">
+                <p id="invitebutton{{ friend.id }}">
                 {% if friend not in club.club_users.all and friend not in club.club_pending_invites.all %}
                 <button onclick="inviteMember({{ friend.id }}, {{ club.club_id }});">Send Invite</button>
                 {% elif friend in club.club_pending_invites.all %}
@@ -33,8 +33,8 @@ Readmore - {{ club.club_name }}
 
 {% block js %}
 function inviteMember(friend_id, club_id) {
-    const invitebutton = document.getElementById("invitebutton");
-    invitebutton.innerHTML = "Pending..."
+    const invitebutton = document.getElementById("invitebutton" + friend_id);
+    invitebutton.innerHTML = "Pending...";
     const xhrinvitemember = new XMLHttpRequest();
     xhrinvitemember.open("GET", "/readmore/ajax/invite_member/" + club_id + "/" + friend_id + "/");
     xhrinvitemember.send();

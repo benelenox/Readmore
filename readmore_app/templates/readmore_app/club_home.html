@@ -68,6 +68,7 @@ function joinClub() {
     const xhrjoinclub = new XMLHttpRequest();
     xhrjoinclub.open("GET", "/readmore/ajax/join_club/{{ club.club_id }}/");
     xhrjoinclub.send();
+    window.location.href = "/readmore/club/{{ club.club_id }}/";
 }
 
 function doLike(post_id) {
