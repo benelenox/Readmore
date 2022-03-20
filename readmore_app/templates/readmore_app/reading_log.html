@@ -7,7 +7,7 @@ Readmore - Reading Log
 
 {% block content %}
 <div style="display: flex; flex-direction: column; width: 80vw;">
-<a style="margin-top: 50px;" href="{% url 'readmore_app:profile' user.id %}">Back To User Profile</a>
+<a style="margin-top: 50px;" href="{% url 'readmore_app:profile' user.id %}" class="anchor_button">Back To User Profile</a>
 <div id="reading_log">
     <center>
     <h1>My Reading Log</h1>
@@ -16,39 +16,37 @@ Readmore - Reading Log
         <tr id="row" style="">
         {% for shortlist in reading_log %}
             {% for book in shortlist %}
-            <td id="reading_log_book{{ book.id }}" style="width: 20%;">
-                <table>
-                <tr>
-                    <a class="book_search_link" href="{% url 'readmore_app:view_book' book.isbn13 %}">
-						<td rowspan=3>
-							<img src="{{ book.small_thumbnail }}" alt="{{ book.title }} Cover Image" />
-						</td>
-					</a>
-                    <td colspan=2>
-						<p style="font-size:18px;">{{ book.title }}</p>
-                    </td>
-                </tr>
-                <tr>
-                    <td style="font-size:12px;">
-                        Author{{ book.authors|length|pluralize:"s" }}
-                    </td>
-                    <td>
-                        <p style="font-size:12px;">
-                        {% for author in book.authors %}
-                        <span style="font-size:12px;">{{ author }}</span>
-                        </p>
-                        {% endfor %}
-                    </td>
-                </tr>
-                <tr>
-                    <td>
-                        <p>
-                            <button onclick="delete_user_library_book('{{ book.id }}');">Delete Book</button>
-                        </p>
-                    </td>
-                </tr>
-                </table>
-            </td>
+            <td id="reading_log_book{{ book.id }}"  class="book_card">
+                <a class="book_search_link" href="{% url 'readmore_app:view_book' book.isbn13 %}">
+                    <div style="width: 16em;">
+                    <div class="book_title">
+                        <div style="width: 40%;"><img width="100px" height="140px" src="{{ book.small_thumbnail }}" alt="{{ book.title }} Cover Image" /></div>
+                        <div style="width: 100%; margin-left: 0.6em;">
+                        
+                        <p style="font-size:18px;">{{ book.title }}</p>
+                        
+                        </div>
+                    </div>
+                    <div style="margin-top: 50%;margin-bottom: 20px;margin-left: 30px;height: 100px;">
+                        <div style="display:flex;">
+                            <div style="font-size:12px; width: 28%; margin-top: 12px;">
+                                Author{{ book.authors|length|pluralize:"s" }}
+                            </div>
+                            <div style="width: 50%;">
+                                <p style="font-size:12px;">
+                                {% for author in book.authors %}
+                                <span style="font-size:12px;">{{ author }}</span>
+                                </p>
+                                {% endfor %}
+                            </div>
+                        </div>
+                    </div>
+                </div>
+               </a>
+               <div style="display: flex; justify-content: center;">
+               <button onclick="delete_user_library_book('{{ book.id }}');" class="book_action">Delete Book</button>
+               </div>
+               </td>
             {% endfor %}
         {% endfor %}
         </tr>
@@ -83,30 +81,32 @@ Readmore - Reading Log
                 {% for book in short_list %}
                 <td style="width: 30vw; height: 40vh;position:relative;"class="book_card">
                 <a class="book_search_link" href="{% url 'readmore_app:view_book' book.volumeInfo.industryIdentifiers.0.identifier %}">
-                    <table >
-                    <tr>
-                        <td rowspan=3><img src="{{ book.volumeInfo.imageLinks.smallThumbnail }}" alt="{{ book.volumeInfo.title }} Cover Image" /></td>
-                        <td colspan=2>
-                        <p style="font-size:18px;">{{ book.volumeInfo.title }}</p>
-                        </td>
-                    </tr>
-                    <tr>
-                        <td style="font-size:12px;">
-                            Author{{ book.volumeInfo.authors|length|pluralize:"s" }}
-                        </td>
-                        <td>
-                            <p style="font-size:12px;">
-                            {% for author in book.volumeInfo.authors %}
-                            <span style="font-size:12px;">{{ author }}</span>
-                            </p>
-                            {% endfor %}
-                        </td>
-                    </tr>
-                    </table>
+                    <div style="width: 23vw;">
+                        <div class="book_title">
+                            <div><img width="100px" height="140px" src="{{ book.volumeInfo.imageLinks.smallThumbnail }}" alt="{{ book.volumeInfo.title }} Cover Image" /></div>
+                            <div>
+                            <p style="font-size:18px;margin-right: 0.8em;margin-left: 0.3em;">{{ book.volumeInfo.title }}</p>
+                            </div>
+                        </div>
+                        <div style="margin-top: 50%; margin-bottom: 20px; margin-left: 30px;height: 100px;">
+                            <div style="display:flex;">
+                                <div style="font-size:12px; width: 28%; margin-top: 12px;">
+                                    Author{{ book.volumeInfo.authors|length|pluralize:"s" }}
+                                </div>
+                                <div style="width:50%; margin-left:10px;">
+                                    <p style="font-size:12px;">
+                                    {% for author in book.volumeInfo.authors %}
+                                    <span style="font-size:12px;">{{ author }}</span>
+                                    </p>
+                                    {% endfor %}
+                                </div>
+                            </div>
+                        </div>
+                    </div>
                </a>
-               <center>
+               <div style="display: flex; justify-content: center;">
                <button style="{% if book.volumeInfo.industryIdentifiers.0.identifier in reading_log_isbns %}display: none;{% endif %}left: 26%;" id="add{{ book.volumeInfo.industryIdentifiers.0.identifier }}" onclick="add_user_library_book('{{ book.volumeInfo.industryIdentifiers.0.identifier }}');" class="book_action">Add To Reading Log</button>
-               </center>
+               </div>
                </td>
                 
                 {% endfor %}
@@ -147,6 +147,10 @@ function delete_user_library_book(book_id) {
         let hasChild = false;
         if (row.childElementCount == 0) {
             reading_log.innerHTML += `<h3 id="nobooksfound">No Books Found</h3>`;
+        }
+        const button = document.getElementById("add" + this.responseText);
+        if (button != null) {
+            button.style.display = "inline-block";
         }
     }
     xhrremoveuserbook.open("GET", `/readmore/ajax/remove_from_user_library/${book_id}/`);

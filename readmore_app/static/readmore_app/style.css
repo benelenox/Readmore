@@ -3,7 +3,7 @@
 body{
     font-family: Garamond, Georgia, serif;
     margin:0; 
-    
+    overflow: hidden;
 }
 a{
     text-decoration: none; 
@@ -28,7 +28,8 @@ header{
 .book_action{
     position:absolute;
     bottom: 2%;
-    left: 13%;
+    border: none;
+    padding: 0.3em 0.8em;
 }
 
 .comment_by {
@@ -88,8 +89,8 @@ element.style {
     margin-left: 7em;
     background-color: white;
     margin-top: 1em;
-    height: 70%;
-    overflow: auto;
+    height:fit-content;
+    overflow: hidden;
     border-style: solid;
     padding: 20px;
     margin-bottom: 2em;
@@ -137,10 +138,11 @@ element.style {
     border-collapse: collapse;
     border: 0px;
     width: 23vw;
-    height: 25em;
+    height: fit-content;
     position:relative;
     outline: 1px solid #eff0f5;
     outline-offset: -5px;
+    color: #eff0f5;
 }
 
 #club_library_table {
@@ -173,13 +175,13 @@ element.style {
     display: flex;
     position: absolute;
     top: 0px;
-    width: 100%;
+    width: 90%;
     flex-direction: row;
     flex-wrap: nowrap;
-    align-content: center;
-    justify-content: start;
-    margin-top: 2%;
+    margin-top: 6%;
     margin-left: 2%;
+    align-content: center;
+    align-items: flex-start;    
 }
 h2.logo{
     color:#e2e2db;
@@ -249,7 +251,7 @@ h2.logo{
 
 main{
     background-image: url(white_background.jpg);
-    background-attachment:fixed;
+    background-attachment:scroll;
     background-size:cover;
     display: flex;
     width: 80%;
@@ -259,6 +261,7 @@ main{
     padding-left: 21%;
     overflow-y: auto;
     overflow-x: hidden;
+    
 }
 .book_search_results{
     height: 100% auto;
@@ -315,15 +318,16 @@ main > div { width: 100%; }
     border-radius: 2px;
     box-shadow: 2px 2px 2px#7074ac;
     border-color: black;
-    width: 50%;
-    margin-left: 10em;
+    width: 100%;
+    margin: 4em 2em;
     background-color: white;
-    margin-top: 3em;
-    height: 80%;
-    overflow: auto;
+    min-height: 70vh;
+    height:fit-content;
+    overflow: hidden;
     border-style: solid;
     border-width: 1px;
     padding: 20px;
+    margin: 4em 2em;
 }
 
 .likes {
@@ -348,7 +352,7 @@ main > div { width: 100%; }
     border-radius: 2px;
     color: #e2e2db;
     height: 30px;
-    width: auto;
+    width: fit-content;
     border: none;
     padding: 10px;
     background: #4b4e75;
@@ -383,6 +387,9 @@ div.sidebar {
     width:20%; 
     min-height:100vh;
     height:100% auto;
+    border-style: solid;
+    border-width: 1px;
+    border-color:#4b4e75; 
     
     
 }
@@ -478,6 +485,7 @@ div.subnav {
     width: fit-content;
     padding-left:5px;
     padding-right:5px;
+    display: flex;
 }
 
 .subnav > p {

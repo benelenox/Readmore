@@ -9,7 +9,7 @@ Readmore - {{ club.club_name }}
 {% block content %}
 
 <div style="display: flex; flex-direction: column; width: 80vw;">
-<a style="margin-top: 50px; width:fit-content; padding-top: 1.2em;" class="anchor_button" href="{% url 'readmore_app:club' club.club_id %}">Back To Club Home</a>
+<a style="margin-top: 50px; width:fit-content;" class="anchor_button" href="{% url 'readmore_app:club' club.club_id %}">Back To Club Home</a>
 <div id="library">
     <center>
     <h1>My Club Library</h1>
@@ -22,10 +22,10 @@ Readmore - {{ club.club_name }}
             
             <td id="clubbook{{ book.id }}"  class="book_card">
             <a class="book_search_link" href="{% url 'readmore_app:view_book' book.isbn13 %}">
-                <div style="width: 16em;">
+                <div style="width: 16em; margin-left: 4%;">
                 <div class="book_title">
-                    <div style="width: 40%;" colspan=2><img width="100px" height="140px" src="{{ book.small_thumbnail }}" alt="{{ book.title }} Cover Image" /></div>
-                    <div style="width: 100%; margin-left: 0.3em; margin-right: 0.8em;">
+                    <div style="width: 40%; margin: 3px;"><img width="100px" height="140px" src="{{ book.small_thumbnail }}" alt="{{ book.title }} Cover Image" /></div>
+                    <div style="width: 100%; margin-left: 0.6em;">
                     
                     <p style="font-size:18px;">{{ book.title }}</p>
                     
@@ -34,7 +34,7 @@ Readmore - {{ club.club_name }}
                 <div style="margin-top: 50%;margin-bottom: 20px;margin-left: 30px;height: 100px;">
                     <div style="display:flex;">
                         <div style="font-size:12px; width: 28%; margin-top: 12px;">
-                            Author{{ book.authors|length|pluralize:"s" }}
+                            Author{{ current_book.authors|length|pluralize:"s" }}
                         </div>
                         <div style="width: 50%;">
                             <p style="font-size:12px;">
@@ -46,14 +46,14 @@ Readmore - {{ club.club_name }}
                     </div>
                 </div>
                 <div style="margin-left: 30px;">
-                    <div colspan=2 style="font-size:12px;">ISBN: {{book.isbn13 }}</div>
+                    <div colspan=2 style="font-size:12px;">ISBN: {{ book.isbn13 }}</div>
                 </div>
-                <div><div align="center" colspan=2><div class="stars" style="--rating:{{ book.rating }};"></div></div></div>
+                <div><div align="center"><div class="stars" style="--rating:{{ book.rating }};"></div></div></div>
             </div>
            </a>
-           <center>
+           <div style="display: flex; justify-content: center;">
            <button onclick="removeBook('{{ book.id }}');" class="book_action">Remove From Club Library</button>
-           </center>
+           </div>
            </td>
           
             {% endfor %}
@@ -114,9 +114,9 @@ Readmore - {{ club.club_name }}
                     <div><div align="center" colspan=3><div class="stars" style="--rating:{{ book.volumeInfo.averageRating }};"></div></div></div>
                 </div>
                </a>
-               <center>
-               <button style="{% if book.volumeInfo.industryIdentifiers.0.identifier in club_library_isbns %}display: none;{% endif %}left: 26%;" id="add{{ book.volumeInfo.industryIdentifiers.0.identifier }}" onclick="addBook('{{ book.volumeInfo.industryIdentifiers.0.identifier }}');" class="book_action">Add To Club Library</button>
-               </center>
+               <div style="display: flex; justify-content: center;">
+               <button style="{% if book.volumeInfo.industryIdentifiers.0.identifier in club_library_isbns %}display: none;{% endif %}" id="add{{ book.volumeInfo.industryIdentifiers.0.identifier }}" onclick="addBook('{{ book.volumeInfo.industryIdentifiers.0.identifier }}');" class="book_action">Add To Club Library</button>
+               </div>
             </td>
                 
                 {% endfor %}

@@ -6,58 +6,63 @@ Readmore - {{ club.club_name }}
 {% endblock %}
 
 {% block content %}
-<div class="basic_card" style="width:100%; margin:2em;">
-    <h1 style="display: inline-block; word-wrap: break-word; width: 100%;">{{ club.club_name }}</h1>
-    <div id="joindiv" style="display: inline-block;">
-    {% if real_user in club.club_users.all %}
-    <h3 style="margin-left: 30px; display: inline-block;">[Joined]</h3>
-    {% elif real_user in club.club_pending_invites.all %}
-    <button onclick="joinClub();">Join</button>
-    {% endif %}
-    </div>
-    <div class="subnav">
-    <p style="display: inline-block"><a href="{% url 'readmore_app:club_members' club.club_id %}">{{ club.club_users.all.count }} Members</a></p>
-    {% if real_user == club.club_owner %}
-    <p style="display: inline-block"><a class="anchor_button" href="{% url 'readmore_app:invite_to_club' club.club_id %}">Invite Users</a></p>
-    {% endif %}
-    <p style="display: inline-block"><a class="anchor_button" href="{% url 'readmore_app:club_library' club.club_id %}">Book Club Library</a></p>
-    {% if real_user in club.club_users.all %}
-    <p style="display: inline-block"><a class="anchor_button" href="{% url 'readmore_app:club_chat' club.club_id %}">Enter Book Club Chat</a></p>
-    {% endif %}
-    </div>
+<div class="basic_card" style="width:100%;">
+    <div style="display:flex; justify-content: space-between;">
+        <div>
+        <h1 style="display: inline-block; word-wrap: break-word; width: 100%;">{{ club.club_name }}</h1>
+        <div id="joindiv" style="display: inline-block;">
+        {% if real_user in club.club_users.all %}
+        <h3 style="margin-left: 30px; display: inline-block;">[Joined]</h3>
+        {% elif real_user in club.club_pending_invites.all %}
+        <button onclick="joinClub();">Join</button>
+        {% endif %}
+        </div>
+        <div class="subnav">
+        <p style="display: inline-block"><a href="{% url 'readmore_app:club_members' club.club_id %}">{{ club.club_users.all.count }} Members</a></p>
+        {% if real_user == club.club_owner %}
+        <p style="display: inline-block"><a class="anchor_button" href="{% url 'readmore_app:invite_to_club' club.club_id %}">Invite Users</a></p>
+        {% endif %}
+        <p style="display: inline-block"><a class="anchor_button" href="{% url 'readmore_app:club_library' club.club_id %}">Book Club Library</a></p>
+        {% if real_user in club.club_users.all %}
+        <p style="display: inline-block"><a class="anchor_button" href="{% url 'readmore_app:club_chat' club.club_id %}">Enter Book Club Chat</a></p>
+        {% endif %}
+        </div>
+        </div>
     {% if current_book %}
-    <div id="current_book" class="book_card_mv">
-        <h2 style="width: 100%; text-align: center; padding: 5px;">Current Book</h2>
-        <a class="book_search_link" href="{% url 'readmore_app:view_book' current_book.isbn13 %}">
-            <table>
-                <tr>
-                    <td style="padding: 15px;"><img width="100px" height="140px" src="{{ current_book.small_thumbnail }}" alt="{{ current_book.title }} Cover Image" /></td>
-                    <td style="padding: 10px;" colspan=2>
+        <div id="current_book" class="book_card_mv" style="color: #eff0f5;width: 18em;font-family:Arial, Helvetica, sans-serif;">
+            <div><h2 style="width: 100%; text-align: center; padding: 5px;">Current Book</h2></div>
+            <a class="book_search_link" href="{% url 'readmore_app:view_book' current_book.isbn13 %}">
+                <div style="width: 16em;margin-left: 4%;">
+                <div class="book_title" style="position: relative;">
+                    <div style="width: 40%; margin: 4px;"><img width="100px" height="140px" src="{{ current_book.small_thumbnail }}" alt="{{ book.title }} Cover Image" /></div>
+                    <div style="width: 100%; margin-left: 0.6em;">
                     
                     <p style="font-size:18px;">{{ current_book.title }}</p>
                     
-                    </td>
-                </tr>
-                <tr>
-                    <td></td>
-                    <td style="font-size:12px; padding-left: 15px; padding-top: 10px; padding-bottom: 15px;">
-                        Author{{ current_book.authors|length|pluralize:"s" }}
-                    </td>
-                    <td style="padding-top: 10px; padding-bottom: 15px;">
-                        <p style="font-size:12px;">
-                        {% for author in current_book.authors %}
-                        <span style="font-size:12px;">{{ author }}</span>
-                        </p>
-                        {% endfor %}
-                    </td>
-                </tr>
-                <tr>
-                    <td align="center" colspan=3 style="font-size:12px; padding-top: 10px; padding-bottom: 10px;">ISBN: {{ current_book.isbn13 }}</td>
-                </tr>
-                <tr><td style="padding-top: 10px;" colspan=3 align="center" colspan=2><div class="stars" style="--rating:{{ current_book.rating }};"></div></td></tr>
-            </table>
-       </a>
-       
+                    </div>
+                </div>
+                <div style="margin-top: 0%;margin-bottom: 20px;margin-left: 30px;height: 100px;">
+                    <div style="display:flex;">
+                        <div style="font-size:12px; width: 28%; margin-top: 12px;">
+                            Author{{ current_book.authors|length|pluralize:"s" }}
+                        </div>
+                        <div style="width: 50%;">
+                            <p style="font-size:12px;">
+                            {% for author in current_book.authors %}
+                            <span style="font-size:12px;">{{ author }}</span>
+                            </p>
+                            {% endfor %}
+                        </div>
+                    </div>
+                </div>
+                <div style="margin-left: 30px;">
+                    <div colspan=2 style="font-size:12px;">ISBN: {{ current_book.isbn13 }}</div>
+                </div>
+                <div style="margin-bottom:5%;"><div align="center"><div class="stars" style="--rating:{{ current_book.rating }};"></div></div></div>
+            </div>
+        </a>
+        
+        </div>
     </div>
     {% endif %}
     <div>
