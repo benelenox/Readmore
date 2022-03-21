@@ -204,7 +204,10 @@ def view_book(request, book_isbn):
 
         book = None
         if 'items' in book_info.keys():
-            book = book_info['items'][0]
+            for match in book_info['items']:
+                if book_isbn in [indID['identifier'] for indID in match['volumeInfo']['industryIdentifiers']]:
+                    book = match
+                    break
 
         return render(request, "readmore_app/view_book.html", {"real_user": real_user, "book": book})
         

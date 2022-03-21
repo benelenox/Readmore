@@ -9,8 +9,12 @@ class Book:
         
         book_api_key = 'AIzaSyCrRXmYA10KFK9bFearnoAGZ8Suzn1aFgI'
         book_info = requests.get(f'https://www.googleapis.com/books/v1/volumes?q=+isbn:{isbn}&key={book_api_key}').json()
+        book = None
         if 'items' in book_info.keys():
-            self.book_data = book_info['items'][0]['volumeInfo']
+            for match in book_info['items']:
+                if isbn in [indID['identifier'] for indID in match['volumeInfo']['industryIdentifiers']]:
+                    self.book_data = match['volumeInfo']
+                    break
         
         self.title = self.book_data.get('title', '')
         self.authors = self.book_data.get('authors', '')
@@ -76,6 +80,9 @@ class Book:
             books_info = requests.get(f'https://www.googleapis.com/books/v1/volumes?q=+isbn:{query}&maxResults=40&key={book_api_key}').json()
         if 'items' in books_info.keys():
             books = [book for book in books_info['items'] if 'ISBN_13' in [x.get('type') for x in book['volumeInfo'].get('industryIdentifiers', [{}])]]
+            for book in books:
+                main_ids = [i for i, id in enumerate(book['volumeInfo']['industryIdentifiers']) if id['type'] in ('ISBN_10', 'ISBN_13')]
+                book['volumeInfo']['industryIdentifiers'] = [book['volumeInfo']['industryIdentifiers'][i] for i in main_ids]
         else:
             books = []
         
