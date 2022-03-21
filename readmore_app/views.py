@@ -323,9 +323,11 @@ def messages(request, friend_id=None):
         return redirect(reverse("readmore_app:login"))
     real_user = UserExt.objects.get(pk=request.user.id)
     if friend_id is None:
+        if not real_user.user_friends.count():
+            return render(request, 'readmore_app/messages.html', {'real_user': real_user})
         friend_id = real_user.user_friends.order_by('username')[0].id
         return redirect(reverse('readmore_app:messages', kwargs={'friend_id': friend_id}))
-    friend = UserExt.objects.get(pk=friend_id)
+    friend = get_object_or_404(UserExt, id=friend_id)
     if request.method == "POST":
         new_message = PM()
         new_message.chat_user = real_user
@@ -333,9 +335,17 @@ def messages(request, friend_id=None):
         new_message.chat_message = request.POST['message_text']
         new_message.chat_pm_identifier = get_identifier(real_user, friend)
         new_message.save()
+        if not Notification.objects.filter(notification_user=friend, notification_type=f"{real_user.username}_pm").count():
+            notify_pm = Notification()
+            notify_pm.notification_type = f"{real_user.username}_pm"
+            notify_pm.notification_user = friend
+            notify_pm.notification_title = f"New Message From {real_user.username}"
+            notify_pm.notification_link = f"/readmore/messages/{real_user.id}/"
+            notify_pm.notification_link_text = f"Messages with {real_user.username}"
+            notify_pm.notification_message = f"{real_user.username} has sent you a new message.  Click the link above to see."
+            notify_pm.save()
     pm_list = PM.objects.filter(chat_pm_identifier=get_identifier(real_user, friend)).order_by('chat_time')
     sorted_friends = real_user.user_friends.order_by('username')
-    print(sorted_friends)
     return render(request, 'readmore_app/messages.html', {'real_user': real_user, 'friend': friend, 'pm_list': pm_list, 'sorted_friends': sorted_friends})
 
 """ 

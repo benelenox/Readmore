@@ -297,7 +297,8 @@ main > div { width: 100%; }
     color:white;
     padding: 0px; 
     z-index: 1; 
-    top:45px;   
+    top:45px;
+    border-radius: 0px 0px 4px 4px;    
 }
 
 #drop { 
@@ -334,14 +335,16 @@ main > div { width: 100%; }
     border-radius: 2px;
     box-shadow: 2px 2px 2px#7074ac;
     border-color: black;
-    width: 5vw;
+    width: 8vw;
     background-color: white;
     margin-top: 3em;
     height: 80%;
     overflow: auto;
+    overflow-x: hidden;
     border-style: solid;
     border-width: 1px;
     padding: 20px;
+    text-align: center;
 }
 
 .likes {
@@ -359,6 +362,7 @@ main > div { width: 100%; }
     float:right;
     background: #e35343;
     border: none;
+    border-radius: 25px;
     padding:8px;
     padding-top: 5px;
 }
@@ -370,6 +374,21 @@ main > div { width: 100%; }
     border: none;
     padding: 10px;
     background: #4b4e75;
+}
+
+.mailbox_username {
+    border-radius: 2px;
+    color: #e2e2db;
+    border: none;
+    padding: 10px;
+    background: #4b4e75;
+    display: block; 
+    padding: 10px; 
+    margin: 5px; 
+    padding-bottom: 10px; 
+    width: 6.2vw; 
+    word-wrap: break-word; 
+    height: fit-content;
 }
 
 .anchor_button:hover{
@@ -476,6 +495,8 @@ div.navbar {
 #chat_table tr td:first-child {
     border-bottom: 1px solid lightgray; 
     padding-left: 1em;
+    max-width: 150px;
+    word-wrap: break-word;
 }
 
 #chat_table tr td:last-child {

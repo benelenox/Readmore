@@ -9,12 +9,17 @@ Readmore - Messages
 <div style="margin-left: 2em;" class="mailbox_card">
     <h3 style="margin-top: 0;">Private Messages</h3>
     <center>
+    {% if not sorted_friends %}
+    <h4>Add Friends to Message Them</h4>
+    {% else %}
     {% for user_friend in sorted_friends %}
-    <a class="anchor_button" href="{% url 'readmore_app:messages' user_friend.id %}" style="display: block; padding: 10px; margin: 5px; padding-bottom: 2px;">{{ user_friend.username }}</a>
+    <a class="mailbox_username" href="{% url 'readmore_app:messages' user_friend.id %}">{{ user_friend.username }}</a>
     {% endfor %}
+    {% endif %}
     </center>
 </div>
-<div style="margin-left: 3em;" class="table_card">
+<div style="margin-left: 3em;{% if not friend %}height: 600px;{% endif %}" class="table_card">
+    {% if friend %}
     <h1>Messages with {{ friend.username }}</h1>
     <button onclick="window.location.reload();" style="float: right;">Refresh</button>
     <button onclick="scrollDown();" id="scrollButton" style="visibility: hidden; float: right;">Scroll Down</button>
@@ -44,6 +49,10 @@ Readmore - Messages
     </div>
     
     <button style="display: block; margin-bottom: 200px; margin-top: 20px;" id="messageButton" onclick="displayMessage();">Send New Message</button>
+    {% else %}
+    <h1>Add Friends to Begin Sending Messages</h1>
+    {% endif %}
+</div>
 {% endblock %}
 
 {% block js %}
