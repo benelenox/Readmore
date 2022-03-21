@@ -24,6 +24,8 @@ urlpatterns = [
     path('create_profile_post/<int:profile_id>/', views.create_profile_post, name="create_profile_post"),
 	path('reading_log/', views.reading_log, name='reading_log'),
     path('view_post/<int:post_id>/', views.view_post, name='view_post'),
+    path('messages/', views.messages, name='messages_no_id'),
+    path('messages/<int:friend_id>/', views.messages, name='messages'),
 ]
 
 # AJAX url patterns

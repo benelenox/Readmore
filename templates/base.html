@@ -38,7 +38,7 @@
                     <div id="dropdown">
                         <a class="dropaw" href="{% url 'readmore_app:notifications' %}">(<span id="num_notifications">{% num_notifications user.id %}</span>) Notifications</a>
                         <a class="dropaw" href="{% url 'readmore_app:reading_log' %}">My Reading Log</a>
-                        <a class="dropaw" href="#">Link 3</a>
+                        <a class="dropaw" href="{% url 'readmore_app:messages_no_id' %}">Messages</a>
                     </div>
                 </div>
                 <form style="display: inline; left: 0px; position: relative; top:7px;" class="link" method="POST" action="{% url 'readmore_app:user_search_results' %}">

@@ -326,6 +326,20 @@ main > div { width: 100%; }
     padding: 20px;
 }
 
+.mailbox_card{
+    border-radius: 2px;
+    box-shadow: 2px 2px 2px#7074ac;
+    border-color: black;
+    width: 5vw;
+    background-color: white;
+    margin-top: 3em;
+    height: 80%;
+    overflow: auto;
+    border-style: solid;
+    border-width: 1px;
+    padding: 20px;
+}
+
 .likes {
     margin-right: 10%;
     position: absolute;

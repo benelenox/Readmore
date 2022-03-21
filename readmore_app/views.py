@@ -6,7 +6,7 @@ from django.views.decorators.csrf import csrf_exempt
 from django.shortcuts import render, redirect, get_object_or_404
 from django.urls import reverse
 from django.http import HttpResponse, HttpResponseRedirect, Http404, HttpResponseNotFound
-from .models import UserExt, Notification, Club, ClubChat, ClubBook, ClubPost, ReadingLogBook, ProfilePost, Post, Comment
+from .models import UserExt, Notification, Club, ClubChat, ClubBook, ClubPost, ReadingLogBook, ProfilePost, Post, Comment, PM
 from .pseudomodels import Book
 from .forms import register as regform, login as loginform, club as clubform, club_post as clubpostform, reading_log as readinglogform, profile_post as profilepostform
 from django.contrib.auth import authenticate, login as log_in, logout as log_out
@@ -316,6 +316,27 @@ def view_post(request, post_id):
         return render(request, "readmore_app/view_post.html", {'real_user': real_user, 'post': post})
     else:
         return redirect(reverse("readmore_app:login"))
+        
+def messages(request, friend_id=None):
+    get_identifier = lambda user1, user2: str(min(user1.id, user2.id)) + '_' + str(max(user1.id, user2.id))
+    if not request.user.is_authenticated:
+        return redirect(reverse("readmore_app:login"))
+    real_user = UserExt.objects.get(pk=request.user.id)
+    if friend_id is None:
+        friend_id = real_user.user_friends.order_by('username')[0].id
+        return redirect(reverse('readmore_app:messages', kwargs={'friend_id': friend_id}))
+    friend = UserExt.objects.get(pk=friend_id)
+    if request.method == "POST":
+        new_message = PM()
+        new_message.chat_user = real_user
+        new_message.chat_type = 'PM'
+        new_message.chat_message = request.POST['message_text']
+        new_message.chat_pm_identifier = get_identifier(real_user, friend)
+        new_message.save()
+    pm_list = PM.objects.filter(chat_pm_identifier=get_identifier(real_user, friend)).order_by('chat_time')
+    sorted_friends = real_user.user_friends.order_by('username')
+    print(sorted_friends)
+    return render(request, 'readmore_app/messages.html', {'real_user': real_user, 'friend': friend, 'pm_list': pm_list, 'sorted_friends': sorted_friends})
 
 """ 
 *************************************
