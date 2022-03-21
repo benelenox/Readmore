@@ -602,9 +602,7 @@ def add_to_user_library(request, isbn):
                                 Author{'s' if len(book.authors) > 1 else ''}
                             </div>
                             <div style="width: 50%;">
-                                <p style="font-size:12px;">
-                                {''.join('<span style="font-size:12px;">'+author+'</span>' for author in book.authors)}
-                                </p>
+                                {''.join('<p style="font-size:12px;"><span style="font-size:12px;">'+author+'</span></p>' for author in book.authors)}
                             </div>
                         </div>
                     </div>

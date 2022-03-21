@@ -33,8 +33,8 @@ Readmore - Reading Log
                                 Author{{ book.authors|length|pluralize:"s" }}
                             </div>
                             <div style="width: 50%;">
-                                <p style="font-size:12px;">
                                 {% for author in book.authors %}
+                                <p style="font-size:12px;">
                                 <span style="font-size:12px;">{{ author }}</span>
                                 </p>
                                 {% endfor %}
