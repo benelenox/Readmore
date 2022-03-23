@@ -30,6 +30,8 @@ header{
     bottom: 2%;
     border: none;
     padding: 0.3em 0.8em;
+    width:fit-content;
+    align-self: center;
     
 }
 
@@ -133,18 +135,23 @@ element.style {
     flex-direction: column;
     height: auto;
     justify-content: space-between;
+    
 }
 
 .book_card_mv{
     background: #a5a5aa;
     border-collapse: collapse;
     border: 0px;
-    width: 32%;
+    width: auto;
     height: fit-content;
     position:relative;
     outline: 1px solid #eff0f5;
     outline-offset: -5px;
     color: #eff0f5;
+    display: flex;
+    flex-direction: column;
+    height: auto;
+    justify-content: space-between;
 }
 
 #club_library_table {
@@ -165,6 +172,7 @@ element.style {
     font-family:Arial, Helvetica, sans-serif;
     outline: 1px solid #eff0f5;
     outline-offset: -5px;
+    min-height: 50vh;
 }
 
 
@@ -366,7 +374,7 @@ main > div { width: 100%; }
 .anchor_button{
     border-radius: 2px;
     color: #e2e2db;
-    height: 30px;
+    height: auto;
     width: fit-content;
     border: none;
     padding: 10px;

@@ -18,7 +18,7 @@ Readmore - Messages
     {% endif %}
     </center>
 </div>
-<div style="margin-left: 3em;{% if not friend %}height: 600px;{% endif %}" class="table_card">
+<div style="margin-left: 3em; margin-bottom: 15vh;{% if not friend %}height: 600px;{% endif %}" class="table_card">
     {% if friend %}
     <h1>Messages with {{ friend.username }}</h1>
     <button onclick="window.location.reload();" style="float: right;">Refresh</button>

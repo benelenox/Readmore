@@ -18,7 +18,7 @@ Readmore - Reading Log
             {% for book in shortlist %}
             <td id="reading_log_book{{ book.id }}"  class="book_card">
                 <a class="book_search_link" href="{% url 'readmore_app:view_book' book.isbn13 %}">
-                    <div style="width: 20em;margin-left: 4%;">
+                    <div style="width: 20em;">
                     <div class="book_title">
                         <div style="width: 40%; margin:3px;"><img width="100px" height="140px" src="{{ book.small_thumbnail }}" alt="{{ book.title }} Cover Image" /></div>
                         <div style="width: 100%; margin-left: 0.6em;">
@@ -81,7 +81,7 @@ Readmore - Reading Log
                 {% for book in short_list %}
                 <td class="book_card">
                 <a class="book_search_link" href="{% url 'readmore_app:view_book' book.volumeInfo.industryIdentifiers.0.identifier %}">
-                    <div style="width: 20em; ">
+                    <div style="width: 20em;">
                     <div class="book_title">
                         <div><img width="100px" height="140px" src="{{ book.volumeInfo.imageLinks.smallThumbnail }}" alt="{{ book.volumeInfo.title }} Cover Image" /></div>
                         <div>
