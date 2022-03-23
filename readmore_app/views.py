@@ -494,23 +494,23 @@ def add_to_library(request, club_id, isbn):
             club.save()
             book = Book.booklike_to_book(new_club_book)
             template = f"""
-            <td id="clubbook{book.id}" class="book_card">
+           <td id="clubbook{book.id}"  class="book_card">
             <a class="book_search_link" href="/readmore/view_book/{book.isbn13}">
-                <div style="width: 16em;" class="libbookind">
+                <div style="width: 20em;margin-left: 4%;">
                 <div class="book_title">
-                    <div style="width: 40%;"><img width="100px" height="140px" src="{book.small_thumbnail}" alt="{book.title} Cover Image" /></div>
-                    <div style="width: 100%; margin-left: 0.3em; margin-right: 0.8em;">
-                    <p style="font-size:18px;">{book.title}</p> 
+                    <div style="width: 40%; margin: 3px;"><img width="100px" height="140px" src="{book.small_thumbnail}" alt="{book.title} Cover Image" /></div>
+                    <div style="width: 100%; margin-left: 0.6em;">                   
+                    <p style="font-size:18px;">{book.title}</p>
                     </div>
                 </div>
-                <div style="margin-top:50%; margin-bottom: 20px; margin-left: 30px; height: 100px">
+                <div style="margin-top: 60%;margin-bottom: 20px;margin-left: 30px;">
                     <div style="display:flex;">
-                        <div style="font-size:12px; width: 20%; margin-top: 12px;">
+                        <div style="font-size:12px; width: 28%; margin-top: 12px;">
                             Author{'s' if len(book.authors) > 1 else ''}
                         </div>
                         <div style="width: 50%;">
                             <p style="font-size:12px;">
-                            {''.join('<span style="font-size:12px;">'+author+'</span>' for author in book.authors)}
+                                {''.join('<p style="font-size:12px;"><span style="font-size:12px;">'+author+'</span></p>' for author in book.authors)}
                             </p>
                         </div>
                     </div>
@@ -518,10 +518,10 @@ def add_to_library(request, club_id, isbn):
                 <div style="margin-left: 30px;">
                     <div colspan=2 style="font-size:12px;">ISBN: {book.isbn13}</div>
                 </div>
-                <div><div align="center"><div class="stars" style="--rating:{book.rating};"></div></div></div>
-                </div>
+                <div><div align="center"><div class="stars" style="--rating:{book.rating};margin-bottom:5%;"></div></div></div>
+            </div>
            </a>
-           <div style="display: flex; justify-content: center;">
+           <div style="display: flex; justify-content: center; margin-bottom: 15px;">
            <button onclick="removeBook({new_club_book.id});" class="book_action">Remove From Club Library</button>
            </div>
            </td>
@@ -590,31 +590,33 @@ def add_to_user_library(request, isbn):
         real_user.save()
         book = Book.booklike_to_book(new_reading_log_book)
         template = f"""
-        <td id="reading_log_book{book.id}" class="book_card">
+       <td id="reading_log_book{book.id}"  class="book_card">
             <a class="book_search_link" href="/readmore/view_book/{book.isbn13}">
-                <div style="width: 16em;" class="libbookind">
-                    <div class="book_title">
-                        <div style="width: 40%;"><img width="100px" height="140px" src="{book.small_thumbnail}" alt="{book.title} Cover Image" /></div>
-                        <div style="width: 100%; margin-left: 0.3em; margin-right: 0.8em;">
-                        <p style="font-size:18px;">{book.title}</p> 
-                        </div>
+                <div style="width: 20em;margin-left: 4%;" class="libbookind">
+                <div class="book_title">
+                    <div style="width: 40%; margin:3px;"><img width="100px" height="140px" src="{book.small_thumbnail}" alt="{book.title} Cover Image" /></div>
+                    <div style="width: 100%; margin-left: 0.6em;">
+                    
+                    <p style="font-size:18px;">{book.title}</p>
+                    
                     </div>
-                    <div style="margin-top:50%; margin-bottom: 20px; margin-left: 30px; height: 100px">
-                        <div style="display:flex;">
-                            <div style="font-size:12px; width: 20%; margin-top: 12px;">
-                                Author{'s' if len(book.authors) > 1 else ''}
-                            </div>
-                            <div style="width: 50%;">
+                </div>
+                <div style="margin-top: 50%;margin-bottom: 20px;margin-left: 30px;">
+                    <div style="display:flex;">
+                        <div style="font-size:12px; width: 28%; margin-top: 12px;">
+                            Author{'s' if len(book.authors) > 1 else ''}
+                        </div>
+                        <div style="width: 50%;">
                                 {''.join('<p style="font-size:12px;"><span style="font-size:12px;">'+author+'</span></p>' for author in book.authors)}
-                            </div>
                         </div>
                     </div>
                 </div>
+            </div>
             </a>
-            <div style="display: flex; justify-content: center;">
-           <button onclick="delete_user_library_book({new_reading_log_book.id});" class="book_action">Delete Book</button>
-           </div>
-       </td>
+            <div style="display: flex; justify-content: center; margin-bottom: 15px;">
+                <button onclick="delete_user_library_book({new_reading_log_book.id});" class="book_action">Delete Book</button>
+            </div>
+        </td>
         """
         return HttpResponse(template)
     return HttpResponse("error")

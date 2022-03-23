@@ -16,13 +16,13 @@ Readmore - {{ club.club_name }}
     <h2>Club Books</h2>
     </center>
     <table class="table" id="club_library_table">
-        <tr id="row">
+        <tr id="row" style="display:flex;align-items: stretch;">
         {% for shortlist in club_library %}
             {% for book in shortlist %}
             
             <td id="clubbook{{ book.id }}"  class="book_card">
             <a class="book_search_link" href="{% url 'readmore_app:view_book' book.isbn13 %}">
-                <div style="width: 16em; margin-left: 4%;">
+                <div style="width: 20em;margin-left: 4%;">
                 <div class="book_title">
                     <div style="width: 40%; margin: 3px;"><img width="100px" height="140px" src="{{ book.small_thumbnail }}" alt="{{ book.title }} Cover Image" /></div>
                     <div style="width: 100%; margin-left: 0.6em;">
@@ -31,14 +31,14 @@ Readmore - {{ club.club_name }}
                     
                     </div>
                 </div>
-                <div style="margin-top: 50%;margin-bottom: 20px;margin-left: 30px;height: 100px;">
+                <div style="margin-top: 60%;margin-bottom: 20px;margin-left: 30px;">
                     <div style="display:flex;">
                         <div style="font-size:12px; width: 28%; margin-top: 12px;">
-                            Author{{ current_book.authors|length|pluralize:"s" }}
+                            Author{{ book.authors|length|pluralize:"s" }}
                         </div>
                         <div style="width: 50%;">
-                            <p style="font-size:12px;">
                             {% for author in book.authors %}
+                            <p style="font-size:12px;">
                             <span style="font-size:12px;">{{ author }}</span>
                             </p>
                             {% endfor %}
@@ -48,10 +48,10 @@ Readmore - {{ club.club_name }}
                 <div style="margin-left: 30px;">
                     <div colspan=2 style="font-size:12px;">ISBN: {{ book.isbn13 }}</div>
                 </div>
-                <div><div align="center"><div class="stars" style="--rating:{{ book.rating }};"></div></div></div>
+                <div><div align="center"><div class="stars" style="--rating:{{ book.rating }};margin-bottom:5%;"></div></div></div>
             </div>
            </a>
-           <div style="display: flex; justify-content: center;">
+           <div style="display: flex; justify-content: center; margin-bottom: 15px;">
            <button onclick="removeBook('{{ book.id }}');" class="book_action">Remove From Club Library</button>
            </div>
            </td>
@@ -83,25 +83,25 @@ Readmore - {{ club.club_name }}
         {% else %}
         <table class="table" id="book_search_results" style="margin-right: 1%;">
             {% for short_list in books %}
-            <tr>
+            <tr style="display:flex;align-items: stretch;">
                 {% for book in short_list %}
                 <td class="book_card">
                 <a class="book_search_link" href="{% url 'readmore_app:view_book' book.volumeInfo.industryIdentifiers.0.identifier %}">
-                    <div style="width: 23vw;">
+                    <div style="width: 20em;margin-left: 4%;">
                     <div class="book_title">
                         <div><img width="100px" height="140px" src="{{ book.volumeInfo.imageLinks.smallThumbnail }}" alt="{{ book.volumeInfo.title }} Cover Image" /></div>
                         <div>
-                        <p style="font-size:18px;margin-right: 0.8em;margin-left: 0.3em;">{{ book.volumeInfo.title }}</p>
+                        <p style="font-size:18px;margin-right: 0.8em;margin-left: 0.3em;margin-block-start: 0px;">{{ book.volumeInfo.title }}</p>
                         </div>
                     </div>
-                    <div style="margin-top: 50%; margin-bottom: 20px; margin-left: 30px;height: 100px;">
+                    <div style="margin-top: 60%; margin-bottom: 20px; margin-left: 30px;">
                         <div style="display:flex;">
                             <div style="font-size:12px; width: 28%; margin-top: 12px;">
                                 Author{{ book.volumeInfo.authors|length|pluralize:"s" }}
                             </div>
                             <div style="width:50%; margin-left:10px;">
-                                <p style="font-size:12px;">
                                 {% for author in book.volumeInfo.authors %}
+								<p style="font-size:12px;">
                                 <span style="font-size:12px;">{{ author }}</span>
                                 </p>
                                 {% endfor %}
@@ -111,10 +111,10 @@ Readmore - {{ club.club_name }}
                     <div style="margin-left: 30px;">
                         <div colspan=2 style="font-size:12px;">ISBN: {% get_isbn_thirteen book.volumeInfo.industryIdentifiers %}</div>
                     </div>
-                    <div><div align="center" colspan=3><div class="stars" style="--rating:{{ book.volumeInfo.averageRating }};"></div></div></div>
+                    <div><div align="center" colspan=3><div class="stars" style="--rating:{{ book.volumeInfo.averageRating }};margin-bottom:5%;"></div></div></div>
                 </div>
                </a>
-               <div style="display: flex; justify-content: center;">
+               <div style="display: flex; justify-content: center;margin-top:10%; margin-bottom: 15px;">
                <button style="{% if book.volumeInfo.industryIdentifiers.0.identifier in club_library_isbns %}display: none;{% endif %}" id="add{{ book.volumeInfo.industryIdentifiers.0.identifier }}" onclick="addBook('{{ book.volumeInfo.industryIdentifiers.0.identifier }}');" class="book_action">Add To Club Library</button>
                </div>
             </td>
@@ -129,14 +129,26 @@ Readmore - {{ club.club_name }}
 </div>
 {% endblock %}
 
+
 {% block js %}
+window.onload = function(){
+    const row = document.getElementById("row");
+    if(row.childElementCount == 0){
+        document.getElementById("club_library_table").setAttribute("style", "height: 0px;");
+    }
+}
+
 function addBook(isbn) {
     const addbutton = document.getElementById("add" + isbn);
     const xhraddbook = new XMLHttpRequest();
+    const row = document.getElementById("row");
     xhraddbook.onload = function(){
-        const row = document.getElementById("row");
+        if (row.childElementCount == 0) {
+            document.getElementById("club_library_table").setAttribute("style", "height: auto;");
+		}
         row.innerHTML += this.responseText;
         addbutton.style.display = "none";
+        
     }
     xhraddbook.open("GET", "/readmore/ajax/add_to_library/{{ club.club_id }}/" + isbn + "/");
     xhraddbook.send();
@@ -145,8 +157,12 @@ function addBook(isbn) {
 function removeBook(clubbook_id) {
     const td = document.getElementById("clubbook" + clubbook_id);
     const xhrremovebook = new XMLHttpRequest();
+    const row = document.getElementById("row");
     xhrremovebook.onload = function(){
         td.parentNode.removeChild(td);
+        if (row.childElementCount == 0) {
+            document.getElementById('club_library_table').setAttribute("style", "height: 0px;"); 
+        }
         const button = document.getElementById("add" + this.responseText);
         if (button != null) {
             button.style.display = "inline-block";

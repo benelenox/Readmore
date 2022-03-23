@@ -26,10 +26,11 @@ header{
 }
 
 .book_action{
-    position:absolute;
+    position:relative;
     bottom: 2%;
     border: none;
     padding: 0.3em 0.8em;
+    
 }
 
 .comment_by {
@@ -109,35 +110,36 @@ element.style {
     margin-top: 10px;
 }
 #book_search_results{
-    display:flex;
     margin-left: -40px;
+    margin-bottom: 10%;
+    margin-top: 2%;
 }
 #book_search_results td{
     color: #eff0f5;
-    width: 18em;
     font-family:Arial, Helvetica, sans-serif;
 }
 
-#book_search_results tbody{
-    height:26em;
-}
+
 
 .book_card{
     background: #a5a5aa;
     border-collapse: collapse;
     border: 0px;
-    width: 100%;
-    height: 25em;
+    width: auto;
     position:relative;
     outline: 1px solid #eff0f5;
     outline-offset: -5px;
+    display: flex;
+    flex-direction: column;
+    height: auto;
+    justify-content: space-between;
 }
 
 .book_card_mv{
     background: #a5a5aa;
     border-collapse: collapse;
     border: 0px;
-    width: 23vw;
+    width: 32%;
     height: fit-content;
     position:relative;
     outline: 1px solid #eff0f5;
@@ -158,8 +160,6 @@ element.style {
     background: #a5a5aa;
     border-collapse: collapse;
     border: 0px;
-    width: 20em;
-    height: 25em;
     margin: 0px;
     padding: 0px;
     font-family:Arial, Helvetica, sans-serif;
@@ -167,9 +167,6 @@ element.style {
     outline-offset: -5px;
 }
 
-#club_library_table tbody{
-    height:26em;
-}
 
 .book_title{
     display: flex;
@@ -178,8 +175,8 @@ element.style {
     width: 90%;
     flex-direction: row;
     flex-wrap: nowrap;
-    margin-top: 6%;
-    margin-left: 2%;
+    margin-top: 5%;
+    margin-left: 5%;
     align-content: center;
     align-items: flex-start;    
 }
@@ -269,7 +266,7 @@ main{
 }
 
 
-main > * { margin-left: 50px; }
+main > * { margin-left: 4.5%; }
 
 main > div { width: 100%; }
 
