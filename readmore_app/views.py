@@ -10,6 +10,7 @@ from .models import UserExt, Notification, Club, ClubChat, ClubBook, ClubPost, R
 from .pseudomodels import Book
 from .forms import register as regform, login as loginform, club as clubform, club_post as clubpostform, reading_log as readinglogform, profile_post as profilepostform
 from django.contrib.auth import authenticate, login as log_in, logout as log_out
+from django.core.exceptions import ObjectDoesNotExist
 
 def friend_list(request, profile_id):
     profile_user = get_object_or_404(UserExt, id=profile_id)
@@ -271,6 +272,25 @@ def create_club_post(request, club_id):
                 new_post.post_date = datetime.now()
                 new_post.post_club = club
                 new_post.save()
+                
+                # Notify Tagged Users
+                tag_list = re.findall("@[a-zA-Z_\-0-9]+", new_post.post_text)
+                for tag in tag_list:
+                    try:
+                        tag_user = club.club_users.get(username=tag[1:])
+                        if tag_user != real_user:
+                            notify_tag = Notification()
+                            notify_tag.notification_type = f"tag"
+                            notify_tag.notification_user = tag_user
+                            notify_tag.notification_title = f"You Were Tagged by {real_user.username}"
+                            notify_tag.notification_link = f"/readmore/view_post/{new_post.post_id}/"
+                            notify_tag.notification_link_text = f"{new_post.post_title}"
+                            notify_tag.notification_message = f"{real_user.username} has tagged you in their post on {club.club_name}.  Click the link above to see."
+                            notify_tag.save()
+                            
+                    except ObjectDoesNotExist:
+                        pass
+                        
                 return redirect(reverse('readmore_app:club', kwargs={'club_id': club.club_id}))
             else:
                 return render(request, 'readmore_app/create_club_post.html', {'form': form, 'club': club})
