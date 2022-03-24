@@ -9,7 +9,7 @@ Readmore - {{ club.club_name }}
 {% block content %}
 
 <div style="display: flex; flex-direction: column; width: 80vw;">
-<a style="margin-top: 50px; width:fit-content; padding-top: 1.2em;" class="anchor_button" href="{% url 'readmore_app:club' club.club_id %}">Back To Club Home</a>
+<a style="margin-top: 50px; width:fit-content;" class="anchor_button" href="{% url 'readmore_app:club' club.club_id %}">Back To Club Home</a>
 <div id="library">
     <center>
     <h1>My Club Library</h1>
@@ -18,30 +18,31 @@ Readmore - {{ club.club_name }}
     {% if not club_library_isbns %}
     <h3>No Books Here</h3>
     {% endif %}
-    <table class="table">
+    <table class="table" id="club_library_table" style="overflow:unset; margin-bottom:10%;">
         {% for shortlist in club_library %}
-        <tr id="row">
+        <tr id="row" style="display:flex;align-items: stretch;">
             {% for book in shortlist %}
             
                 <td id="clubbook{{ book.id }}"  class="book_card_mv">
                 <a class="book_search_link" href="{% url 'readmore_app:view_book' book.isbn13 %}">
-                    <div style="width: 16em;">
-                    <div class="book_title">
-                        <div style="width: 40%;" colspan=2><img width="100px" height="140px" src="{{ book.small_thumbnail }}" alt="{{ book.title }} Cover Image" /></div>
-                        <div style="width: 100%; margin-left: 0.3em; margin-right: 0.8em;">
+                    <div style="width: 20em;margin-left: 4%;">
+                    <div class="book_title" style="margin-left:0px;">
+                        <div style="width: 40%;margin:3px;" colspan=2><img width="100px" height="140px" src="{{ book.small_thumbnail }}" alt="{{ book.title }} Cover Image" /></div>
+                        <div style="width: 100%; margin-left: 0.6em;">
                         
                         <p style="font-size:18px;">{{ book.title }}</p>
                         
                         </div>
                     </div>
-                    <div style="margin-top: 50%;margin-bottom: 20px;margin-left: 30px;height: 100px;">
+                    <div style="margin-top: 50%;margin-bottom: 20px;margin-left: 30px;">
                         <div style="display:flex;">
                             <div style="font-size:12px; width: 28%; margin-top: 12px;">
                                 Author{{ book.authors|length|pluralize:"s" }}
                             </div>
                             <div style="width: 50%;">
-                                <p style="font-size:12px;">
+                               
                                 {% for author in book.authors %}
+                                <p style="font-size:12px;">
                                 <span style="font-size:12px;">{{ author }}</span>
                                 </p>
                                 {% endfor %}
@@ -51,9 +52,10 @@ Readmore - {{ club.club_name }}
                     <div style="margin-left: 30px;">
                         <div colspan=2 style="font-size:12px;">ISBN: {{book.isbn13 }}</div>
                     </div>
-                    <div><div align="center" colspan=2><div class="stars" style="--rating:{{ book.rating }};"></div></div></div>
-                </div>
-               </a>
+                    </div>
+                </a>
+                <div><div align="center" colspan=2><div class="stars" style="--rating:{{ book.rating }};margin-bottom:5%;"></div></div></div>
+                
                </td>
             
             {% endfor %}

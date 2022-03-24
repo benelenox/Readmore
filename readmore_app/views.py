@@ -6,10 +6,11 @@ from django.views.decorators.csrf import csrf_exempt
 from django.shortcuts import render, redirect, get_object_or_404
 from django.urls import reverse
 from django.http import HttpResponse, HttpResponseRedirect, Http404, HttpResponseNotFound
-from .models import UserExt, Notification, Club, ClubChat, ClubBook, ClubPost, ReadingLogBook, ProfilePost, Post, Comment, ReviewPost
+from .models import UserExt, Notification, Club, ClubChat, ClubBook, ClubPost, ReadingLogBook, ProfilePost, Post, Comment, ReviewPost, PM
 from .pseudomodels import Book
 from .forms import register as regform, login as loginform, club as clubform, club_post as clubpostform, reading_log as readinglogform, profile_post as profilepostform, review_post as reviewpostform
 from django.contrib.auth import authenticate, login as log_in, logout as log_out
+from django.core.exceptions import ObjectDoesNotExist
 
 def friend_list(request, profile_id):
     profile_user = get_object_or_404(UserExt, id=profile_id)
@@ -204,7 +205,10 @@ def view_book(request, book_isbn):
 
         book = None
         if 'items' in book_info.keys():
-            book = book_info['items'][0]
+            for match in book_info['items']:
+                if book_isbn in [indID['identifier'] for indID in match['volumeInfo']['industryIdentifiers']]:
+                    book = match
+                    break
 
         return render(request, "readmore_app/view_book.html", {"real_user": real_user, "book": book})
         
@@ -268,6 +272,25 @@ def create_club_post(request, club_id):
                 new_post.post_date = datetime.now()
                 new_post.post_club = club
                 new_post.save()
+                
+                # Notify Tagged Users
+                tag_list = re.findall("@[a-zA-Z_\-0-9]+", new_post.post_text)
+                for tag in tag_list:
+                    try:
+                        tag_user = club.club_users.get(username=tag[1:])
+                        if tag_user != real_user:
+                            notify_tag = Notification()
+                            notify_tag.notification_type = f"tag"
+                            notify_tag.notification_user = tag_user
+                            notify_tag.notification_title = f"You Were Tagged by {real_user.username}"
+                            notify_tag.notification_link = f"/readmore/view_post/{new_post.post_id}/"
+                            notify_tag.notification_link_text = f"{new_post.post_title}"
+                            notify_tag.notification_message = f"{real_user.username} has tagged you in their post on {club.club_name}.  Click the link above to see."
+                            notify_tag.save()
+                            
+                    except ObjectDoesNotExist:
+                        pass
+                        
                 return redirect(reverse('readmore_app:club', kwargs={'club_id': club.club_id}))
             else:
                 return render(request, 'readmore_app/create_club_post.html', {'form': form, 'club': club})
@@ -316,6 +339,37 @@ def view_post(request, post_id):
         return render(request, "readmore_app/view_post.html", {'real_user': real_user, 'post': post})
     else:
         return redirect(reverse("readmore_app:login"))
+        
+def messages(request, friend_id=None):
+    get_identifier = lambda user1, user2: str(min(user1.id, user2.id)) + '_' + str(max(user1.id, user2.id))
+    if not request.user.is_authenticated:
+        return redirect(reverse("readmore_app:login"))
+    real_user = UserExt.objects.get(pk=request.user.id)
+    if friend_id is None:
+        if not real_user.user_friends.count():
+            return render(request, 'readmore_app/messages.html', {'real_user': real_user})
+        friend_id = real_user.user_friends.order_by('username')[0].id
+        return redirect(reverse('readmore_app:messages', kwargs={'friend_id': friend_id}))
+    friend = get_object_or_404(UserExt, id=friend_id)
+    if request.method == "POST":
+        new_message = PM()
+        new_message.chat_user = real_user
+        new_message.chat_type = 'PM'
+        new_message.chat_message = request.POST['message_text']
+        new_message.chat_pm_identifier = get_identifier(real_user, friend)
+        new_message.save()
+        if not Notification.objects.filter(notification_user=friend, notification_type=f"{real_user.username}_pm").count():
+            notify_pm = Notification()
+            notify_pm.notification_type = f"{real_user.username}_pm"
+            notify_pm.notification_user = friend
+            notify_pm.notification_title = f"New Message From {real_user.username}"
+            notify_pm.notification_link = f"/readmore/messages/{real_user.id}/"
+            notify_pm.notification_link_text = f"Messages with {real_user.username}"
+            notify_pm.notification_message = f"{real_user.username} has sent you a new message.  Click the link above to see."
+            notify_pm.save()
+    pm_list = PM.objects.filter(chat_pm_identifier=get_identifier(real_user, friend)).order_by('chat_time')
+    sorted_friends = real_user.user_friends.order_by('username')
+    return render(request, 'readmore_app/messages.html', {'real_user': real_user, 'friend': friend, 'pm_list': pm_list, 'sorted_friends': sorted_friends})
 
 
 
@@ -487,36 +541,36 @@ def add_to_library(request, club_id, isbn):
             club.save()
             book = Book.booklike_to_book(new_club_book)
             template = f"""
-            <td id="clubbook{book.id}" style="width: 20%; margin: 40px;">
+           <td id="clubbook{book.id}"  class="book_card">
             <a class="book_search_link" href="/readmore/view_book/{book.isbn13}">
-                <table style="width: 250px;" class="libbookind">
-                <tr>
-                    <td style="width: 40%;" colspan=2><img width="100px" src="{book.small_thumbnail}" alt="{book.title} Cover Image" /></td>
-                    <td style="width: 40%;">
-                    <center>
+                <div style="width: 20em;margin-left: 4%;">
+                <div class="book_title">
+                    <div style="width: 40%; margin: 3px;"><img width="100px" height="140px" src="{book.small_thumbnail}" alt="{book.title} Cover Image" /></div>
+                    <div style="width: 100%; margin-left: 0.6em;">                   
                     <p style="font-size:18px;">{book.title}</p>
-                    </center>
-                    </td>
-                </tr>
-                <tr>
-                    <td style="font-size:12px; width: 28%;">
-                        Author{'s' if len(book.authors) > 1 else ''}
-                    </td>
-                    <td style="width: 50%;">
-                        <p style="font-size:12px;">
-                        {''.join('<span style="font-size:12px;">'+author+'</span>' for author in book.authors)}
-                        </p>
-                    </td>
-                </tr>
-                <tr>
-                    <td colspan=2 style="font-size:12px;">ISBN: {book.isbn13}</td>
-                </tr>
-                <tr><td align="center" colspan=2><div class="stars" style="--rating:{book.rating};"></div></td></tr>
-                </table>
+                    </div>
+                </div>
+                <div style="margin-top: 60%;margin-bottom: 20px;margin-left: 30px;">
+                    <div style="display:flex;">
+                        <div style="font-size:12px; width: 28%; margin-top: 12px;">
+                            Author{'s' if len(book.authors) > 1 else ''}
+                        </div>
+                        <div style="width: 50%;">
+                            <p style="font-size:12px;">
+                                {''.join('<p style="font-size:12px;"><span style="font-size:12px;">'+author+'</span></p>' for author in book.authors)}
+                            </p>
+                        </div>
+                    </div>
+                </div>
+                <div style="margin-left: 30px;">
+                    <div colspan=2 style="font-size:12px;">ISBN: {book.isbn13}</div>
+                </div>
+            </div>
            </a>
-           <center>
-           <button onclick="removeBook({new_club_book.id});">Remove From Club Library</button>
-           </center>
+           <div style="display: flex; flex-direction: column; justify-content: center; margin-bottom: 15px;">
+            <div><div align="center"><div class="stars" style="--rating:{book.rating};margin-bottom:5%;"></div></div></div>
+           <button onclick="removeBook({new_club_book.id});" class="book_action">Remove From Club Library</button>
+           </div>
            </td>
             """
             return HttpResponse(template)
@@ -583,37 +637,33 @@ def add_to_user_library(request, isbn):
         real_user.save()
         book = Book.booklike_to_book(new_reading_log_book)
         template = f"""
-        <td id="reading_log_book{book.id}" style="width: 20%;">
-            <table>
-            <tr>
-				<a class="book_search_link" href="/readmore/view_book/{book.isbn13}">
-					<td rowspan=3>
-						<img src="{book.small_thumbnail}" alt="{book.title} Cover Image" />
-					</td>
-				</a>
-                <td colspan=2>
-					<p style="font-size:18px;">{book.title}</p>
-                </td>
-            </tr>
-            <tr>
-                <td style="font-size:12px;">
-                    Author{'s' if len(book.authors) > 1 else ''}
-                </td>
-                <td>
-                    <p style="font-size:12px;">
-                    {''.join('<span style="font-size:12px;">'+author+'</span>' for author in book.authors)}
-                    </p>
-                </td>
-            </tr>
-            <tr>
-                <td>
-					<p>
-						<button onclick="delete_user_library_book({new_reading_log_book.id});">Delete Book</button>
-					</p>
-				</td>
-            </tr>
-            </table>
-       </td>
+       <td id="reading_log_book{book.id}"  class="book_card">
+            <a class="book_search_link" href="/readmore/view_book/{book.isbn13}">
+                <div style="width: 20em;" class="libbookind">
+                <div class="book_title">
+                    <div style="width: 40%; margin:3px;"><img width="100px" height="140px" src="{book.small_thumbnail}" alt="{book.title} Cover Image" /></div>
+                    <div style="width: 100%; margin-left: 0.6em;">
+                    
+                    <p style="font-size:18px;">{book.title}</p>
+                    
+                    </div>
+                </div>
+                <div style="margin-top: 50%;margin-bottom: 20px;margin-left: 30px;">
+                    <div style="display:flex;">
+                        <div style="font-size:12px; width: 28%; margin-top: 12px;">
+                            Author{'s' if len(book.authors) > 1 else ''}
+                        </div>
+                        <div style="width: 50%;">
+                                {''.join('<p style="font-size:12px;"><span style="font-size:12px;">'+author+'</span></p>' for author in book.authors)}
+                        </div>
+                    </div>
+                </div>
+            </div>
+            </a>
+            <div style="display: flex; justify-content: center; margin-bottom: 15px;">
+                <button onclick="delete_user_library_book({new_reading_log_book.id});" class="book_action">Delete Book</button>
+            </div>
+        </td>
         """
         return HttpResponse(template)
     return HttpResponse("error")
@@ -623,7 +673,7 @@ def remove_from_user_library(request, book_id):
     book = ReadingLogBook.objects.get(pk=book_id)
     real_user.user_reading_log.remove(book)
     book.delete()
-    return HttpResponse("")
+    return HttpResponse(book.isbn)
 
 
 

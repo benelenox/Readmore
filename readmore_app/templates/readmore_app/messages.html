@@ -1,0 +1,111 @@
+{% extends parent_template|default:"base.html" %}
+{% load static %}
+
+{% block title %}
+Readmore - Messages
+{% endblock %}
+
+{% block content %}
+<div style="margin-left: 2em;" class="mailbox_card">
+    <h3 style="margin-top: 0;">Private Messages</h3>
+    <center>
+    {% if not sorted_friends %}
+    <h4>Add Friends to Message Them</h4>
+    {% else %}
+    {% for user_friend in sorted_friends %}
+    <a class="mailbox_username" href="{% url 'readmore_app:messages' user_friend.id %}">{{ user_friend.username }}</a>
+    {% endfor %}
+    {% endif %}
+    </center>
+</div>
+<div style="margin-left: 3em; margin-bottom: 15vh;{% if not friend %}height: 600px;{% endif %}" class="table_card">
+    {% if friend %}
+    <h1>Messages with {{ friend.username }}</h1>
+    <button onclick="window.location.reload();" style="float: right;">Refresh</button>
+    <button onclick="scrollDown();" id="scrollButton" style="visibility: hidden; float: right;">Scroll Down</button>
+    <div id="chatdiv">
+    <table id="chat_table">
+    {% for message in pm_list %}
+        <tr>
+            <td>
+                {% if message.chat_user %}<p>{{ message.chat_user }}</p>{% endif %}
+                <p>{{ message.chat_time|date:'m/d/Y h:i A' }}</p>
+            </td>
+            <td>
+                <p>{{ message.chat_message }}</p>
+            </td>
+        </tr>
+    {% endfor %}
+    </table>
+    </div>
+    <div id="makeMessage" style="display: none;">
+        <center>
+        <form action="{% url 'readmore_app:messages' friend.id %}" method="POST" id="messageForm">
+        {% csrf_token %}
+            <textarea id="message_text" style="display: block; resize: none;" rows=8 cols=100 name="message_text"></textarea>
+            <button id="sendMessageButton" style="margin: 10px;">Submit</button>
+        </form>
+        </center>
+    </div>
+    
+    <button style="display: block; margin-bottom: 200px; margin-top: 20px;" id="messageButton" onclick="displayMessage();">Send New Message</button>
+    {% else %}
+    <h1>Add Friends to Begin Sending Messages</h1>
+    {% endif %}
+</div>
+{% endblock %}
+
+{% block js %}
+const scrollDiv = document.getElementById('chatdiv');
+const scrollButton = document.getElementById("scrollButton");
+const scrollDown = function() {
+    var elem = document.getElementById('chatdiv');
+    elem.scrollTop = elem.scrollHeight;
+}
+
+scrollDown()
+
+
+scrollDiv.addEventListener('scroll', (event) => {
+    if (scrollDiv.scrollTop + scrollDiv.offsetHeight < scrollDiv.scrollHeight - 10) {
+        scrollButton.style.visibility = "visible";
+    }
+    else if (scrollDiv.scrollTop + scrollDiv.offsetHeight >= scrollDiv.scrollHeight - 10) {
+        scrollButton.style.visibility = "hidden";
+    }
+});
+
+function displayMessage(){
+    const messageButton = document.getElementById("messageButton");
+    const messageDiv = document.getElementById("makeMessage");
+    messageButton.style.display = "none";
+    messageDiv.style.display = "block";
+}
+
+function submitForm() {
+    const form = document.getElementById('messageForm');
+    const message_text = document.getElementById('message_text');
+    if (message_text.value.trim() == "") {
+        return;
+    }
+    form.submit();
+}
+
+const message_text = document.getElementById("message_text");
+const send_message_button = document.getElementById('sendMessageButton');
+message_text.addEventListener('keypress', function(event) {
+                                                if (event.which === 13) {
+                                                    event.preventDefault();
+                                                    submitForm();
+                                                }
+                                            });
+                                            
+send_message_button.addEventListener('click', function(event) { 
+                                                event.preventDefault(); 
+                                                submitForm();
+                                            });
+
+if ( window.history.replaceState ) {
+  window.history.replaceState( null, null, window.location.href );
+}
+{% endblock %}

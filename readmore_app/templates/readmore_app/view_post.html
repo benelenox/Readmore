@@ -7,11 +7,11 @@ Readmore - View Post
 {% endblock %}
 
 {% block content %}
-<div>
+<div class="basic_card">
     {% if post.post_club %}<a href="{% url 'readmore_app:club' post.post_club.club_id %}"><h2>{{ post.post_club.club_name }}</h2></a>
     {% elif post.post_profile_user %}<a href="{% url 'readmore_app:profile' post.post_profile_user.id %}"><h2>{{ post.post_profile_user.username }}'s Profile</h2></a>{% endif %}
-    <div style="width: 98%; text-align: center;" class="clubpost">
-        <span style="margin-right: 10%; position: absolute; margin-left: 35%;">
+    <div style=" text-align: center;" class="clubpost">
+        <span style="margin-right: 10%; position: absolute; margin-left: 35%;" class="likes">
             <span id="nlikes{{ post.post_id }}">{{ post.post_likes.count }}</span>
             <input id="likeimage{{post.post_id}}" onclick="doLike({{post.post_id}});" style="width: 20px;" type="image" src="{% if real_user in post.post_likes.all %}{% static 'readmore_app/thumbs_up.png' %}{% else %}{% static 'readmore_app/thumbs_up_gray.png' %}{% endif %}" />
         </span>
@@ -33,11 +33,11 @@ Readmore - View Post
     <!-- REMEMBER TO SORT BY OLDEST COMMENTS -->
     {% for comment in post.comments.all %}
         <div class="clubpost">
-        <span style="position: absolute; margin-left: 95%;">
-            <span id="nlikes{{ comment.post_id }}">{{ comment.post_likes.count }}</span>
+        <span style="position: absolute; margin-left: 94.1%;" class="likes">
+            <span id="nlikes{{ comment.post_id }}" >{{ comment.post_likes.count }}</span>
             <input id="likeimage{{comment.post_id}}" onclick="doLike({{comment.post_id}});" style="width: 20px;" type="image" src="{% if real_user in comment.post_likes.all %}{% static 'readmore_app/thumbs_up.png' %}{% else %}{% static 'readmore_app/thumbs_up_gray.png' %}{% endif %}" />
         </span>
-        <table style="width: 93%;">
+        <table style="width: 94%;">
             <tr>
                 <td class="comment_by">{{ comment.post_user }}<br><span style="font-size: 10px;">{{ comment.post_date|date:'m/d/Y h:i A' }}</span></td>
                 <td class="comment_text">{{ comment.post_text }}</td>
@@ -49,10 +49,10 @@ Readmore - View Post
     {% if real_user in post.post_club.club_users.all or post.post_profile_user %}
     
     <div id="makeComment" style="display: none;">
-        <center>
+        <div style="display: flex; justify-content: center; flex-direction: column;">
         <textarea id="comment_text" style="display: block; resize: none;" rows=8 cols=100 name="comment_text"></textarea>
-        <input onclick="doComment();" style="margin: 10px;" type="submit" value="Submit" />
-        </center>
+        <input onclick="doComment();" style="margin: 10px;width: fit-content;" type="submit" value="Submit" />
+        </div>
     </div>
     
     <button style="display: block; margin-bottom: 200px;" id="commentButton" onclick="displayComment();">Comment on this Post</button>
@@ -105,5 +105,9 @@ function doComment(){
     comment_text.value = "";
     commentDiv.style.display = "none";
     
+}
+
+if ( window.history.replaceState ) {
+  window.history.replaceState( null, null, window.location.href );
 }
 {% endblock %}

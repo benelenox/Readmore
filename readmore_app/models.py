@@ -52,6 +52,9 @@ class Chat(models.Model):
 class ClubChat(Chat):
     chat_destination = models.ForeignKey(Club, on_delete=models.CASCADE)
 
+class PM(Chat):
+    chat_pm_identifier = models.CharField(max_length=100)
+
 class Post(models.Model):
     post_id = models.AutoField(primary_key=True)
     post_user = models.ForeignKey(UserExt, models.DO_NOTHING)

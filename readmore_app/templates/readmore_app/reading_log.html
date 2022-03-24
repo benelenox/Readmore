@@ -7,13 +7,13 @@ Readmore - Reading Log
 
 {% block content %}
 <div style="display: flex; flex-direction: column; width: 80vw;">
-<a style="margin-top: 50px;" href="{% url 'readmore_app:profile' user.id %}">Back To User Profile</a>
+<a style="margin-top: 50px;" href="{% url 'readmore_app:profile' user.id %}" class="anchor_button">Back To User Profile</a>
 <div id="reading_log">
     <center>
     <h1>My Reading Log</h1>
     </center>
     <table class="table" id="club_library_table">
-        <tr id="row" style="">
+        <tr id="row" style="display:flex;align-items: stretch;">
         {% for shortlist in reading_log %}
             {% for book in shortlist %}
             <td id="reading_log_book{{ book.id }}" style="width: 20%;">
@@ -81,34 +81,36 @@ Readmore - Reading Log
         {% else %}
         <table class="table" id="book_search_results" style="margin-right: 1%;">
             {% for short_list in books %}
-            <tr>
+            <tr style="display:flex;align-items: stretch;">
                 {% for book in short_list %}
-                <td style="width: 30vw; height: 40vh;position:relative;"class="book_card">
+                <td class="book_card">
                 <a class="book_search_link" href="{% url 'readmore_app:view_book' book.volumeInfo.industryIdentifiers.0.identifier %}">
-                    <table >
-                    <tr>
-                        <td rowspan=3><img src="{{ book.volumeInfo.imageLinks.smallThumbnail }}" alt="{{ book.volumeInfo.title }} Cover Image" /></td>
-                        <td colspan=2>
-                        <p style="font-size:18px;">{{ book.volumeInfo.title }}</p>
-                        </td>
-                    </tr>
-                    <tr>
-                        <td style="font-size:12px;">
-                            Author{{ book.volumeInfo.authors|length|pluralize:"s" }}
-                        </td>
-                        <td>
-                            <p style="font-size:12px;">
-                            {% for author in book.volumeInfo.authors %}
-                            <span style="font-size:12px;">{{ author }}</span>
-                            </p>
-                            {% endfor %}
-                        </td>
-                    </tr>
-                    </table>
+                    <div style="width: 20em;">
+                    <div class="book_title">
+                        <div><img width="100px" height="140px" src="{{ book.volumeInfo.imageLinks.smallThumbnail }}" alt="{{ book.volumeInfo.title }} Cover Image" /></div>
+                        <div>
+                        <p style="font-size:18px;margin-right: 0.8em;margin-left: 0.3em;margin-block-start: 0px;">{{ book.volumeInfo.title }}</p>
+                        </div>
+                    </div>
+                    <div style="margin-top: 60%; margin-bottom: 20px; margin-left: 30px;">
+                        <div style="display:flex;">
+                            <div style="font-size:12px; width: 28%; margin-top: 12px;">
+                                Author{{ book.volumeInfo.authors|length|pluralize:"s" }}
+                            </div>
+                            <div style="width:50%; margin-left:10px;">
+                                {% for author in book.volumeInfo.authors %}
+								<p style="font-size:12px;">
+                                <span style="font-size:12px;">{{ author }}</span>
+                                </p>
+                                {% endfor %}
+                            </div>
+                        </div>
+                    </div>
+                </div>
                </a>
-               <center>
-               <button style="{% if book.volumeInfo.industryIdentifiers.0.identifier in reading_log_isbns %}display: none;{% endif %}left: 26%;" id="add{{ book.volumeInfo.industryIdentifiers.0.identifier }}" onclick="add_user_library_book('{{ book.volumeInfo.industryIdentifiers.0.identifier }}');" class="book_action">Add To Reading Log</button>
-               </center>
+               <div style="display: flex; align-content: center;margin-top:10%; margin-bottom: 15px;">
+               <button style="{% if book.volumeInfo.industryIdentifiers.0.identifier in reading_log_isbns %}display: none;{% endif %}left: 26%; bottom: 5%;" id="add{{ book.volumeInfo.industryIdentifiers.0.identifier }}" onclick="add_user_library_book('{{ book.volumeInfo.industryIdentifiers.0.identifier }}');" class="book_action">Add To Reading Log</button>
+               </div>
                </td>
                 
                 {% endfor %}
@@ -123,6 +125,13 @@ Readmore - Reading Log
 
 
 {% block js %}
+window.onload = function(){
+    const row = document.getElementById("row");
+    if(row.childElementCount == 0){
+        document.getElementById("club_library_table").setAttribute("style", "height: 0px;");
+    }
+}
+
 function add_user_library_book(isbn) {
     const addbutton = document.getElementById("add" + isbn);
     const xhraddbook = new XMLHttpRequest();
@@ -131,6 +140,7 @@ function add_user_library_book(isbn) {
     xhraddbook.onload = function(){
 		if (row.childElementCount == 0) {
 			reading_log.removeChild(document.getElementById("nobooksfound"));
+            document.getElementById("club_library_table").setAttribute("style", "height: auto;");
 		}
         row.innerHTML += this.responseText;
         addbutton.style.display = "none";
@@ -149,7 +159,14 @@ function delete_user_library_book(book_id) {
         let hasChild = false;
         if (row.childElementCount == 0) {
             reading_log.innerHTML += `<h3 id="nobooksfound">No Books Found</h3>`;
+            document.getElementById('club_library_table').setAttribute("style", "height: 0px;"); 
+
         }
+        const button = document.getElementById("add" + this.responseText);
+        if (button != null) {
+            button.style.display = "inline-block";
+        }
+
     }
     xhrremoveuserbook.open("GET", `/readmore/ajax/remove_from_user_library/${book_id}/`);
     xhrremoveuserbook.send();

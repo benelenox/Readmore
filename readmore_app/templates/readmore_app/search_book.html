@@ -7,7 +7,7 @@ Readmore - Search Book
 {% endblock %}
 
 {% block content %}
-<div>
+<div style="display: flex; flex-direction: column; width: 80vw;padding-top: 10%;">
     <center>
     <h1>Search Books</h1>
     <form action="{% url 'readmore_app:search_book' %}" method="POST">
@@ -27,38 +27,42 @@ Readmore - Search Book
         {% if not books %}
         <h2>No Books Found Matching Search Terms</h2>
         {% else %}
-        <table class="table" id="book_search_results">
+        <table class="table" id="book_search_results" style="margin-right: 1%; padding: 2% 8% 10% 0%;">
             {% for short_list in books %}
-            <tr>
+            <tr style="display:flex;align-items: stretch;">
                 {% for book in short_list %}
-                <td style="width: 30vw; height: 30vh;outline: 1px solid #eff0f5; outline-offset: -5px;">
+                <td class="book_card">
                 <a class="book_search_link" href="{% url 'readmore_app:view_book' book.volumeInfo.industryIdentifiers.0.identifier %}">
-                    <table class="book_card">
-                    <tr>
-                        <td rowspan=3><img style="height: 180px;width: 130px; margin-left:10px;" src="{{ book.volumeInfo.imageLinks.smallThumbnail }}" alt="{{ book.volumeInfo.title }} Cover Image"/></td>
-                        <td colspan=2>
-                        <p style="font-size:18px;">{{ book.volumeInfo.title }}</p>
-                        </td>
-                    </tr>
-                    <tr>
-                        <td style="font-size:12px;">
-                            Author{{ book.volumeInfo.authors|length|pluralize:"s" }}
-                        </td>
-                        <td>
-                            <p style="font-size:12px;">
-                            {% for author in book.volumeInfo.authors %}
-                            <span style="font-size:12px;">{{ author }}</span>
-                            </p>
-                            {% endfor %}
-                        </td>
-                    </tr>
-                    <tr>
-                        <td colspan=2 style="font-size:12px;">ISBN: {% get_isbn_thirteen book.volumeInfo.industryIdentifiers %}</td>
-                    </tr>
-                    <tr><td align="center" colspan=3><div class="stars" style="--rating:{{ book.volumeInfo.averageRating }};"></div></td></tr>
-                    </table>
-               </a>
-                </td>
+                    <div style="width: 20em;margin-left: 4%;">
+                    <div class="book_title">
+                        <div><img width="100px" height="140px" src="{{ book.volumeInfo.imageLinks.smallThumbnail }}" alt="{{ book.volumeInfo.title }} Cover Image" /></div>
+                        <div>
+                        <p style="font-size:18px;margin-right: 0.8em;margin-left: 0.3em;margin-block-start: 0px;">{{ book.volumeInfo.title }}</p>
+                        </div>
+                    </div>
+                    <div style="margin-top: 60%; margin-bottom: 20px; margin-left: 30px;">
+                        <div style="display:flex;">
+                            <div style="font-size:12px; width: 28%; margin-top: 12px;">
+                                Author{{ book.volumeInfo.authors|length|pluralize:"s" }}
+                            </div>
+                            <div style="width:50%; margin-left:10px;">
+                                {% for author in book.volumeInfo.authors %}
+								<p style="font-size:12px;">
+                                <span style="font-size:12px;">{{ author }}</span>
+                                </p>
+                                {% endfor %}
+                            </div>
+                        </div>
+                    </div>
+                    <div style="margin-left: 30px;">
+                        <div colspan=2 style="font-size:12px;">ISBN: {% get_isbn_thirteen book.volumeInfo.industryIdentifiers %}</div>
+                    </div>
+                    </div>
+                </a>
+                <div><div align="center" colspan=3><div class="stars" style="--rating:{{ book.volumeInfo.averageRating }};margin-bottom:5%;"></div></div></div>
+                
+               
+            </td>
                 
                 {% endfor %}
             </tr>

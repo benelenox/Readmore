@@ -3,7 +3,7 @@
 body{
     font-family: Garamond, Georgia, serif;
     margin:0; 
-    
+    overflow: hidden;
 }
 a{
     text-decoration: none; 
@@ -26,9 +26,13 @@ header{
 }
 
 .book_action{
-    position:absolute;
+    position:relative;
     bottom: 2%;
-    left: 13%;
+    border: none;
+    padding: 0.3em 0.8em;
+    width:fit-content;
+    align-self: center;
+    
 }
 
 .comment_by {
@@ -88,8 +92,8 @@ element.style {
     margin-left: 7em;
     background-color: white;
     margin-top: 1em;
-    height: 70%;
-    overflow: auto;
+    height:fit-content;
+    overflow: hidden;
     border-style: solid;
     padding: 20px;
     margin-bottom: 2em;
@@ -108,39 +112,46 @@ element.style {
     margin-top: 10px;
 }
 #book_search_results{
-    display:flex;
     margin-left: -40px;
+    margin-bottom: 10%;
+    margin-top: 2%;
 }
 #book_search_results td{
     color: #eff0f5;
-    width: 18em;
     font-family:Arial, Helvetica, sans-serif;
 }
 
-#book_search_results tbody{
-    height:26em;
-}
+
 
 .book_card{
     background: #a5a5aa;
     border-collapse: collapse;
     border: 0px;
-    width: 100%;
-    height: 25em;
+    width: auto;
     position:relative;
     outline: 1px solid #eff0f5;
     outline-offset: -5px;
+    display: flex;
+    flex-direction: column;
+    height: auto;
+    justify-content: space-between;
+    
 }
 
 .book_card_mv{
     background: #a5a5aa;
     border-collapse: collapse;
     border: 0px;
-    width: 23vw;
-    height: 25em;
+    width: auto;
+    height: fit-content;
     position:relative;
     outline: 1px solid #eff0f5;
     outline-offset: -5px;
+    color: #eff0f5;
+    display: flex;
+    flex-direction: column;
+    height: auto;
+    justify-content: space-between;
 }
 
 #club_library_table {
@@ -156,30 +167,26 @@ element.style {
     background: #a5a5aa;
     border-collapse: collapse;
     border: 0px;
-    width: 20em;
-    height: 25em;
     margin: 0px;
     padding: 0px;
     font-family:Arial, Helvetica, sans-serif;
     outline: 1px solid #eff0f5;
     outline-offset: -5px;
+    min-height: 50vh;
 }
 
-#club_library_table tbody{
-    height:26em;
-}
 
 .book_title{
     display: flex;
     position: absolute;
     top: 0px;
-    width: 100%;
+    width: 90%;
     flex-direction: row;
     flex-wrap: nowrap;
+    margin-top: 5%;
+    margin-left: 5%;
     align-content: center;
-    justify-content: start;
-    margin-top: 2%;
-    margin-left: 2%;
+    align-items: flex-start;    
 }
 h2.logo{
     color:#e2e2db;
@@ -249,7 +256,7 @@ h2.logo{
 
 main{
     background-image: url(white_background.jpg);
-    background-attachment:fixed;
+    background-attachment:scroll;
     background-size:cover;
     display: flex;
     width: 80%;
@@ -259,6 +266,7 @@ main{
     padding-left: 21%;
     overflow-y: auto;
     overflow-x: hidden;
+    
 }
 .book_search_results{
     height: 100% auto;
@@ -266,7 +274,7 @@ main{
 }
 
 
-main > * { margin-left: 50px; }
+main > * { margin-left: 4.5%; }
 
 main > div { width: 100%; }
 
@@ -294,7 +302,8 @@ main > div { width: 100%; }
     color:white;
     padding: 0px; 
     z-index: 1; 
-    top:45px;   
+    top:45px;
+    border-radius: 0px 0px 4px 4px;    
 }
 
 #drop { 
@@ -315,15 +324,32 @@ main > div { width: 100%; }
     border-radius: 2px;
     box-shadow: 2px 2px 2px#7074ac;
     border-color: black;
-    width: 50%;
-    margin-left: 10em;
+    width: 100%;
+    margin: 4em 2em;
+    background-color: white;
+    min-height: 70vh;
+    height:fit-content;
+    overflow: hidden;
+    border-style: solid;
+    border-width: 1px;
+    padding: 20px;
+    margin: 4em 2em;
+}
+
+.mailbox_card{
+    border-radius: 2px;
+    box-shadow: 2px 2px 2px#7074ac;
+    border-color: black;
+    width: 8vw;
     background-color: white;
     margin-top: 3em;
     height: 80%;
     overflow: auto;
+    overflow-x: hidden;
     border-style: solid;
     border-width: 1px;
     padding: 20px;
+    text-align: center;
 }
 
 .likes {
@@ -341,17 +367,33 @@ main > div { width: 100%; }
     float:right;
     background: #e35343;
     border: none;
+    border-radius: 25px;
     padding:8px;
     padding-top: 5px;
 }
 .anchor_button{
     border-radius: 2px;
     color: #e2e2db;
-    height: 30px;
-    width: auto;
+    height: auto;
+    width: fit-content;
     border: none;
     padding: 10px;
     background: #4b4e75;
+}
+
+.mailbox_username {
+    border-radius: 2px;
+    color: #e2e2db;
+    border: none;
+    padding: 10px;
+    background: #4b4e75;
+    display: block; 
+    padding: 10px; 
+    margin: 5px; 
+    padding-bottom: 10px; 
+    width: 6.2vw; 
+    word-wrap: break-word; 
+    height: fit-content;
 }
 
 .anchor_button:hover{
@@ -383,6 +425,9 @@ div.sidebar {
     width:20%; 
     min-height:100vh;
     height:100% auto;
+    border-style: solid;
+    border-width: 1px;
+    border-color:#4b4e75; 
     
     
 }
@@ -455,6 +500,8 @@ div.navbar {
 #chat_table tr td:first-child {
     border-bottom: 1px solid lightgray; 
     padding-left: 1em;
+    max-width: 150px;
+    word-wrap: break-word;
 }
 
 #chat_table tr td:last-child {
@@ -478,6 +525,7 @@ div.subnav {
     width: fit-content;
     padding-left:5px;
     padding-right:5px;
+    display: flex;
 }
 
 .subnav > p {

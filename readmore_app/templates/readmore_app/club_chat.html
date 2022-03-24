@@ -8,6 +8,7 @@ Readmore - {{ club.club_name }}
 {% block content %}
 <div class="table_card">
     <h1>{{ club.club_name }} Chatroom</h1>
+    <button onclick="scrollDown();" id="scrollButton" style="visibility: hidden; float: right;">Scroll Down</button>
     <div id="chatdiv">
     <table id="chat_table">
     {% for chat in club_chats %}
@@ -28,6 +29,17 @@ Readmore - {{ club.club_name }}
 {% endblock %}
 
 {% block js %}
+const scrollDiv = document.getElementById('chatdiv');
+const scrollButton = document.getElementById("scrollButton");
+scrollDiv.addEventListener('scroll', (event) => {
+    if (scrollDiv.scrollTop + scrollDiv.offsetHeight < scrollDiv.scrollHeight - 10) {
+        scrollButton.style.visibility = "visible";
+    }
+    else if (scrollDiv.scrollTop + scrollDiv.offsetHeight >= scrollDiv.scrollHeight - 10) {
+        scrollButton.style.visibility = "hidden";
+    }
+});
+
 const table = document.getElementById("chat_table");
 const textarea = document.getElementById("message");
 const send_button = document.getElementById("send");
