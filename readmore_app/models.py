@@ -75,3 +75,7 @@ class ProfilePost(Post):
 
 class Comment(Post):
     post_parent = models.ForeignKey(Post, on_delete=models.CASCADE, related_name="comments")
+
+class ReviewPost(Post):
+    post_isbn = models.TextField()
+    post_rating = models.IntegerField()

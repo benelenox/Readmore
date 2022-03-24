@@ -6,9 +6,9 @@ from django.views.decorators.csrf import csrf_exempt
 from django.shortcuts import render, redirect, get_object_or_404
 from django.urls import reverse
 from django.http import HttpResponse, HttpResponseRedirect, Http404, HttpResponseNotFound
-from .models import UserExt, Notification, Club, ClubChat, ClubBook, ClubPost, ReadingLogBook, ProfilePost, Post, Comment
+from .models import UserExt, Notification, Club, ClubChat, ClubBook, ClubPost, ReadingLogBook, ProfilePost, Post, Comment, ReviewPost
 from .pseudomodels import Book
-from .forms import register as regform, login as loginform, club as clubform, club_post as clubpostform, reading_log as readinglogform, profile_post as profilepostform
+from .forms import register as regform, login as loginform, club as clubform, club_post as clubpostform, reading_log as readinglogform, profile_post as profilepostform, review_post as reviewpostform
 from django.contrib.auth import authenticate, login as log_in, logout as log_out
 
 def friend_list(request, profile_id):
@@ -316,6 +316,33 @@ def view_post(request, post_id):
         return render(request, "readmore_app/view_post.html", {'real_user': real_user, 'post': post})
     else:
         return redirect(reverse("readmore_app:login"))
+
+
+
+def create_review_post(request):
+    if request.user.is_authenticated:
+        real_user = UserExt.objects.get(pk=request.user.id)
+        form = reviewpostform()
+        if request.method != 'POST':
+            return render(request, 'readmore_app/review_book.html', {'form': form})
+        else:
+            form = reviewpostform(request.POST)
+            if form.is_valid():
+                new_post = ReviewPost()
+                new_post.post_user = real_user
+
+                new_post.post_text = form.cleaned_data['review_text']
+                new_post.post_date = datetime.now()
+                new_post.save()
+                return redirect(reverse('readmore_app:reading_log'))
+            else:
+                return render(request, 'readmore_app/review_book.html', {'form': form})
+    else:
+        return redirect(reverse("readmore_app:login"))
+
+
+
+
 
 """ 
 *************************************

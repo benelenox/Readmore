@@ -44,9 +44,11 @@ Readmore - Reading Log
                     <td>
                         <p>
                             <button onclick="delete_user_library_book('{{ book.id }}');">Delete Book</button>
+                            <button><a href="{% url 'readmore_app:create_review_post' %}" style="text-decoration: none">Review Book</a></button>
                         </p>
                     </td>
                 </tr>
+
                 </table>
             </td>
             {% endfor %}
