@@ -89,8 +89,10 @@ Readmore - {{ club.club_name }}
                 <img style="max-width: 500px;" src="{{ post.post_img }}"/>
                 {% endif %}
                 {% if post.post_text %}
-                <div class="post_text">
-                <p>{{ post.post_text }}</p>
+				<div class="post_text">
+					{% autoescape off %}
+					<p>{{ post.post_text }}</p>
+					{% endautoescape %}
                 </div>
                 {% endif %}
             </div>

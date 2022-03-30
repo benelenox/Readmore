@@ -1,5 +1,8 @@
+import re
+from datetime import datetime
 from django.db import models
 from django.contrib.auth.models import User
+from django.core.exceptions import ObjectDoesNotExist
 
 # User model extension for adding more attributes
 class UserExt(User):
@@ -63,6 +66,51 @@ class Post(models.Model):
     post_img = models.TextField(blank=True)
     post_likes = models.ManyToManyField(UserExt, related_name="likes")
     post_date = models.DateTimeField(auto_now_add=True)
+    
+    def setup_info(self, info_user, info_title=None, info_text="", info_image="", info_date=datetime.now()):
+        """
+        Used for initializing the basic values of a Post
+        """
+        
+        self.post_user = info_user
+        self.post_title = info_title or f"Post by {self.post_user.username}"
+        self.post_text = info_text
+        self.post_img = info_image
+        self.post_date = info_date
+        
+        # Escape HTML Characters in Post's Message
+        self.post_text = self.post_text.replace('&', "&amp;")
+        self.post_text = self.post_text.replace('<', "&lt;")
+        self.post_text = self.post_text.replace('>', "&gt;")
+        self.post_text = self.post_text.replace('"', "&quot;")
+        self.post_text = self.post_text.replace("'", "&#39;")
+        
+        # Save Post
+        self.save()
+        
+        # Tagged Users in Post's Message
+        tag_list = re.findall("@[a-zA-Z_\-0-9]+", self.post_text)
+        for tag in tag_list:
+            try:
+                tag_username = tag[1:]
+                tag_user = UserExt.objects.get(username=tag_username)
+                if tag_user != self.post_user:
+                    # Link to Tagged User's Profile
+                    self.post_text = self.post_text.replace(tag, f'<a href="/readmore/profile/{tag_user.id}">&#64;{tag_username}</a>', 1)
+                    self.save()
+                    
+                    # Notify Tagged User
+                    notify_tag = Notification()
+                    notify_tag.notification_type = f"tag"
+                    notify_tag.notification_user = tag_user
+                    notify_tag.notification_title = f"You Were Tagged by {self.post_user.username}"
+                    notify_tag.notification_link = f"/readmore/view_post/{self.post_id}/"
+                    notify_tag.notification_link_text = f"{self.post_title}"
+                    notify_tag.notification_message = f"{self.post_user.username} has tagged you in their post.  Click the link above to see."
+                    notify_tag.save()
+                    
+            except ObjectDoesNotExist:
+                pass
     
     def date_formatted(self):
         return self.post_date.strftime("%m/%d/%Y %I:%M:%S %p")

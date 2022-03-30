@@ -45,7 +45,9 @@ Readmore - {{ profile_user.username }}'s Profile
                 {% endif %}
                 {% if post.post_text %}
                 <div class="post_text">
-                <p>{{ post.post_text }}</p>
+					{% autoescape off %}
+					<p>{{ post.post_text }}</p>
+					{% endautoescape %}
                 </div>
                 {% endif %}
             </div>

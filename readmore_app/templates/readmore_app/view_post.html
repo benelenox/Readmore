@@ -24,7 +24,9 @@ Readmore - View Post
         {% if post.post_text %}
         <center>
         <div class="post_text">
-        <p>{{ post.post_text }}</p>
+			{% autoescape off %}
+			<p>{{ post.post_text }}</p>
+			{% endautoescape %}
         </div>
         </center>
         {% endif %}
@@ -40,7 +42,9 @@ Readmore - View Post
         <table style="width: 94%;">
             <tr>
                 <td class="comment_by">{{ comment.post_user }}<br><span style="font-size: 10px;">{{ comment.post_date|date:'m/d/Y h:i A' }}</span></td>
-                <td class="comment_text">{{ comment.post_text }}</td>
+                {% autoescape off %}
+				<td class="comment_text">{{ comment.post_text }}</td>
+				{% endautoescape %}
             </tr>
         </table>
         </div>

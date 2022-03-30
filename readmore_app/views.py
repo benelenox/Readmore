@@ -10,7 +10,6 @@ from .models import UserExt, Notification, Club, ClubChat, ClubBook, ClubPost, R
 from .pseudomodels import Book
 from .forms import register as regform, login as loginform, club as clubform, club_post as clubpostform, reading_log as readinglogform, profile_post as profilepostform, review_post as reviewpostform
 from django.contrib.auth import authenticate, login as log_in, logout as log_out
-from django.core.exceptions import ObjectDoesNotExist
 
 def friend_list(request, profile_id):
     profile_user = get_object_or_404(UserExt, id=profile_id)
@@ -42,13 +41,8 @@ def create_profile_post(request, profile_id):
             form = profilepostform(request.POST)
             if form.is_valid():
                 new_post = ProfilePost()
-                new_post.post_user = real_user
-                new_post.post_title = form.cleaned_data['title']
-                new_post.post_text = form.cleaned_data['text']
-                new_post.post_img = form.cleaned_data['image']
-                new_post.post_date = datetime.now()
                 new_post.post_profile_user = profile_user
-                new_post.save()
+                new_post.setup_info(real_user, form.cleaned_data['title'], form.cleaned_data['text'], form.cleaned_data['image'])
                 return redirect(reverse('readmore_app:profile', kwargs={'profile_id': profile_user.id}))
             else:
                 return render(request, 'readmore_app/create_profile_post.html', {'form': form, 'profile_user': profile_user})
@@ -265,32 +259,8 @@ def create_club_post(request, club_id):
             form = clubpostform(request.POST)
             if form.is_valid():
                 new_post = ClubPost()
-                new_post.post_user = real_user
-                new_post.post_title = form.cleaned_data['title']
-                new_post.post_text = form.cleaned_data['text']
-                new_post.post_img = form.cleaned_data['image']
-                new_post.post_date = datetime.now()
                 new_post.post_club = club
-                new_post.save()
-                
-                # Notify Tagged Users
-                tag_list = re.findall("@[a-zA-Z_\-0-9]+", new_post.post_text)
-                for tag in tag_list:
-                    try:
-                        tag_user = club.club_users.get(username=tag[1:])
-                        if tag_user != real_user:
-                            notify_tag = Notification()
-                            notify_tag.notification_type = f"tag"
-                            notify_tag.notification_user = tag_user
-                            notify_tag.notification_title = f"You Were Tagged by {real_user.username}"
-                            notify_tag.notification_link = f"/readmore/view_post/{new_post.post_id}/"
-                            notify_tag.notification_link_text = f"{new_post.post_title}"
-                            notify_tag.notification_message = f"{real_user.username} has tagged you in their post on {club.club_name}.  Click the link above to see."
-                            notify_tag.save()
-                            
-                    except ObjectDoesNotExist:
-                        pass
-                        
+                new_post.setup_info(real_user, form.cleaned_data['title'], form.cleaned_data['text'], form.cleaned_data['image'])
                 return redirect(reverse('readmore_app:club', kwargs={'club_id': club.club_id}))
             else:
                 return render(request, 'readmore_app/create_club_post.html', {'form': form, 'club': club})
@@ -383,11 +353,7 @@ def create_review_post(request):
             form = reviewpostform(request.POST)
             if form.is_valid():
                 new_post = ReviewPost()
-                new_post.post_user = real_user
-
-                new_post.post_text = form.cleaned_data['review_text']
-                new_post.post_date = datetime.now()
-                new_post.save()
+                new_post.setup_info(info_user=real_user, info_text=form.cleaned_data['review_text'])
                 return redirect(reverse('readmore_app:reading_log'))
             else:
                 return render(request, 'readmore_app/review_book.html', {'form': form})
@@ -603,14 +569,13 @@ def do_like(request, post_id):
 @csrf_exempt
 def make_comment(request, post_id):
 
-    escapeHtml = lambda unsafe: unsafe.replace("&", "&amp;").replace("<", "&lt;").replace(">", "&gt;").replace('"', "&quot;").replace("'", "&#039;");
+    #escapeHtml = lambda unsafe: unsafe.replace("&", "&amp;").replace("<", "&lt;").replace(">", "&gt;").replace('"', "&quot;").replace("'", "&#039;");
     real_user = UserExt.objects.get(pk=request.user.id)
     post = Post.objects.get(pk=post_id)
     data = json.loads(request.body)
     new_comment = Comment()
-    new_comment.post_user = real_user
-    new_comment.post_text = data['comment_text']
     new_comment.post_parent = post
+    new_comment.setup_info(info_user=real_user, info_text=data['comment_text'])
     new_comment.save()
     return HttpResponse(f"""<div class="clubpost">
         <span style="position: absolute; margin-left: 95%;">
@@ -620,7 +585,7 @@ def make_comment(request, post_id):
         <table style="width: 93%;">
             <tr>
                 <td class="comment_by">{new_comment.post_user}<br><span style="font-size: 10px;">{datetime.now().strftime("%m/%d/%Y %I:%M %p")}</span></td>
-                <td class="comment_text">{escapeHtml(new_comment.post_text)}</td>
+                <td class="comment_text">{new_comment.post_text}</td>
             </tr>
         </table>
         </div>""")
