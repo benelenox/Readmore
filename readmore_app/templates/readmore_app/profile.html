@@ -1,5 +1,6 @@
 {% extends parent_template|default:"base.html" %}
 {% load static %}
+{% load extras %}
 
 {% block title %}
 Readmore - {{ profile_user.username }}'s Profile
@@ -41,7 +42,12 @@ Readmore - {{ profile_user.username }}'s Profile
                 <h5 style="margin: 2px;">Post By: <a href="{% url 'readmore_app:profile' post.post_user.id %}">{{ post.post_user.username }}</a></h5>
                 <h6 style="margin: 2px;">{{ post.post_date|date:"m/d/Y h:i:s A" }}</h6>
                 {% if post.post_img %}
-                <img style="max-width: 500px;" src="{{ post.post_img }}"/>
+                    {% if post.post_rating %}<a href="{% url 'readmore_app:view_book' post.post_isbn %}">{% endif %}
+                        <img style="max-width: 500px;" src="{{ post.post_img }}"/>
+                    {% if post.post_rating %}</a>{% endif %}
+                {% endif %}
+                {% if post.post_rating %}
+                    <div align="center" colspan=3><div class="stars" style="font-size: 50px; --rating:{{ post.post_rating|divide:2 }};"></div></div>
                 {% endif %}
                 {% if post.post_text %}
                 <div class="post_text">
@@ -49,6 +55,9 @@ Readmore - {{ profile_user.username }}'s Profile
 					<p>{{ post.post_text }}</p>
 					{% endautoescape %}
                 </div>
+                {% endif %}
+                {% if post.post_user == real_user %}
+                <button onclick="deletePost({{ post.post_id }});" class="anchor_button" style="float: right; margin-right: 10px; margin-top: 10px;">Delete This Post</button>
                 {% endif %}
             </div>
         {% endfor %}
@@ -59,6 +68,19 @@ Readmore - {{ profile_user.username }}'s Profile
 {% endblock %}
 
 {% block js %}
+function deletePost(post_id) {
+    if (confirm("Are you sure you wish to delete this post?")) {
+        const xhrdeletepost = new XMLHttpRequest();
+        xhrdeletepost.onload = function() {
+            if (this.responseText == "CONFIRM") {
+                window.location.href = "/readmore/profile/{{ profile_user.id }}/";
+            }
+        }
+        xhrdeletepost.open("GET", `/readmore/ajax/delete_post/${post_id}/`);
+        xhrdeletepost.send();
+    }
+}
+
 function friend(user_id, type) {
     const xhrfriend = new XMLHttpRequest();
     const xhrfriendcount = new XMLHttpRequest();

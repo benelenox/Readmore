@@ -25,3 +25,16 @@ def get_isbn_ten(identifiers):
             return id['identifier']
     return None
 
+@register.filter
+def divide(value, arg):
+    try:
+        return int(value) / int(arg)
+    except (ValueError, ZeroDivisionError):
+        return None
+
+@register.filter
+def isbn_thirteen_filter(identifiers):
+    for id in identifiers:
+        if id['type'] == "ISBN_13":
+            return id['identifier']
+    return None

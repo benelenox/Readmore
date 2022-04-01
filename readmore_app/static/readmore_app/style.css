@@ -32,7 +32,6 @@ header{
     padding: 0.3em 0.8em;
     width:fit-content;
     align-self: center;
-    
 }
 
 .comment_by {
@@ -59,6 +58,17 @@ div.createform h1 {
 }
 
 .clubpost {
+    position: relative;
+    margin-bottom: 50px;
+    background: #e4e0c5;
+    border-radius: 2px;
+    padding-bottom: 60px;
+    padding-top: 30px;
+    box-shadow: 2px 2px 2px#7074ac;
+    width: 98%;
+}
+
+.clubcomment {
     position: relative;
     margin-bottom: 50px;
     background: #e4e0c5;

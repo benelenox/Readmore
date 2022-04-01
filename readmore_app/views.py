@@ -5,6 +5,7 @@ from datetime import datetime
 from django.views.decorators.csrf import csrf_exempt
 from django.shortcuts import render, redirect, get_object_or_404
 from django.urls import reverse
+from django.db.models import Count, Avg
 from django.http import HttpResponse, HttpResponseRedirect, Http404, HttpResponseNotFound
 from .models import UserExt, Notification, Club, ClubChat, ClubBook, ClubPost, ReadingLogBook, ProfilePost, Post, Comment, ReviewPost, PM
 from .pseudomodels import Book
@@ -24,7 +25,10 @@ def profile(request, profile_id):
     if request.user.is_authenticated:
         real_user = UserExt.objects.get(pk=request.user.id)
         profile_posts = ProfilePost.objects.filter(post_profile_user = profile_user).order_by('-post_date')
-        return render(request, "readmore_app/profile.html", {'real_user': real_user, 'profile_user': profile_user, 'profile_posts': profile_posts})
+        review_posts = ReviewPost.objects.filter(post_user=profile_user)
+        matches = list(profile_posts) + list(review_posts)
+        matches = sorted(matches, key=lambda o: o.post_date, reverse=True)
+        return render(request, "readmore_app/profile.html", {'real_user': real_user, 'profile_user': profile_user, 'profile_posts': matches})
     else:
         return render(request, "readmore_app/profile.html", {'profile_user': profile_user})
 
@@ -191,7 +195,7 @@ def view_book(request, book_isbn):
     """
     The page for viewing books
     """
-    
+    get_isbn13 = lambda ls: [x['identifier'] for i, x in enumerate(ls) if x['type'] == 'ISBN_13'][0]
     if request.user.is_authenticated:
         book_api_key = 'AIzaSyCrRXmYA10KFK9bFearnoAGZ8Suzn1aFgI'
         book_info = requests.get(f'https://www.googleapis.com/books/v1/volumes?q=+isbn:{book_isbn}&key={book_api_key}').json()
@@ -203,8 +207,18 @@ def view_book(request, book_isbn):
                 if book_isbn in [indID['identifier'] for indID in match['volumeInfo']['industryIdentifiers']]:
                     book = match
                     break
+        reviews = []
+        review_avg = None
+        if book != None:
+            try:
+                reviews = ReviewPost.objects.filter(post_isbn=get_isbn13(book['volumeInfo']['industryIdentifiers'])).annotate(num_likes=Count('post_likes')).order_by('-num_likes')
+                review_avg = ReviewPost.objects.filter(post_isbn="9781408855898").aggregate(Avg('post_rating'))['post_rating__avg']
+                print(review_avg)
+                print("REEEEEVIIEWIWWIWIWW AVVGGGG")
+            except KeyError:
+                pass
 
-        return render(request, "readmore_app/view_book.html", {"real_user": real_user, "book": book})
+        return render(request, "readmore_app/view_book.html", {"real_user": real_user, "book": book, 'reviews': reviews, 'review_avg': review_avg})
         
     # Redirect Unknown Users
     return redirect(reverse('readmore_app:login'))
@@ -295,18 +309,27 @@ def reading_log(request):
     # Redirect Unknown Users
     return HttpResponseRedirect(reverse("readmore_app:login"))
 
-def view_post(request, post_id):
+def view_post(request, post_id, highlight=None):
     if request.user.is_authenticated:
         real_user = UserExt.objects.get(pk=request.user.id)
         post = None
+        comment = False
         try:
             post = ClubPost.objects.get(pk=post_id)
         except:
             try:
                 post = ProfilePost.objects.get(pk=post_id)
             except:
-                return HttpResponseNotFound()
-        return render(request, "readmore_app/view_post.html", {'real_user': real_user, 'post': post})
+                try:
+                    post = ReviewPost.objects.get(pk=post_id)
+                except:
+                    try:
+                        comment = Comment.objects.get(pk=post_id)
+                        post = comment.post_parent
+                        return redirect(reverse('readmore_app:view_post_highlighted_comment', kwargs={'post_id': post.post_id, 'highlight': comment.post_id}))
+                    except:
+                        raise Http404()
+        return render(request, "readmore_app/view_post.html", {'real_user': real_user, 'post': post, 'highlight': highlight})
     else:
         return redirect(reverse("readmore_app:login"))
         
@@ -343,20 +366,29 @@ def messages(request, friend_id=None):
 
 
 
-def create_review_post(request):
+def create_review_post(request, book_isbn):
     if request.user.is_authenticated:
         real_user = UserExt.objects.get(pk=request.user.id)
+        review_book = Book(book_isbn)
+        if not review_book.title: # Checking if Google Books API returned data for the book
+            raise Http404("Book Cannot Be Found")
         form = reviewpostform()
         if request.method != 'POST':
-            return render(request, 'readmore_app/review_book.html', {'form': form})
+            return render(request, 'readmore_app/review_book.html', {'form': form, 'book': review_book})
         else:
             form = reviewpostform(request.POST)
             if form.is_valid():
                 new_post = ReviewPost()
-                new_post.setup_info(info_user=real_user, info_text=form.cleaned_data['review_text'])
-                return redirect(reverse('readmore_app:reading_log'))
+                new_post.post_user = real_user
+                new_post.post_title = f"Review of {review_book.title}"
+                new_post.post_text = form.cleaned_data['review_text']
+                new_post.post_img = review_book.thumbnail
+                new_post.post_isbn = review_book.isbn
+                new_post.post_rating = int(form.cleaned_data['rating'])
+                new_post.save()
+                return redirect(reverse('readmore_app:profile', kwargs={'profile_id': real_user.id}))
             else:
-                return render(request, 'readmore_app/review_book.html', {'form': form})
+                return render(request, 'readmore_app/review_book.html', {'form': form, 'book': review_book})
     else:
         return redirect(reverse("readmore_app:login"))
 
@@ -626,7 +658,7 @@ def add_to_user_library(request, isbn):
             </div>
             </a>
             <div style="display: flex; justify-content: center; margin-bottom: 15px;">
-               <a href="/readmore/review_book/" style="display: block; margin-right: 20px;"><button class="book_action">Review Book</button></a>
+               <a href="/readmore/review_book/{book.isbn13}" style="display: block; margin-right: 20px;"><button class="book_action">Review Book</button></a>
                <button onclick="delete_user_library_book('{{ book.id }}');" class="book_action" style="display: block; margin-left: 20px;">Delete Book</button>
             </div>
         </td>
@@ -641,5 +673,14 @@ def remove_from_user_library(request, book_id):
     book.delete()
     return HttpResponse(book.isbn)
 
-
-
+def delete_post(request, post_id):
+    real_user = UserExt.objects.get(pk=request.user.id)
+    try:
+        post = Post.objects.get(pk=post_id)
+    except:
+        return HttpResponse("DENY")
+    if post.post_user == real_user:
+        post.delete()
+        return HttpResponse("CONFIRM")
+    else:
+        return HttpResponse("DENY")

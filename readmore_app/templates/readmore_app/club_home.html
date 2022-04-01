@@ -59,8 +59,8 @@ Readmore - {{ club.club_name }}
                     <div colspan=2 style="font-size:12px;">ISBN: {{ current_book.isbn13 }}</div>
                 </div>
                 <div style="margin-bottom:5%;"><div align="center"><div class="stars" style="--rating:{{ current_book.rating }};"></div></div></div>
-            </div>
-        </a>
+                </div>
+            </a>
         
         </div>
     </div>
@@ -95,6 +95,9 @@ Readmore - {{ club.club_name }}
 					{% endautoescape %}
                 </div>
                 {% endif %}
+                {% if post.post_user == real_user %}
+                <button onclick="deletePost({{ post.post_id }});" class="anchor_button" style="float: right; margin-right: 10px; margin-top: 10px;">Delete This Post</button>
+                {% endif %}
             </div>
         {% endfor %}
     {% endif %}
@@ -104,6 +107,19 @@ Readmore - {{ club.club_name }}
 {% endblock %}
 
 {% block js %}
+function deletePost(post_id) {
+    if (confirm("Are you sure you wish to delete this post?")) {
+        const xhrdeletepost = new XMLHttpRequest();
+        xhrdeletepost.onload = function() {
+            if (this.responseText == "CONFIRM") {
+                window.location.href = "/readmore/club/{{ club.club_id }}/";
+            }
+        }
+        xhrdeletepost.open("GET", `/readmore/ajax/delete_post/${post_id}/`);
+        xhrdeletepost.send();
+    }
+}
+
 function joinClub() {
     const joindiv = document.getElementById("joindiv");
     joindiv.innerHTML = `<h3 style="margin-left: 30px; display: inline-block;">[Joined]</h3>`;

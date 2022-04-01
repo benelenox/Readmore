@@ -72,7 +72,7 @@ class register(forms.Form):
 
 class club(forms.Form):
 	name = forms.CharField(validators=[validators.RegexValidator(regex="^[a-zA-Z_\-0-9].{2,99}$", message="A valid book club name must be provided.")])
-	description = forms.CharField(widget=forms.Textarea(attrs={'cols': 50, 'style': 'resize: vertical;'}), required=False)
+	description = forms.CharField(validators=[validators.RegexValidator("^[a-zA-Z_\-0-9].{0,300}$", message="Description must be 300 or fewer characters.")], widget=forms.Textarea(attrs={'cols': 50, 'style': 'resize: vertical;'}), required=False)
 
 
 class reading_log(forms.Form):

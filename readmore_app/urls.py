@@ -24,7 +24,8 @@ urlpatterns = [
     path('create_profile_post/<int:profile_id>/', views.create_profile_post, name="create_profile_post"),
 	path('reading_log/', views.reading_log, name='reading_log'),
     path('view_post/<int:post_id>/', views.view_post, name='view_post'),
-    path('review_book/', views.create_review_post, name='create_review_post'),
+    path('view_post/<int:post_id>/<int:highlight>/', views.view_post, name="view_post_highlighted_comment"),
+    path('review_book/<str:book_isbn>/', views.create_review_post, name='create_review_post'),
     path('messages/', views.messages, name='messages_no_id'),
     path('messages/<int:friend_id>/', views.messages, name='messages'),
 ]
@@ -45,5 +46,6 @@ urlpatterns.extend(
     path('ajax/make_comment/<int:post_id>/', views.make_comment, name="make_comment"),
     path('ajax/remove_from_user_library/<int:book_id>/', views.remove_from_user_library, name='remove_from_user_library'),
     path('ajax/add_to_user_library/<str:isbn>/', views.add_to_user_library, name='add_to_user_library'),
+    path('ajax/delete_post/<int:post_id>/', views.delete_post, name='delete_post'),
     ]
 )
