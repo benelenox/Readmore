@@ -21,7 +21,12 @@ Readmore - {{ profile_user.username }}'s Profile
     <div style="height:42px;margin-top: 2em;">
     <a href="{% url 'readmore_app:friend_list' profile_user.id %}" id="friendinfo" class="anchor_button">{{ profile_user.user_friends.all.count }} Friends</a>
     </div>
-    <!-- Implement User bio -->
+    <div id="userbio">
+        <p id="bio">{{ profile_user.user_bio }}</p>
+        {% if real_user == profile_user %}
+            <button id="biobutton" onclick="makeEditable();">Edit Bio</button>
+        {% endif %}
+    </div>
     <div>
         {% if real_user == profile_user %}
         <p><a href="{% url 'readmore_app:create_profile_post' profile_user.id %}" class="anchor_button">Create Post</a></p>
@@ -68,6 +73,55 @@ Readmore - {{ profile_user.username }}'s Profile
 {% endblock %}
 
 {% block js %}
+
+function escapeHtml(unsafe) {
+    return unsafe
+         .replace(/&/g, "&amp;")
+         .replace(/</g, "&lt;")
+         .replace(/>/g, "&gt;")
+         .replace(/"/g, "&quot;")
+         .replace(/'/g, "&#039;");
+}
+
+function makeEditable(){
+    const biodiv = document.getElementById("userbio")
+    const biobutton = document.getElementById("biobutton");
+    const bio = document.getElementById("bio");
+    const textarea = document.createElement("textarea");
+    textarea.id = "bio_edit";
+    textarea.cols = 80;
+    textarea.rows = 8;
+    textarea.style = "resize: vertical;"
+    textarea.innerHTML = bio.innerHTML;
+    bio.parentNode.removeChild(bio);
+    biodiv.insertBefore(textarea, biobutton);
+    
+    biobutton.innerHTML = "Save Bio";
+    biobutton.setAttribute("onclick", "saveBio();");
+}
+
+function saveBio() {
+    const biodiv = document.getElementById("userbio")
+    const biobutton = document.getElementById("biobutton");
+    const textarea = document.getElementById("bio_edit");
+    const bio = document.createElement("p");
+    
+    let new_bio = textarea.value;
+    const xhrsavebio = new XMLHttpRequest();
+    xhrsavebio.open("POST", `/readmore/ajax/save_bio/{{ real_user.id }}/`);
+    xhrsavebio.setRequestHeader("Content-Type", "application/json;charset=UTF-8");
+    xhrsavebio.send(JSON.stringify({"bio": new_bio}));
+    
+    bio.id = "bio";
+    bio.innerHTML = escapeHtml(new_bio);
+    textarea.parentNode.removeChild(textarea);
+    biodiv.insertBefore(bio, biobutton);
+    
+    biobutton.innerHTML = "Edit Bio";
+    biobutton.setAttribute("onclick", "makeEditable();");
+}
+
+
 function deletePost(post_id) {
     if (confirm("Are you sure you wish to delete this post?")) {
         const xhrdeletepost = new XMLHttpRequest();

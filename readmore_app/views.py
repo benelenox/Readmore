@@ -621,7 +621,18 @@ def make_comment(request, post_id):
             </tr>
         </table>
         </div>""")
-        
+
+@csrf_exempt
+def save_bio(request, user_id):
+    real_user = UserExt.objects.get(pk=request.user.id)
+    bio_user = UserExt.objects.get(pk=user_id)
+    if real_user != bio_user:
+        return HttpResponse()
+    data = json.loads(request.body)
+    real_user.user_bio = data['bio']
+    real_user.save()
+    return HttpResponse("success")
+
 def add_to_user_library(request, isbn):
     if Book(isbn).book_data:
         real_user = UserExt.objects.get(pk=request.user.id)

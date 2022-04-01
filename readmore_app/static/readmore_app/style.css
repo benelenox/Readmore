@@ -42,6 +42,12 @@ header{
     background: #f7f0da;
 }
 
+#userbio > * {
+    display: block;
+}
+
+#bio {width: 600px;}
+
 .comment_text {
     border-radius: 15px;
     width: 70%;
