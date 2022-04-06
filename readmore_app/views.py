@@ -379,12 +379,9 @@ def create_review_post(request, book_isbn):
             form = reviewpostform(request.POST)
             if form.is_valid():
                 new_post = ReviewPost()
-                new_post.post_user = real_user
-                new_post.post_title = f"Review of {review_book.title}"
-                new_post.post_text = form.cleaned_data['review_text']
-                new_post.post_img = review_book.thumbnail
                 new_post.post_isbn = review_book.isbn
                 new_post.post_rating = int(form.cleaned_data['rating'])
+                new_post.setup_info(real_user, f"Review of {review_book.title}", form.cleaned_data['review_text'], review_book.thumbnail)
                 new_post.save()
                 return redirect(reverse('readmore_app:profile', kwargs={'profile_id': real_user.id}))
             else:
