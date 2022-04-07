@@ -7,7 +7,7 @@ from django.shortcuts import render, redirect, get_object_or_404
 from django.urls import reverse
 from django.db.models import Count, Avg
 from django.http import HttpResponse, HttpResponseRedirect, Http404, HttpResponseNotFound
-from .models import UserExt, Notification, Club, ClubChat, ClubBook, ClubPost, ReadingLogBook, ProfilePost, Post, Comment, ReviewPost, PM
+from .models import UserExt, Notification, Club, ClubChat, ClubBook, ClubPost, ReadingLogBook, ProfilePost, Post, Comment, ReviewPost, PM, BookForumPost
 from .pseudomodels import Book
 from .forms import register as regform, login as loginform, club as clubform, club_post as clubpostform, reading_log as readinglogform, profile_post as profilepostform, review_post as reviewpostform
 from django.contrib.auth import authenticate, login as log_in, logout as log_out
@@ -364,8 +364,6 @@ def messages(request, friend_id=None):
     sorted_friends = real_user.user_friends.order_by('username')
     return render(request, 'readmore_app/messages.html', {'real_user': real_user, 'friend': friend, 'pm_list': pm_list, 'sorted_friends': sorted_friends})
 
-
-
 def create_review_post(request, book_isbn):
     if request.user.is_authenticated:
         real_user = UserExt.objects.get(pk=request.user.id)
@@ -389,6 +387,30 @@ def create_review_post(request, book_isbn):
     else:
         return redirect(reverse("readmore_app:login"))
 
+def book_forum(request, book_isbn):
+    """
+    The discussion forum page for individual books
+    """
+    
+    if request.user.is_authenticated:
+        real_user = UserExt.objects.get(pk=request.user.id)
+        book_forum_posts = BookForumPost.objects.filter(post_isbn=book_isbn).order_by('-post_date')
+        return render(request, "readmore_app/book_forum.html", {"real_user": real_user, 'book_forum_posts': book_forum_posts, 'book_isbn': book_isbn})
+        
+    # Redirect Unknown Users
+    return HttpResponseRedirect(reverse("readmore_app:login"))
+
+def create_book_forum_post(request, book_isbn):
+    """
+    The creation page for book forum posts
+    """
+    
+    if request.user.is_authenticated:
+        real_user = UserExt.objects.get(pk=request.user.id)
+        
+        
+    # Redirect Unknown Users
+    return HttpResponseRedirect(reverse("readmore_app:login"))
 
 
 
