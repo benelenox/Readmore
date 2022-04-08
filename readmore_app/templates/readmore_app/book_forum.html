@@ -1,0 +1,78 @@
+{% extends parent_template|default:"base.html" %}
+{% load static %}
+
+{% block title %}
+Readmore - Book Forum
+{% endblock %}
+
+{% block content %}
+<div class="basic_card" style="width:100%;">
+    <div style="display:flex;flex-direction:row; justify-content: space-between;">
+        <h1 style="display: inline-block; word-wrap: break-word; width: 100%;">Hello There</h1>
+    </div>
+    <center>
+    <div class="postlist">
+    {% if not book_forum_posts %}
+        <p>No posts have been made to this book's forum</p>
+    {% else %}
+        {% for post in book_forum_posts %}
+            <div class="clubpost">
+                <span class="likes">
+                    <span id="nlikes{{ post.post_id }}">{{ post.post_likes.count }}</span>
+                    <input id="likeimage{{post.post_id}}" onclick="doLike({{post.post_id}});" style="width: 20px;" type="image" src="{% if real_user in post.post_likes.all %}{% static 'readmore_app/thumbs_up.png' %}{% else %}{% static 'readmore_app/thumbs_up_gray.png' %}{% endif %}" />
+                </span>
+                <a href="{% url 'readmore_app:view_post' post.post_id %}"><h2 style="margin: 10px;">{{ post.post_title }}</h2></a>
+                <h5 style="margin: 2px;">Post By: <a href="{% url 'readmore_app:profile' post.post_user.id %}">{{ post.post_user.username }}</a></h5>
+                <h6 style="margin: 2px;">{{ post.post_date|date:"m/d/Y h:i:s A" }}</h6>
+                {% if post.post_img %}
+                <img style="max-width: 500px;" src="{{ post.post_img }}"/>
+                {% endif %}
+                {% if post.post_text %}
+				<div class="post_text">
+					{% autoescape off %}
+					<p>{{ post.post_text }}</p>
+					{% endautoescape %}
+                </div>
+                {% endif %}
+                {% if post.post_user == real_user %}
+                <button onclick="deletePost({{ post.post_id }});" class="anchor_button" style="float: right; margin-right: 10px; margin-top: 10px;">Delete This Post</button>
+                {% endif %}
+            </div>
+        {% endfor %}
+    {% endif %}
+    </div>
+    </center>
+</div>
+{% endblock %}
+
+{% block js %}
+function deletePost(post_id) {
+    if (confirm("Are you sure you wish to delete this post?")) {
+        const xhrdeletepost = new XMLHttpRequest();
+        xhrdeletepost.onload = function() {
+            if (this.responseText == "CONFIRM") {
+                window.location.href = "/readmore/book_forum/{{ book_isbn }}/";
+            }
+        }
+        xhrdeletepost.open("GET", `/readmore/ajax/delete_post/${post_id}/`);
+        xhrdeletepost.send();
+    }
+}
+
+function doLike(post_id) {
+    const image = document.getElementById("likeimage" + post_id);
+    const nlikes = document.getElementById("nlikes" + post_id);
+    const xhrlike = new XMLHttpRequest();
+    xhrlike.onload = function() {
+        [new_image, num_likes] = this.responseText.split(' ');
+        if (new_image == "unlike") {
+            image.src = "/static/readmore_app/thumbs_up_gray.png";
+        } else if (new_image == "like") {
+            image.src = "/static/readmore_app/thumbs_up.png";
+        }
+        nlikes.innerHTML = num_likes;
+    }
+    xhrlike.open("GET", `/readmore/ajax/dolike/${post_id}/`);
+    xhrlike.send();
+}
+{% endblock %}

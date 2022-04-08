@@ -90,16 +90,19 @@ class Post(models.Model):
         
         # Tagged Users in Post's Message
         tag_list = re.findall("@[a-zA-Z_\-0-9]+", self.post_text)
+        tag_user_set = set()
         for tag in tag_list:
             try:
                 tag_username = tag[1:]
                 tag_user = UserExt.objects.get(username=tag_username)
-                if tag_user != self.post_user:
-                    # Link to Tagged User's Profile
-                    self.post_text = self.post_text.replace(tag, f'<a href="/readmore/profile/{tag_user.id}">&#64;{tag_username}</a>', 1)
-                    self.save()
-                    
-                    # Notify Tagged User
+                
+                # Link to Tagged User's Profile
+                self.post_text = self.post_text.replace(tag, f'<a href="/readmore/profile/{tag_user.id}">&#64;{tag_username}</a>', 1)
+                self.save()
+                
+                # Notify Tagged User
+                if tag_user != self.post_user and tag_user not in tag_user_set:
+                    tag_user_set.add(tag_user)
                     notify_tag = Notification()
                     notify_tag.notification_type = f"tag"
                     notify_tag.notification_user = tag_user
@@ -130,3 +133,6 @@ class Comment(Post):
 class ReviewPost(Post):
     post_isbn = models.TextField()
     post_rating = models.IntegerField()
+
+class BookForumPost(Post):
+    post_isbn = models.TextField()
