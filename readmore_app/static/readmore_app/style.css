@@ -45,13 +45,14 @@ a{
 
 .comment_text {
     text-align: left;
-    width: 75%;
+    width: 73%;
     background: #f8f8fa;
     border-radius: 2px;
     padding: 15px;
-    margin-top: 15px;
     box-shadow: 2px 2px 2px#7074ac;
     word-break: break-word;
+    margin-right:1%;
+
 }
 
 div.createform > * {
@@ -70,7 +71,6 @@ div.createform h1 {
     padding-bottom: 60px;
     padding-top: 30px;
     box-shadow: 2px 2px 2px#7074ac;
-    width: 98%;
     display:flex; 
     flex-direction:column; 
     align-items:center;
@@ -83,11 +83,20 @@ div.createform h1 {
     border-radius: 2px;
     box-shadow: 2px 2px 2px#7074ac;
     width: 98%;
-    display:flex; 
-    flex-direction:column; 
-    align-items:center;
-    padding: 5% 0%;
+    padding: 5% 1%;
+    display:flex;
 }
+
+.clubcomment :nth-child(1){
+    order: 1;
+}
+.clubcomment :nth-child(2){
+    order:2;
+}
+.clubcomment :nth-child(3){
+    order:3;
+}
+
 
 .post_text {
     text-align: left;
@@ -382,7 +391,6 @@ main > div { width: 100%; }
     box-shadow: 2px 2px 2px#7074ac;
     border-color: black;
     width: 100%;
-    margin: 4em 2em;
     background-color: white;
     min-height: 70vh;
     height:fit-content;
@@ -679,6 +687,12 @@ div.subnav {
     justify-content: space-between;
 }
 
+.post_title{
+    max-width: 92%;
+    word-break: break-word;
+    text-align: center;
+}
+
 @media (max-width:889px){
     .navbar_wrapper{
         flex-direction: column;
@@ -783,11 +797,33 @@ div.subnav {
    .message_area{
        padding-bottom:50%;
    }
+   .post_title{
+       max-width: 86%;
+   }
+   .clubcomment{
+    display: grid;
+    grid-template-columns: 20% 80%;
+    padding-bottom: 15%;
+   }
+   .clubcomment :nth-child(1){
+    grid-row-start: 1;
+    grid-row-end: 2;
+   }
+   .clubcomment :nth-child(2){
+    grid-row-start: 1;
+    grid-row-end: 3;
+    width:87%;
+    padding-bottom:9%;
+   }
+
 }   
 
 @media (max-width: 500px){
     .book_table_head{
         flex-direction: column;
+    }
+    .clubcomment{
+        padding-bottom: 14%;
     }
 }
 
