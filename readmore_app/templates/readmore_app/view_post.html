@@ -17,9 +17,9 @@ Readmore - View Post
                 <a href="{% url 'readmore_app:view_post' post.post_id %}"><h2 style="margin: 10px;">{{ post.post_title }}</h2></a>
                 {% if post.post_img %}
                 <div style="display:flex;flex-direction: row;">
-                    <a href="{% url 'readmore_app:view_book' post.post_isbn %}">
+                    {% if post.post_rating %}<a href="{% url 'readmore_app:view_book' post.post_isbn %}">{% endif %}
                         <img style="max-width: 50%;" src="{{ post.post_img }}"/>
-                    </a>
+                        {% if post.post_rating %}</a>{% endif %}
                 {% endif %}
                     <div>
                         <h5 style="margin: 2px;">Post By: <a href="{% url 'readmore_app:profile' post.post_user.id %}">{{ post.post_user.username }}</a></h5>
