@@ -6,8 +6,10 @@ Readmore - Messages
 {% endblock %}
 
 {% block content %}
-<div style="margin-left: 2em;" class="mailbox_card">
-    <h3 style="margin-top: 0;">Private Messages</h3>
+<div style="margin:0px;">
+<div style="display:flex; margin-left:0px; font-family:Arial, Helvetica, sans-serif;">
+<div class="mailbox_card">
+    <h3 style="margin-top: 1%; color:white;">Private Messages</h3>
     <center>
     {% if not sorted_friends %}
     <h4>Add Friends to Message Them</h4>
@@ -18,20 +20,20 @@ Readmore - Messages
     {% endif %}
     </center>
 </div>
-<div style="margin-left: 3em; margin-bottom: 15vh;{% if not friend %}height: 600px;{% endif %}" class="table_card">
+<div style="{% if not friend %}height: 600px;{% endif %}" class="message_area">
     {% if friend %}
-    <h1>Messages with {{ friend.username }}</h1>
+    <h1 style="word-break:break-word">Messages with {{ friend.username }}</h1>
     <button onclick="window.location.reload();" style="float: right;">Refresh</button>
     <button onclick="scrollDown();" id="scrollButton" style="visibility: hidden; float: right;">Scroll Down</button>
-    <div id="chatdiv">
+    <div id="chatdiv" style="width:100%; margin-top:10%;">
     <table id="chat_table">
     {% for message in pm_list %}
         <tr>
-            <td>
+            <td >
                 {% if message.chat_user %}<p>{{ message.chat_user }}</p>{% endif %}
                 <p>{{ message.chat_time|date:'m/d/Y h:i A' }}</p>
             </td>
-            <td>
+            <td style="word-break:break-word;">
                 <p>{{ message.chat_message }}</p>
             </td>
         </tr>
@@ -42,7 +44,7 @@ Readmore - Messages
         <center>
         <form action="{% url 'readmore_app:messages' friend.id %}" method="POST" id="messageForm">
         {% csrf_token %}
-            <textarea id="message_text" style="display: block; resize: none;" rows=8 cols=100 name="message_text"></textarea>
+            <textarea id="message_text" style="display: block; resize: none;width:100%;" rows=8 cols=100 name="message_text"></textarea>
             <button id="sendMessageButton" style="margin: 10px;">Submit</button>
         </form>
         </center>
@@ -52,6 +54,8 @@ Readmore - Messages
     {% else %}
     <h1>Add Friends to Begin Sending Messages</h1>
     {% endif %}
+</div>
+</div>
 </div>
 {% endblock %}
 

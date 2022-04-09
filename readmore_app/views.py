@@ -541,7 +541,7 @@ def add_to_library(request, club_id, isbn):
             template = f"""
            <td id="clubbook{book.id}"  class="book_card">
             <a class="book_search_link" href="/readmore/view_book/{book.isbn13}">
-                <div style="width: 20em;margin-left: 4%;">
+                <div style="width: 20em;">
                 <div class="book_title">
                     <div style="width: 40%; margin: 3px;"><img width="100px" height="140px" src="{book.small_thumbnail}" alt="{book.title} Cover Image" /></div>
                     <div style="width: 100%; margin-left: 0.6em;">                   
@@ -609,18 +609,28 @@ def make_comment(request, post_id):
     new_comment.post_parent = post
     new_comment.setup_info(info_user=real_user, info_text=data['comment_text'])
     new_comment.save()
-    return HttpResponse(f"""<div class="clubpost">
-        <span style="position: absolute; margin-left: 95%;">
-            <span id="nlikes{new_comment.post_id}">{new_comment.post_likes.count()}</span>
-            <input id="likeimage{new_comment.post_id}" onclick="doLike({new_comment.post_id});" style="width: 20px;" type="image" src="{'/static/readmore_app/thumbs_up.png' if real_user in new_comment.post_likes.all() else '/static/readmore_app/thumbs_up_gray.png'}" />
-        </span>
-        <table style="width: 93%;">
-            <tr>
-                <td class="comment_by">{new_comment.post_user}<br><span style="font-size: 10px;">{datetime.now().strftime("%m/%d/%Y %I:%M %p")}</span></td>
-                <td class="comment_text">{new_comment.post_text}</td>
-            </tr>
-        </table>
-        </div>""")
+    return HttpResponse(f"""
+        <div class="clubcomment">
+            <div style="
+            display: flex;
+            justify-content: space-between;">
+                
+                <div style="width: 94%;">
+                    <div>
+                        <div class="comment_by">{new_comment.post_user}</div>
+                        <div style="font-size: 10px;">{datetime.now().strftime("%m/%d/%Y %I:%M %p")}</div>
+                    </div>
+                </div>
+                <div>
+                <span class="likes">
+                    <span id="nlikes{new_comment.post_id}" >{new_comment.post_likes.count()}</span>
+                    <input id="likeimage{new_comment.post_id}" onclick="doLike({new_comment.post_id});" style="width: 20px;" type="image" src="{'/static/readmore_app/thumbs_up.png' if real_user in new_comment.post_likes.all() else '/static/readmore_app/thumbs_up_gray.png'}" />
+                </span>
+                </div>
+            </div>
+            <div class="comment_text">{new_comment.post_text }</div>
+        </div>
+        """)
 
 @csrf_exempt
 def save_bio(request, user_id):
@@ -656,7 +666,7 @@ def add_to_user_library(request, isbn):
                     
                     </div>
                 </div>
-                <div style="margin-top: 50%;margin-bottom: 20px;margin-left: 30px;">
+                <div style="margin-top: 60%;margin-bottom: 20px;margin-left: 30px;">
                     <div style="display:flex;">
                         <div style="font-size:12px; width: 28%; margin-top: 12px;">
                             Author{'s' if len(book.authors) > 1 else ''}
@@ -666,8 +676,14 @@ def add_to_user_library(request, isbn):
                         </div>
                     </div>
                 </div>
+                <div style="margin-left: 30px;">
+                    <div colspan=2 style="font-size:12px;">ISBN: {book.isbn13}</div>
+                </div>
             </div>
             </a>
+            <div style="display: flex; flex-direction: column; justify-content: center; margin-bottom: 15px;">
+                <div><div align="center"><div class="stars" style="--rating:{book.rating};margin-bottom:5%;"></div></div></div>
+                </div>
             <div style="display: flex; justify-content: center; margin-bottom: 15px;">
                <a href="/readmore/review_book/{book.isbn13}" style="display: block; margin-right: 20px;"><button class="book_action">Review Book</button></a>
                <button onclick="delete_user_library_book('{{ book.id }}');" class="book_action" style="display: block; margin-left: 20px;">Delete Book</button>

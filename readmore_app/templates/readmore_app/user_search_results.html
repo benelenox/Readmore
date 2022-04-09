@@ -15,7 +15,7 @@ Readmore - Search Results
     {% for user_found in user_search_results %}
         <tr>
             <td>
-                <p><a href="{% url 'readmore_app:profile' user_found.id %}" class="anchor_button">@{{ user_found.username }}</a></p>
+                <p><a href="{% url 'readmore_app:profile' user_found.id %}" style="word-break:break-word">@{{ user_found.username }}</a></p>
                 <hr>
             </td>
         </tr>

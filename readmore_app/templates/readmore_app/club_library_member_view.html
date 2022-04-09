@@ -18,15 +18,25 @@ Readmore - {{ club.club_name }}
     {% if not club_library_isbns %}
     <h3>No Books Here</h3>
     {% endif %}
-    <table class="table" id="club_library_table" style="overflow:unset; margin-bottom:10%;">
+    <div class="table" id="book_search_results" style="overflow:unset; margin-right;">
         {% for shortlist in club_library %}
-        <tr id="row" style="display:flex;align-items: stretch;">
+        <div id="row" style="display:flex;align-items: stretch;">
             {% for book in shortlist %}
             
-                <td id="clubbook{{ book.id }}"  class="book_card_mv">
+                <div id="clubbook{{ book.id }}"  class="book_card_mv">
                 <a class="book_search_link" href="{% url 'readmore_app:view_book' book.isbn13 %}">
-                    <div style="width: 20em;margin-left: 4%;">
-                    <div class="book_title" style="margin-left:0px;">
+                    <div style="width:20em;">
+                    <div class="book_title" style="
+                        display: flex;
+                        position: absolute;
+                        top: 0px;
+                        width: 90%;
+                        flex-direction: row;
+                        flex-wrap: nowrap;
+                        margin-top: 5%;
+                        margin-left: 5%;
+                        align-content: center;
+                        align-items: flex-start;"">
                         <div style="width: 40%;margin:3px;" colspan=2><img width="100px" height="140px" src="{{ book.small_thumbnail }}" alt="{{ book.title }} Cover Image" /></div>
                         <div style="width: 100%; margin-left: 0.6em;">
                         
@@ -56,13 +66,13 @@ Readmore - {{ club.club_name }}
                 </a>
                 <div><div align="center" colspan=2><div class="stars" style="--rating:{{ book.rating }};margin-bottom:5%;"></div></div></div>
                 
-               </td>
+            </div>
             
             {% endfor %}
-            </tr>
+        </div>
         {% endfor %}
         
-    </table>
+    </div>
 </div>
 </div>
 {% endblock %}

@@ -19,7 +19,7 @@ Readmore - Notifications
                 <button onclick="removeNotification({{ notification.notification_id }});" class="remove"><img style="width: 15px;" src="{% static 'readmore_app/x_button.png' %}" /></button>
                 <p style="font-size: 10px">{{ notification.notification_time }}</p>
                 {% if notification.notification_link %}
-                <p><a href="{{ notification.notification_link }}" class="anchor_button">{{ notification.notification_link_text }}</a></p>
+                <p style="margin-bottom: 5%;"><a href="{{ notification.notification_link }}" class="anchor_button">{{ notification.notification_link_text }}</a></p>
                 {% endif %}
                 <p>{{ notification.notification_message }}</p>
                 <hr>

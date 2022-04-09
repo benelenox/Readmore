@@ -8,30 +8,34 @@ Readmore - {{ profile_user.username }}'s Profile
 
 {% block content %}
 <div class="profile basic_card">
-    <h1>{{ profile_user.username }}'s Profile</h1>
-    {% if user.is_authenticated and profile_user != real_user %}
-        {% if real_user not in profile_user.user_friends.all and profile_user not in real_user.user_pending_friends.all %}
-            <button id="friendbutton" onclick="friend({{ profile_user.id }}, 'add');" name="user_id" value="{{ profile_user.id }}" class="friend">Add Friend</button>
-        {% elif profile_user in real_user.user_pending_friends.all and real_user not in profile_user.user_friends.all %}
-            <button id="friendbutton" onclick="friend({{ profile_user.id }}, 'pending');" name="user_id" value="{{ profile_user.id }}" class="friend">Pending...</button>
-        {% elif real_user in profile_user.user_friends.all %}
-            <button id="friendbutton" onclick="friend({{ profile_user.id }}, 'remove');" name="user_id" value="{{ profile_user.id }}" class="friend">Remove Friend</button>
-        {% endif %}
-    {% endif %}
-    <div style="height:42px;margin-top: 2em;">
-    <a href="{% url 'readmore_app:friend_list' profile_user.id %}" id="friendinfo" class="anchor_button">{{ profile_user.user_friends.all.count }} Friends</a>
-    </div>
-    <div id="userbio">
-        <p id="bio">{{ profile_user.user_bio }}</p>
-        {% if real_user == profile_user %}
-            <button id="biobutton" onclick="makeEditable();">Edit Bio</button>
-        {% endif %}
-    </div>
-    <div>
-        {% if real_user == profile_user %}
-        <p><a href="{% url 'readmore_app:create_profile_post' profile_user.id %}" class="anchor_button">Create Post</a></p>
-        {% endif %}
-    </div>
+    <div class="profile_header">
+        <div style="margin-bottom: 2%;">
+            <h1>{{ profile_user.username }}'s Profile</h1>
+            {% if user.is_authenticated and profile_user != real_user %}
+                {% if real_user not in profile_user.user_friends.all and profile_user not in real_user.user_pending_friends.all %}
+                    <button id="friendbutton" onclick="friend({{ profile_user.id }}, 'add');" name="user_id" value="{{ profile_user.id }}" class="friend">Add Friend</button>
+                {% elif profile_user in real_user.user_pending_friends.all and real_user not in profile_user.user_friends.all %}
+                    <button id="friendbutton" onclick="friend({{ profile_user.id }}, 'pending');" name="user_id" value="{{ profile_user.id }}" class="friend">Pending...</button>
+                {% elif real_user in profile_user.user_friends.all %}
+                    <button id="friendbutton" onclick="friend({{ profile_user.id }}, 'remove');" name="user_id" value="{{ profile_user.id }}" class="friend">Remove Friend</button>
+                {% endif %}
+            {% endif %}
+            <div style="height:42px;margin-top: 2em;">
+            <a href="{% url 'readmore_app:friend_list' profile_user.id %}" id="friendinfo" class="anchor_button">{{ profile_user.user_friends.all.count }} Friends</a>
+            </div>
+            <div>
+                {% if real_user == profile_user %}
+                <p ><a href="{% url 'readmore_app:create_profile_post' profile_user.id %}" class="anchor_button">Create Post</a></p>
+                {% endif %}
+            </div>
+        </div>
+        <div id="userbio">
+            <p id="bio" style="width:100%;">{{ profile_user.user_bio }}</p>
+            {% if real_user == profile_user %}
+                <button id="biobutton" onclick="makeEditable();" style="border:none; padding:0.5% 1%">Edit Bio</button>
+            {% endif %}
+        </div>
+    </div> 
     <center>
     <div class="postlist">
     {% if not profile_posts %}
@@ -39,20 +43,41 @@ Readmore - {{ profile_user.username }}'s Profile
     {% else %}
         {% for post in profile_posts %}
             <div class="clubpost">
-                <span class="likes">
-                    <span id="nlikes{{ post.post_id }}">{{ post.post_likes.count }}</span>
-                    <input id="likeimage{{post.post_id}}" onclick="doLike({{post.post_id}});" style="width: 20px;" type="image" src="{% if real_user in post.post_likes.all %}{% static 'readmore_app/thumbs_up.png' %}{% else %}{% static 'readmore_app/thumbs_up_gray.png' %}{% endif %}" />
-                </span>
-                <a href="{% url 'readmore_app:view_post' post.post_id %}"><h2 style="margin: 10px;">{{ post.post_title }}</h2></a>
-                <h5 style="margin: 2px;">Post By: <a href="{% url 'readmore_app:profile' post.post_user.id %}">{{ post.post_user.username }}</a></h5>
-                <h6 style="margin: 2px;">{{ post.post_date|date:"m/d/Y h:i:s A" }}</h6>
-                {% if post.post_img %}
-                    {% if post.post_rating %}<a href="{% url 'readmore_app:view_book' post.post_isbn %}">{% endif %}
-                        <img style="max-width: 500px;" src="{{ post.post_img }}"/>
-                    {% if post.post_rating %}</a>{% endif %}
-                {% endif %}
+                <div style="
+                flex-direction: column;
+                align-items: center;
+                max-width: 89%;">
+                    <div style="display:inline-flex;
+                        justify-content: center;
+                        max-width: 80%;
+                        ">
+                    <a href="{% url 'readmore_app:view_post' post.post_id %}" style="max-width:80;"><h2 style="margin: 10px;">{{ post.post_title }}</h2></a>
+                    <div style="max-width: 92%;word-break: break-word;">
+                        <span class="likes">
+                            <span id="nlikes{{ post.post_id }}">{{ post.post_likes.count }}</span>
+                            <input id="likeimage{{post.post_id}}" onclick="doLike({{post.post_id}});" style="width: 20px;" type="image" src="{% if real_user in post.post_likes.all %}{% static 'readmore_app/thumbs_up.png' %}{% else %}{% static 'readmore_app/thumbs_up_gray.png' %}{% endif %}" />
+                        </span>
+                    </div>
+                    </div>
+                    <div>
+                    {% if post.post_img %}
+                        {% if post.post_rating %}<a href="{% url 'readmore_app:view_book' post.post_isbn %}">{% endif %}
+                            <img style="max-width: 500px;" src="{{ post.post_img }}"/>
+                        {% if post.post_rating %}</a>{% endif %}
+                    {% endif %}
+                    <h5 style="margin: 2px;">Post By: <a href="{% url 'readmore_app:profile' post.post_user.id %}">{{ post.post_user.username }}</a></h5>
+                    <h6 style="margin: 2px;">{{ post.post_date|date:"m/d/Y h:i:s A" }}</h6>
+                    </div>
+                </div>
+                
+                
                 {% if post.post_rating %}
-                    <div align="center" colspan=3><div class="stars" style="font-size: 50px; --rating:{{ post.post_rating|divide:2 }};"></div></div>
+                    <div align="center" colspan=3 style="
+                    margin-top: 1%;
+                    background: #b4b8cffc;
+                    padding: 5px;
+                    border-radius: 15px;
+                    "><div class="stars" style="font-size: 250%; --rating:{{ post.post_rating|divide:2 }};"></div></div>
                 {% endif %}
                 {% if post.post_text %}
                 <div class="post_text">
@@ -64,6 +89,7 @@ Readmore - {{ profile_user.username }}'s Profile
                 {% if post.post_user == real_user %}
                 <button onclick="deletePost({{ post.post_id }});" class="anchor_button" style="float: right; margin-right: 10px; margin-top: 10px;">Delete This Post</button>
                 {% endif %}
+                
             </div>
         {% endfor %}
     {% endif %}

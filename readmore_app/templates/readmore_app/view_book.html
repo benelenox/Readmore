@@ -15,57 +15,47 @@ Readmore - Book Not Found
     {% if book != None %}
     <h1>{{ book.volumeInfo.title }}</h1>
     <h2>{{ book.volumeInfo.subtitle }}</h2>
-    <table id="view_book_table">
-    <tr>
-        <td style="width: 20%;" rowspan=5>
-            <img width="300px" src="{{ book.volumeInfo.imageLinks.thumbnail }}" alt="Image of Book Cover"> 
-        </td>
-        <td style="width:200px;" align="center" rowspan=5>
-            <div style="margin-bottom: 50%;">
-            Rating: 
-            <br>
-            <div class="stars" style="--rating:{{ book.volumeInfo.averageRating }};"></div>
+    <div id="view_book_table">
+        <div class="book_table_head">
+            <div style="width: 20%;" rowspan=5>
+                <img width="200%" src="{{ book.volumeInfo.imageLinks.thumbnail }}" alt="Image of Book Cover"> 
             </div>
-            {% if reviews %}
-            <div style="margin-bottom: 50%;">
-            Readmore Rating: 
-            <br>
-            <div class="stars" style="--rating:{{ review_avg|divide:2 }};"></div>
+            <div style="width: 50%;">
+                <div style="margin-bottom: 6%;">
+                    <div >
+                    <h3>Rating: </h3>
+                    <div class="stars" style="--rating:{{ book.volumeInfo.averageRating }};"></div>
+                    </div>
+                    {% if reviews %}
+                    <div>
+                        <h3>Readmore Rating: </h3>
+                        <div class="stars" style="--rating:{{ review_avg|divide:2 }};"></div>
+                    </div>
+                    {% endif %}
+                </div>
+                <div>
+                    <h3>Author{{ book.volumeInfo.authors|length|pluralize:"s" }}:</h3>
+                    {% for author in book.volumeInfo.authors %}
+                    <h5><span style="margin-left: 3%;">{{ author }}</span></h5>
+                    {% endfor %}
+                </div>
             </div>
-            {% endif %}
-        </td>
-        <td>
-            Author{{ book.volumeInfo.authors|length|pluralize:"s" }}:
-                        <br>
-                        {% for author in book.volumeInfo.authors %}
-                        <span style="margin-left: 3%;">{{ author }}<span>
-                        <br>
-                        {% endfor %}
-        </td>
-    </tr>
-    <tr>
-        <td>Publisher: {{ book.volumeInfo.publisher }}</td>
-    </tr>
-    <tr>
-        <td>Publication Date: {{ book.volumeInfo.publishedDate }}</td>
-    </tr>
-    <tr>
-        <td>ISBN13: {% get_isbn_thirteen book.volumeInfo.industryIdentifiers %}</td>
-    </tr>
-    <tr>
-        <td>ISBN10: {% get_isbn_ten book.volumeInfo.industryIdentifiers %}</td>
-    </tr>
-    <tr>
-        <td colspan=3>
+        </div>
+        <div>
+            <h4>Publisher: {{ book.volumeInfo.publisher }}</h4>
+            <h4>Publication Date: {{ book.volumeInfo.publishedDate }}</h4>
+            <h4>ISBN13: {% get_isbn_thirteen book.volumeInfo.indusdivyIdentifiers %}</h4>
+            <h4>ISBN10: {% get_isbn_ten book.volumeInfo.indusdivyIdentifiers %}</h4>
+        </div>
+        <div>
             <h2>Description</h2>
             <p>{{ book.volumeInfo.description }}</p>
-        </td>
-    </tr>
-    </table>
-    <h2>Forums</h2>
-	<h2 style="display: inline;">Reviews</h2>
-    <a href="{% url 'readmore_app:create_review_post' book.volumeInfo.industryIdentifiers|isbn_thirteen_filter %}" style="display: block; display: inline; margin-left: 80%;"><button style="border: none; padding: 9px;">Review This Book</button></a>
-    <br/></br/></br/></br/>
+        </div>
+
+        <h2>Forums</h2>
+        <h2 style="display: inline;">Reviews</h2>
+        <a href="{% url 'readmore_app:create_review_post' book.volumeInfo.industryIdentifiers|isbn_thirteen_filter %}" ><button style="border: none; padding: 9px;">Review This Book</button></a>
+    </div>
     {% if reviews %}
         {% for review in reviews %}
         <div class="clubcomment" {% if highlight == review.post_id %}style="background: #fbff8c;"{% endif %}>

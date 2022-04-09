@@ -17,54 +17,55 @@
   </head>
   <body>
     <div class="container" >
-      <header>
-            <div class="navbar">
-              <div class="navbar">
-                <div><h2 class="logo">readmore</h2></div>
-                <div><img src="{% static 'readmore_app/logo_small.png' %}"></div>
-              </div>
-              <div class="navbar">
-                
-                <a class="link" href="{% url 'readmore_app:index' %}">Home</a>
-                {% if not user.is_authenticated %}
-                <a class="link" href="{% url 'readmore_app:login' %}" >Login</a>
-                <a class="link" href="{% url 'readmore_app:registration' %}">Register</a>
-                {% else %}
-                
-                <a href="{% url 'readmore_app:logout' %}" >Logout</a>
-                <div id="drop">
-                    {% num_notifications user.id as has_notifications %}
-                    <a  href="{% url 'readmore_app:profile' user.id %}" style="margin-top: -10px;"><span id="notification_dot" style="color: red;">{% if has_notifications %}●{% endif %}</span>{{ user.username }}</a>
-                    <div id="dropdown">
-                        <a class="dropaw" href="{% url 'readmore_app:notifications' %}">(<span id="num_notifications">{% num_notifications user.id %}</span>) Notifications</a>
-                        <a class="dropaw" href="{% url 'readmore_app:reading_log' %}">My Reading Log</a>
-                        <a class="dropaw" href="{% url 'readmore_app:messages_no_id' %}">Messages</a>
-                    </div>
-                </div>
-                <form style="display: inline; left: 0px; position: relative; top:7px;" class="link" method="POST" action="{% url 'readmore_app:user_search_results' %}">
-                  {% csrf_token %}
-                  <input type="image" width="20px" style="margin: 0px 6px 0px 8px; position:relative; top: 3px;" src="{% static 'readmore_app/logo_search.png' %}">
-                  <input type="text" placeholder="Search User" name="search_query" style="margin: 0px 10px 6px 0px;">
-                </form>
-                {% endif %}
-
-              </div>
-            </div>
-      </header>
-        <div class="content-container">
-            {% if user.is_authenticated %}
-            <div class="sidebar">
-                <a href="{% url 'readmore_app:index' %}">Home</a>
-                <a href="{% url 'readmore_app:book_clubs' %}">Book Clubs</a>
-                <a href="{% url 'readmore_app:search_book' %}">Search Books</a>
-            </div>
-            <main style="margin:0;">
-            {% endif %}
-            {% block content %}
-              Where content goes
-            {% endblock %}
-            </main>
+      <div class="navbar navbar_wrapper">
+        <div class="navbar">
+          <div><h2 class="logo">readmore</h2></div>
+          <div><img src="{% static 'readmore_app/logo_small.png' %}"></div>
         </div>
+        <div class="navbar navbar_links" style="padding-right:2%;">
+          
+          <a class="link" href="{% url 'readmore_app:index' %}">Home</a>
+          {% if not user.is_authenticated %}
+          <a class="link" href="{% url 'readmore_app:login' %}" >Login</a>
+          <a class="link" href="{% url 'readmore_app:registration' %}">Register</a>
+          {% else %}
+          
+          <a href="{% url 'readmore_app:logout' %}" >Logout</a>
+          <div id="drop">
+              {% num_notifications user.id as has_notifications %}
+              <a  href="{% url 'readmore_app:profile' user.id %}" style="margin-top: -10px;"><span id="notification_dot" style="color: red;">{% if has_notifications %}●{% endif %}</span>{{ user.username }}</a>
+              <div id="dropdown">
+                  <a class="dropaw" href="{% url 'readmore_app:notifications' %}">(<span id="num_notifications">{% num_notifications user.id %}</span>) Notifications</a>
+                  <a class="dropaw" href="{% url 'readmore_app:reading_log' %}">My Reading Log</a>
+                  <a class="dropaw" href="{% url 'readmore_app:messages_no_id' %}">Messages</a>
+              </div>
+          </div>
+          <div style="padding: 0.5%;">
+            <form style="display: flex; left: 0px; position: relative; top:7px; align-items: center;" class="link" method="POST" action="{% url 'readmore_app:user_search_results' %}">
+              {% csrf_token %}
+              <input type="image" width="20px" style="margin-right: 3%;" src="{% static 'readmore_app/logo_search.png' %}">
+              <input type="text" placeholder="Search User" name="search_query" >
+            </form>
+          </div>
+          {% endif %}
+
+        </div>
+      </div>
+      
+      <div class="content-container">
+          {% if user.is_authenticated %}
+          <div class="sidebar">
+              <a href="{% url 'readmore_app:index' %}">Home</a>
+              <a href="{% url 'readmore_app:book_clubs' %}">Book Clubs</a>
+              <a href="{% url 'readmore_app:search_book' %}">Search Books</a>
+          </div>
+          <main style="margin:0;">
+          {% endif %}
+          {% block content %}
+            Where content goes
+          {% endblock %}
+          </main>
+      </div>
     </div>
   </body>
   <script>
