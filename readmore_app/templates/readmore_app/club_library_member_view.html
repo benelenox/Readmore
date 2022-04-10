@@ -20,7 +20,6 @@ Readmore - {{ club.club_name }}
     {% endif %}
     <div class="table" id="book_search_results" style="overflow:unset; margin-right;">
         {% for shortlist in club_library %}
-        <div id="row" style="display:flex;align-items: stretch;">
             {% for book in shortlist %}
             
                 <div id="clubbook{{ book.id }}"  class="book_card_mv">
@@ -37,19 +36,19 @@ Readmore - {{ club.club_name }}
                         margin-left: 5%;
                         align-content: center;
                         align-items: flex-start;"">
-                        <div style="width: 40%;margin:3px;" colspan=2><img width="100px" height="140px" src="{{ book.small_thumbnail }}" alt="{{ book.title }} Cover Image" /></div>
-                        <div style="width: 100%; margin-left: 0.6em;">
+                        <div ><img width="100px" height="140px" src="{{ book.small_thumbnail }}" alt="{{ book.title }} Cover Image" /></div>
+                        <div >
                         
                         <p style="font-size:18px;">{{ book.title }}</p>
                         
                         </div>
                     </div>
-                    <div style="margin-top: 50%;margin-bottom: 20px;margin-left: 30px;">
-                        <div style="display:flex;">
+                    <div style="margin-top: 60%;margin-bottom: 20px;">
+                        <div style="display:flex; flex-direction: row;">
                             <div style="font-size:12px; width: 28%; margin-top: 12px;">
                                 Author{{ book.authors|length|pluralize:"s" }}
                             </div>
-                            <div style="width: 50%;">
+                            <div style="width: 50%; margin-left:10px;">
                                
                                 {% for author in book.authors %}
                                 <p style="font-size:12px;">
@@ -59,7 +58,7 @@ Readmore - {{ club.club_name }}
                             </div>
                         </div>
                     </div>
-                    <div style="margin-left: 30px;">
+                    <div>
                         <div colspan=2 style="font-size:12px;">ISBN: {{book.isbn13 }}</div>
                     </div>
                     </div>
@@ -69,7 +68,7 @@ Readmore - {{ club.club_name }}
             </div>
             
             {% endfor %}
-        </div>
+        
         {% endfor %}
         
     </div>

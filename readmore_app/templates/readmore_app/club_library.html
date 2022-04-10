@@ -87,7 +87,6 @@ Readmore - {{ club.club_name }}
         {% else %}
         <div class="table" id="book_search_results" style="margin-right: 1%;">
             {% for short_list in books %}
-            <div style="display:flex;align-items: stretch;">
                 {% for book in short_list %}
                 <div class="book_card">
                     <a class="book_search_link" href="{% url 'readmore_app:view_book' book.volumeInfo.industryIdentifiers.0.identifier %}">
@@ -108,9 +107,9 @@ Readmore - {{ club.club_name }}
                                 <p style="font-size:18px;margin-right: 0.8em;margin-left: 0.3em;margin-block-start: 0px;">{{ book.volumeInfo.title }}</p>
                                 </div>
                             </div>
-                            <div style="margin-top: 50%; margin-bottom: 20px;">
+                            <div style="margin-top: 60%; margin-bottom: 20px;">
                                 <div style="display:flex;flex-direction: row;">
-                                    <div style="font-size:12px; width: 28%; margin-top: 12px;">
+                                    <div style="font-size:12px; width: 28%; ">
                                         Author{{ book.volumeInfo.authors|length|pluralize:"s" }}
                                     </div>
                                     <div style="width:50%; margin-left:10px;">
@@ -122,7 +121,7 @@ Readmore - {{ club.club_name }}
                                     </div>
                                 </div>
                             </div>
-                            <div style="margin-left: 30px;">
+                            <div >
                                 <div colspan=2 style="font-size:12px;">ISBN: {% get_isbn_thirteen book.volumeInfo.industryIdentifiers %}</div>
                             </div>
                         
@@ -135,7 +134,7 @@ Readmore - {{ club.club_name }}
                 </div>
                 
                 {% endfor %}
-        </div>
+        
             {% endfor %}
         </div>
         {% endif %}

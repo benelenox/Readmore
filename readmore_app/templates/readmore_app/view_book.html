@@ -11,7 +11,8 @@ Readmore - Book Not Found
 {% endblock %}
 
 {% block content %}
-<div class="basic_card">
+<div style="display:flex;flex-direction: column;align-items: center;padding: 4% 0%;margin-left:0%;height:fit-content;">
+<div class="basic_card" style="width: 85%;">
     {% if book != None %}
     <h1>{{ book.volumeInfo.title }}</h1>
     <h2>{{ book.volumeInfo.subtitle }}</h2>
@@ -57,29 +58,34 @@ Readmore - Book Not Found
         <a href="{% url 'readmore_app:create_review_post' book.volumeInfo.industryIdentifiers|isbn_thirteen_filter %}" ><button style="border: none; padding: 9px;">Review This Book</button></a>
     </div>
     {% if reviews %}
+    <div id="commentslist" class="comments">
         {% for review in reviews %}
-        <div class="clubcomment" {% if highlight == review.post_id %}style="background: #fbff8c;"{% endif %}>
-        <span style="position: absolute; margin-left: 94.1%;" class="likes">
-            <span id="nlikes{{ review.post_id }}" >{{ review.post_likes.count }}</span>
-            <input id="likeimage{{review.post_id}}" onclick="doLike({{review.post_id}});" style="width: 20px;" type="image" src="{% if real_user in review.post_likes.all %}{% static 'readmore_app/thumbs_up.png' %}{% else %}{% static 'readmore_app/thumbs_up_gray.png' %}{% endif %}" />
-        </span>
-        <div style="width: 100%;">
-            <center>
-            <div class="comment_by" style="width: fit-content;">
-                <a href="{% url 'readmore_app:profile' review.post_user.id %}">{{ review.post_user }}</a><br><span style="font-size: 10px;">{{ review.post_date|date:'m/d/Y h:i A' }}</span>
-            </div>
+        <div class="clubcomment" style="align-items: flex-start;justify-content: space-between;"{% if highlight == review.post_id %}style="background: white;"{% endif %}>  
+            
             <div>
-                <div style="background: #c0d8fc;padding: 10px;box-shadow: 2px 2px 2px#7074ac; width: fit-content; border-radius: 15px;" align="center" colspan=3><div class="stars" style="font-size: 50px; --rating:{{ review.post_rating|divide:2 }};"></div></div>
+                <div style="margin-right:1%;">
+                    <div class="comment_by">{{ review.post_user }}</div>
+                    <div style="font-size: 10px;">{{ review.post_date|date:'m/d/Y h:i A' }}</div>
+                </div>
             </div>
-            <div align="center" class="comment_text" style="width: 92%; text-align: left;">
+            <div style="width: 81%;">
+                <div style="margin-bottom: 3%;margin-top: -5%;">
+                    <div style="background: #c0d8fc;padding: 10px;box-shadow: 2px 2px 2px#7074ac; width: fit-content; border-radius: 15px;" align="center" colspan=3><div class="stars" style="font-size: 2em; --rating:{{ review.post_rating|divide:2 }};"></div></div>
+                </div>
                 {% autoescape off %}
-				<p>{{ review.post_text }}</p>
-				{% endautoescape %}
+                <div class="comment_text">{{ review.post_text }}</div>
+                {% endautoescape %}
             </div>
-            </center>
-        </div>
+            <div style="margin-right:7%;">
+                <span class="likes">
+                    <span id="nlikes{{ review.post_id }}" >{{ review.post_likes.count }}</span>
+                    <input id="likeimage{{review.post_id}}" onclick="doLike({{review.post_id}});" style="width: 20px;" type="image" src="{% if real_user in review.post_likes.all %}{% static 'readmore_app/thumbs_up.png' %}{% else %}{% static 'readmore_app/thumbs_up_gray.png' %}{% endif %}" />
+                </span>
+            </div>
+            
         </div>
         {% endfor %}
+        </div>
     {% else %}
         <p>No reviews have been posted about this book.</p>
     {% endif %}
@@ -87,6 +93,7 @@ Readmore - Book Not Found
     {% else %}
         <h1>Book Not Found</h1>
     {% endif %}
+</div>
 </div>
 {% endblock %}
 

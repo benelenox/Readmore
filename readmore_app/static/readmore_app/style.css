@@ -35,6 +35,7 @@ a{
 
 .comment_by {
     min-width: 15%;
+    display:inline-flex;
 }
 
 #userbio > * {
@@ -77,6 +78,17 @@ div.createform h1 {
 }
 
 .clubcomment {
+    position: relative;
+    margin-bottom: 50px;
+    background: #e4e0c5;
+    border-radius: 2px;
+    box-shadow: 2px 2px 2px#7074ac;
+    width: 98%;
+    padding: 5% 1%;
+    display:flex;
+}
+
+.review_comment{
     position: relative;
     margin-bottom: 50px;
     background: #e4e0c5;
@@ -149,10 +161,11 @@ textarea#id_review_text{
     margin-top: 2%;
     display: flex;
     flex-direction: row;
-    flex-wrap: wrap;
     align-content: flex-start;
-    align-items: flex-start;
+    align-items: stretch;
     justify-content: center;
+    flex-wrap: wrap;
+    padding:60%;
 }
 #book_search_results td{
     color: #eff0f5;
@@ -184,7 +197,7 @@ textarea#id_review_text{
     flex-direction: column;
     height: auto;
     justify-content: space-between;
-    box-shadow: 2px 2px 15px 10px #a5a5aa7a;
+    box-shadow: 2px 2px 8px 6px #7575807a;
     margin: 5px;
     
 }
@@ -203,8 +216,8 @@ textarea#id_review_text{
     flex-direction: column;
     height: auto;
     justify-content: space-between;
-    box-shadow: 2px 2px 15px 10px #a5a5aa7a;
-    
+    box-shadow: 2px 2px 8px 6px #7575807a;
+    margin: 5px;
 }
 
 #club_library_table {
@@ -214,6 +227,15 @@ textarea#id_review_text{
     margin-right: 2%;
     width: 75vw;
     color: #eff0f5;
+    background-color: #8d9ab8;
+    border-style: solid;
+    border-width: 9px;
+    border-color: #847d7d;
+}
+
+
+
+
 }
 
 #club_library_table td {
@@ -362,7 +384,7 @@ main > div { width: 100%; }
     color: #3b3e66;
 }
 #dropdown {
-    position: absolute; 
+    position: relative; 
     display: none; 
     color:white;
     padding: 0px; 
@@ -380,7 +402,7 @@ main > div { width: 100%; }
 }
 
 #drop:hover #dropdown {
-    min-width:30%;
+    min-width:25%;
     display:flex; 
     flex-direction: column; 
     z-index: 2;
@@ -398,7 +420,8 @@ main > div { width: 100%; }
     border-style: solid;
     border-width: 1px;
     padding: 20px;
-    margin: 4em 2em;
+    padding-bottom: 10%;
+    margin: 4%;
 }
 
 .mailbox_card{
@@ -479,7 +502,7 @@ p a.anchor_button{
     margin-bottom:4%;
 }
 
-.book_club_listing td p a{
+/*.book_club_listing td p a{
     border-radius: 2px;
     color: #e2e2db;
     height: 30px;
@@ -487,7 +510,7 @@ p a.anchor_button{
     border: none;
     padding: 10px;
     background: #4b4e75;
-}
+}*/
 
 .anchor_button:hover{
     background: #dee7e9; 
@@ -693,6 +716,11 @@ div.subnav {
     text-align: center;
 }
 
+.sidebar_filler{
+    background-image: url(stackedbooks.jpg);
+    height: inherit;
+}
+
 @media (max-width:889px){
     .navbar_wrapper{
         flex-direction: column;
@@ -744,7 +772,9 @@ div.subnav {
     .book_review{
         margin-top: 2%;
     }
-    
+    #book_search_results{
+        margin-bottom:28%;
+    }
 }
 
 @media (max-width:709px){
@@ -815,6 +845,9 @@ div.subnav {
     width:87%;
     padding-bottom:9%;
    }
+   #book_search_results{
+        margin-bottom:41%;
+    }
 
 }   
 
@@ -824,6 +857,9 @@ div.subnav {
     }
     .clubcomment{
         padding-bottom: 14%;
+    }
+    #book_search_results{
+        margin-bottom:65%;
     }
 }
 

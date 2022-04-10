@@ -87,7 +87,7 @@ Readmore - Reading Log
             <div style="display:flex;align-items: stretch;">
                 {% for book in short_list %}
                 <div class="book_card">
-         <a class="book_search_link" href="{% url 'readmore_app:view_book' book.volumeInfo.industryIdentifiers.0.identifier %}">
+                    <a class="book_search_link" href="{% url 'readmore_app:view_book' book.volumeInfo.industryIdentifiers.0.identifier %}">
                         <div style="width: 20em;">
                             <div class="book_title" style="
                                 display: flex;

@@ -15,10 +15,10 @@ Readmore - {{ club.club_name }}
             <h3 style="margin-left: 30px; display: inline-block;">[Joined]</h3>
             {% elif real_user in club.club_pending_invites.all %}
             <button onclick="joinClub();">Join</button>
-        {% endif %}
+            {% endif %}
         </div>
         <div class="subnav">
-            <div style="display: inline-block"><a href="{% url 'readmore_app:club_members' club.club_id %}">{{ club.club_users.all.count }} Members</a></div>
+            <div style="display: inline-block"><a class="anchor_button" href="{% url 'readmore_app:club_members' club.club_id %}">{{ club.club_users.all.count }} Members</a></div>
             {% if real_user == club.club_owner %}
             <div style="display: inline-block"><a class="anchor_button" href="{% url 'readmore_app:invite_to_club' club.club_id %}">Invite Users</a></div>
             {% endif %}
