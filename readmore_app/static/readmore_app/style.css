@@ -99,17 +99,6 @@ div.createform h1 {
     display:flex;
 }
 
-.clubcomment :nth-child(1){
-    order: 1;
-}
-.clubcomment :nth-child(2){
-    order:2;
-}
-.clubcomment :nth-child(3){
-    order:3;
-}
-
-
 .post_text {
     text-align: left;
     width: 90%;
@@ -156,7 +145,7 @@ textarea#id_review_text{
     margin-top: 10px;
 }
 #book_search_results{
-    margin-left: -1%;
+    margin-left: -4%;
     margin-bottom: 10%;
     margin-top: 2%;
     display: flex;
@@ -165,7 +154,7 @@ textarea#id_review_text{
     align-items: stretch;
     justify-content: center;
     flex-wrap: wrap;
-    padding:60%;
+    padding-bottom:60%;
 }
 #book_search_results td{
     color: #eff0f5;
@@ -225,7 +214,7 @@ textarea#id_review_text{
     overflow: auto;
     margin-left: -2%;
     margin-right: 2%;
-    width: 75vw;
+    width: 77vw;
     color: #eff0f5;
     background-color: #8d9ab8;
     border-style: solid;
@@ -233,10 +222,6 @@ textarea#id_review_text{
     border-color: #847d7d;
 }
 
-
-
-
-}
 
 #club_library_table td {
     background: #a5a5aa;
@@ -383,6 +368,7 @@ main > div { width: 100%; }
     background-color:#E6F4F1;
     color: #3b3e66;
 }
+
 #dropdown {
     position: relative; 
     display: none; 
@@ -406,6 +392,7 @@ main > div { width: 100%; }
     display:flex; 
     flex-direction: column; 
     z-index: 2;
+    background:none;
 }
 
 .basic_card{
@@ -490,10 +477,7 @@ p a.anchor_button{
     margin:1%;
 }
 
-.anchor_button:hover{
-    background:#e2e2db;
-    color: #4b4e75;
-}
+
 
 .profile_header{
     display:flex;
@@ -767,7 +751,7 @@ div.subnav {
         margin-bottom:50%;
     }
     #club_library_table{
-        width:90vw;
+        width:96vw;
     }
     .book_review{
         margin-top: 2%;

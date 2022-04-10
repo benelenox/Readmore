@@ -85,7 +85,7 @@ Readmore - {{ club.club_name }}
         {% if not books %}
         <h2>No Books Found Matching Search Terms</h2>
         {% else %}
-        <div class="table" id="book_search_results" style="margin-right: 1%;">
+        <div class="table" id="book_search_results" style="">
             {% for short_list in books %}
                 {% for book in short_list %}
                 <div class="book_card">
@@ -148,7 +148,7 @@ Readmore - {{ club.club_name }}
 window.onload = function(){
     const row = document.getElementById("row");
     if(row.childElementCount == 0){
-        document.getElementById("club_library_table").setAttribute("style", "height: 0px;");
+        document.getElementById("club_library_table").setAttribute("style", "height: 0px;border:none;   ");
     }
 }
 
@@ -175,7 +175,7 @@ function removeBook(clubbook_id) {
     xhrremovebook.onload = function(){
         td.parentNode.removeChild(td);
         if (row.childElementCount == 0) {
-            document.getElementById('club_library_table').setAttribute("style", "height: 0px;"); 
+            document.getElementById('club_library_table').setAttribute("style", "height: 0px; border:none;"); 
         }
         const button = document.getElementById("add" + this.responseText);
         if (button != null) {

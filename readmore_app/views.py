@@ -611,24 +611,20 @@ def make_comment(request, post_id):
     new_comment.save()
     return HttpResponse(f"""
         <div class="clubcomment">
-            <div style="
-            display: flex;
-            justify-content: space-between;">
-                
-                <div style="width: 94%;">
-                    <div>
-                        <div class="comment_by">{new_comment.post_user}</div>
-                        <div style="font-size: 10px;">{datetime.now().strftime("%m/%d/%Y %I:%M %p")}</div>
-                    </div>
+            <div>
+                <div style="margin-right: 1%;">                   
+                    <div class="comment_by">{new_comment.post_user}</div>
+                    <div style="font-size: 10px;">{datetime.now().strftime("%m/%d/%Y %I:%M %p")}</div>
                 </div>
-                <div>
+            </div>
+            <div class="comment_text">{new_comment.post_text }</div>
+            <div>
                 <span class="likes">
                     <span id="nlikes{new_comment.post_id}" >{new_comment.post_likes.count()}</span>
                     <input id="likeimage{new_comment.post_id}" onclick="doLike({new_comment.post_id});" style="width: 20px;" type="image" src="{'/static/readmore_app/thumbs_up.png' if real_user in new_comment.post_likes.all() else '/static/readmore_app/thumbs_up_gray.png'}" />
                 </span>
                 </div>
             </div>
-            <div class="comment_text">{new_comment.post_text }</div>
         </div>
         """)
 

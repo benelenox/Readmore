@@ -84,7 +84,6 @@ Readmore - Reading Log
         {% else %}
         <div class="table" id="book_search_results" style="margin-right: 1%;">
             {% for short_list in books %}
-            <div style="display:flex;align-items: stretch;">
                 {% for book in short_list %}
                 <div class="book_card">
                     <a class="book_search_link" href="{% url 'readmore_app:view_book' book.volumeInfo.industryIdentifiers.0.identifier %}">
@@ -132,7 +131,7 @@ Readmore - Reading Log
             </div>
                 
                 {% endfor %}
-        </div>
+        
             {% endfor %}
     </div>
         {% endif %}
@@ -146,7 +145,7 @@ Readmore - Reading Log
 window.onload = function(){
     const row = document.getElementById("row");
     if(row.childElementCount == 0){
-        document.getElementById("club_library_table").setAttribute("style", "height: 0px;");
+        document.getElementById("club_library_table").setAttribute("style", "height: 0px; border:none;");
     }
 }
 
@@ -177,7 +176,7 @@ function delete_user_library_book(book_id) {
         let hasChild = false;
         if (row.childElementCount == 0) {
             reading_log.innerHTML += `<h3 id="nobooksfound">No Books Found</h3>`;
-            document.getElementById('club_library_table').setAttribute("style", "height: 0px;"); 
+            document.getElementById('club_library_table').setAttribute("style", "height: 0px; border:none;"); 
 
         }
         const button = document.getElementById("add" + this.responseText);

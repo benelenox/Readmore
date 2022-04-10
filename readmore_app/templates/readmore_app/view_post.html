@@ -30,7 +30,7 @@ Readmore - View Post
             </div>
         </div>
         {% if post.post_img %}
-        <div><img style="max-width: 50%;" src="{{ post.post_img }}"/></div>
+        <img style="max-width: 50%;" src="{{ post.post_img }}"/>
         {% endif %}
         {% if post.post_text %}
         <div class="post_text">
@@ -41,7 +41,7 @@ Readmore - View Post
         {% endif %}
     </div>
     <div id="commentslist" class="comments">
-    {% for comment in post.comments.all %}
+    {% for comment in post.comments.all %}  
     <div>
         <div class="clubcomment" {% if highlight == comment.post_id %}style="background: white;"{% endif %}>     
             <div>
