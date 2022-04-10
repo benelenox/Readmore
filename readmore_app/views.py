@@ -207,6 +207,9 @@ def view_book(request, book_isbn):
                 if book_isbn in [indID['identifier'] for indID in match['volumeInfo']['industryIdentifiers']]:
                     book = match
                     break
+                    
+        book_forum_post_count = BookForumPost.objects.filter(post_isbn=book_isbn).order_by('-post_date').count()
+        
         reviews = []
         review_avg = None
         if book != None:
@@ -218,7 +221,7 @@ def view_book(request, book_isbn):
             except KeyError:
                 pass
 
-        return render(request, "readmore_app/view_book.html", {"real_user": real_user, "book": book, 'reviews': reviews, 'review_avg': review_avg})
+        return render(request, "readmore_app/view_book.html", {"real_user": real_user, "book": book, 'book_forum_post_count': book_forum_post_count, 'reviews': reviews, 'review_avg': review_avg})
         
     # Redirect Unknown Users
     return redirect(reverse('readmore_app:login'))
@@ -380,7 +383,6 @@ def create_review_post(request, book_isbn):
                 new_post.post_isbn = review_book.isbn
                 new_post.post_rating = int(form.cleaned_data['rating'])
                 new_post.setup_info(real_user, f"Review of {review_book.title}", form.cleaned_data['review_text'], review_book.thumbnail)
-                new_post.save()
                 return redirect(reverse('readmore_app:profile', kwargs={'profile_id': real_user.id}))
             else:
                 return render(request, 'readmore_app/review_book.html', {'form': form, 'book': review_book})
@@ -394,8 +396,22 @@ def book_forum(request, book_isbn):
 
     if request.user.is_authenticated:
         real_user = UserExt.objects.get(pk=request.user.id)
+        book_api_key = 'AIzaSyCrRXmYA10KFK9bFearnoAGZ8Suzn1aFgI'
+        book_info = requests.get(f'https://www.googleapis.com/books/v1/volumes?q=+isbn:{book_isbn}&key={book_api_key}').json()
+
+        # Find Matching Book
+        book = None
+        if 'items' in book_info.keys():
+            for match in book_info['items']:
+                if book_isbn in [indID['identifier'] for indID in match['volumeInfo']['industryIdentifiers']]:
+                    book = match
+                    break
+                    
+        # Collect Book Forum Posts
         book_forum_posts = BookForumPost.objects.filter(post_isbn=book_isbn).order_by('-post_date')
-        return render(request, "readmore_app/book_forum.html", {"real_user": real_user, 'book_forum_posts': book_forum_posts, 'book_isbn': book_isbn})
+        
+        # Render Page
+        return render(request, "readmore_app/book_forum.html", {"real_user": real_user, 'book_forum_posts': book_forum_posts, 'book': book, 'book_isbn': book_isbn})
 
     # Redirect Unknown Users
     return HttpResponseRedirect(reverse("readmore_app:login"))

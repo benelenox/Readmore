@@ -54,6 +54,11 @@ Readmore - Book Not Found
         </div>
 
         <h2>Forums</h2>
+		<a href="{% url 'readmore_app:book_forum' book.volumeInfo.industryIdentifiers|isbn_thirteen_filter %}" ><button style="border: none; padding: 9px;">View This Book's Forums</button> ({{book_forum_post_count}} Post{{book_forum_post_count|pluralize:"s"}})</a>
+		<p>
+		<a href="{% url 'readmore_app:create_book_forum_post' book.volumeInfo.industryIdentifiers|isbn_thirteen_filter %}" ><button style="border: none; padding: 9px;">Post to This Book's Forums</button></a>
+		</p>
+		
         <h2 style="display: inline;">Reviews</h2>
         <a href="{% url 'readmore_app:create_review_post' book.volumeInfo.industryIdentifiers|isbn_thirteen_filter %}" ><button style="border: none; padding: 9px;">Review This Book</button></a>
     </div>
