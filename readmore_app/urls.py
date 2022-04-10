@@ -28,6 +28,8 @@ urlpatterns = [
     path('review_book/<str:book_isbn>/', views.create_review_post, name='create_review_post'),
     path('messages/', views.messages, name='messages_no_id'),
     path('messages/<int:friend_id>/', views.messages, name='messages'),
+    path('book_forum/<str:book_isbn>/', views.book_forum, name='book_forum'),
+    path('create_book_forum_post/<str:book_isbn>/', views.create_book_forum_post, name="create_book_forum_post"),
 ]
 
 # AJAX url patterns
