@@ -19,7 +19,7 @@ Readmore - View Post
 		<div class="clubpost">
 			<div style="display:inline-flex;">
 				<div class="post_title">
-					<a href="{% url 'readmore_app:view_post' post.post_id %}"><h2 style="margin: 10px;">{{ post.post_title }}</h2></a>
+					<h2 style="margin: 10px;">{{ post.post_title }}</h2>
 					<h5 style="margin: 2px;">Post By: <a href="{% url 'readmore_app:profile' post.post_user.id %}">{{ post.post_user.username }}</a></h5>
 					<h6 style="margin: 2px;">{{ post.post_date|date:"m/d/Y h:i:s A" }}</h6>
 				</div>

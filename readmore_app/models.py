@@ -3,6 +3,7 @@ from datetime import datetime
 from django.db import models
 from django.contrib.auth.models import User
 from django.core.exceptions import ObjectDoesNotExist
+from django.utils import timezone
 
 # User model extension for adding more attributes
 class UserExt(User):
@@ -136,3 +137,22 @@ class ReviewPost(Post):
 	
 class BookForumPost(Post):
     post_isbn = models.TextField()
+    
+class Meeting(models.Model):
+    meeting_id = models.AutoField(primary_key=True)
+    meeting_name = models.CharField(max_length=100)
+    meeting_description = models.TextField()
+    meeting_club = models.ForeignKey(Club, models.CASCADE)
+    meeting_time = models.DateTimeField()
+    
+    @staticmethod
+    def update_meetings(club_id):
+        club = Club.objects.get(pk=club_id)
+        club_meetings = Meeting.objects.filter(meeting_club=club)
+        delete_ids = []
+        for meeting in club_meetings:
+            if meeting.meeting_time < timezone.now():
+                delete_ids.append(meeting.meeting_id)
+        for id in delete_ids:
+            Meeting.objects.get(pk=id).delete()
+        return bool(delete_ids)

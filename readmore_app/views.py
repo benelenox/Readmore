@@ -7,9 +7,9 @@ from django.shortcuts import render, redirect, get_object_or_404
 from django.urls import reverse
 from django.db.models import Count, Avg
 from django.http import HttpResponse, HttpResponseRedirect, Http404, HttpResponseNotFound
-from .models import UserExt, Notification, Club, ClubChat, ClubBook, ClubPost, ReadingLogBook, ProfilePost, Post, Comment, ReviewPost, PM, BookForumPost
+from .models import UserExt, Notification, Club, ClubChat, ClubBook, ClubPost, ReadingLogBook, ProfilePost, Post, Comment, ReviewPost, PM, BookForumPost, Meeting
 from .pseudomodels import Book
-from .forms import register as regform, login as loginform, club as clubform, club_post as clubpostform, reading_log as readinglogform, profile_post as profilepostform, review_post as reviewpostform
+from .forms import register as regform, login as loginform, club as clubform, club_post as clubpostform, reading_log as readinglogform, profile_post as profilepostform, review_post as reviewpostform, meeting as meetingform
 from django.contrib.auth import authenticate, login as log_in, logout as log_out
 
 def friend_list(request, profile_id):
@@ -153,12 +153,20 @@ def club(request, club_id):
     """
     if request.user.is_authenticated:
         club = get_object_or_404(Club, club_id=club_id)
+        
+        # delete past meetings
+        Meeting.update_meetings(club_id)
+        
         real_user = get_object_or_404(UserExt, id=request.user.id)
         club_posts = ClubPost.objects.filter(post_club = club).order_by('-post_date')
         current_book = False
         if club.club_library.order_by('-time'):
             current_book = Book(club.club_library.order_by('-time')[0].isbn)
-        return render(request, "readmore_app/club_home.html", {"real_user": real_user, "club": club, 'club_posts': club_posts, 'current_book': current_book})
+        next_meeting = False
+        meetings = Meeting.objects.filter(meeting_club=club)
+        if meetings:
+            next_meeting = meetings.order_by('meeting_time')[0]
+        return render(request, "readmore_app/club_home.html", {"real_user": real_user, "club": club, 'club_posts': club_posts, 'current_book': current_book, 'next_meeting': next_meeting})
     else:
         return redirect(reverse('readmore_app:login'))
 
@@ -428,6 +436,37 @@ def create_book_forum_post(request, book_isbn):
     # Redirect Unknown Users
     return HttpResponseRedirect(reverse("readmore_app:login"))
 
+def club_schedule(request, club_id):
+    if not request.user.is_authenticated:
+        return HttpResponseRedirect(reverse("readmore_app:login"))
+    
+    real_user = UserExt.objects.get(pk=request.user.id)
+    club = get_object_or_404(Club, club_id=club_id)
+    meetings = Meeting.objects.filter(meeting_club=club).order_by('meeting_time')
+    
+    # delete past meetings
+    Meeting.update_meetings(club_id)
+    
+    if real_user == club.club_owner:
+        message = False
+        if request.method != "POST":
+            form = meetingform()
+            return render(request, "readmore_app/schedule.html", {"real_user": real_user, "club": club, 'meetings': meetings, 'form': form})
+        else:
+            form = meetingform(request.POST)
+            if form.is_valid():
+                new_meeting = Meeting()
+                new_meeting.meeting_club = club
+                new_meeting.meeting_name = form.cleaned_data['meeting_name']
+                new_meeting.meeting_time = datetime.combine(form.cleaned_data['meeting_date'], form.cleaned_data['meeting_time'])
+                new_meeting.meeting_description = form.cleaned_data['meeting_description']
+                new_meeting.save()
+                message = "New Meeting Saved to Schedule"
+                form = meetingform()
+            meetings = Meeting.objects.filter(meeting_club=club).order_by('meeting_time')
+            return render(request, "readmore_app/schedule.html", {"real_user": real_user, "club": club, 'meetings': meetings, 'form': form, 'message': message})
+    else:
+        return render(request, "readmore_app/schedule_member_view.html", {"real_user": real_user, 'meetings': meetings, "club": club})
 
 """ 
 *************************************
@@ -737,6 +776,16 @@ def delete_post(request, post_id):
         return HttpResponse("DENY")
     if post.post_user == real_user:
         post.delete()
+        return HttpResponse("CONFIRM")
+    else:
+        return HttpResponse("DENY")
+
+def delete_meeting(request, meeting_id):
+    real_user = UserExt.objects.get(pk=request.user.id)
+    meeting = Meeting.objects.get(pk=meeting_id)
+    club = meeting.meeting_club
+    if real_user == club.club_owner:
+        meeting.delete()
         return HttpResponse("CONFIRM")
     else:
         return HttpResponse("DENY")

@@ -1,0 +1,37 @@
+{% extends parent_template|default:"base.html" %}
+{% load static %}
+{% load extras %}
+
+{% block title %}
+Readmore - {{ club.club_name }} Schedule
+{% endblock %}
+
+{% block content %}
+<style>
+ #schedule td {border: 1px solid black;}
+ #schedule th {border: 1px solid black;}
+</style>
+<div style="display:flex;flex-direction: column;align-items: center;padding: 4% 0%;margin-left:0%;height:fit-content;">
+<div style="align-self: flex-start;margin-left: 4.5%;">
+	<a class="anchor_button" href="{% url 'readmore_app:club' club.club_id %}" style="margin-top: 1.5%; ">{{ club.club_name }}</a>
+</div>
+<div class="basic_card" style="width: 80%;">
+<center>
+    <table id="schedule" style="margin-bottom: 100px;">
+        <tr><th  colspan="3" style="text-align: center;">Meeting Schedule</th></tr>
+        <tr>
+            <th style="min-width: 200px;">Meeting Name</th>
+            <th style="min-width: 170px;">Meeting Time</th>
+            <th style="min-width: 300px;">Meeting Description</th>
+        </tr>
+        {% for meeting in meetings %}
+        <tr>
+            <td>{% if not meeting.meeting_name %}(Unnamed Meeting){% endif %}{{ meeting.meeting_name }}</td>
+            <td>{{ meeting.meeting_time|date:'m/d/Y h:i A' }}</td>
+            <td>{{ meeting.meeting_description }}</td>
+        </tr>
+        {% endfor %}
+    </table>
+    </center>
+</div>
+{% endblock %}
