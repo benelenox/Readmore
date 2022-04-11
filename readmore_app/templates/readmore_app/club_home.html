@@ -6,6 +6,17 @@ Readmore - {{ club.club_name }}
 {% endblock %}
 
 {% block content %}
+<style>
+.subnavanchor {
+    padding: 10px;
+    border-radius: 5px;
+}
+
+.subnavanchor:hover {
+    background: #dee7e9;
+    transition: all 0.4s;
+}
+</style>
 <div class="basic_card" style="width:100%;">
     <div style="margin-bottom: 50px;" class="club_heading">
         <div>
@@ -18,14 +29,14 @@ Readmore - {{ club.club_name }}
             {% endif %}
         </div>
         <div class="subnav">
-            <div style="display: inline-block"><a class="anchor_button" href="{% url 'readmore_app:club_members' club.club_id %}">{{ club.club_users.all.count }} Members</a></div>
+            <div style="display: inline-block"><a class="anchor_button" href="{% url 'readmore_app:club_members' club.club_id %}"><div class="subnavanchor">{{ club.club_users.all.count }} Members</div></a></div>
             {% if real_user == club.club_owner %}
-            <div style="display: inline-block"><a class="anchor_button" href="{% url 'readmore_app:invite_to_club' club.club_id %}">Invite Users</a></div>
+            <div style="display: inline-block"><a class="anchor_button" href="{% url 'readmore_app:invite_to_club' club.club_id %}"><div class="subnavanchor">Invite Users</div></a></div>
             {% endif %}
-            <div style="display: inline-block"><a class="anchor_button" href="{% url 'readmore_app:club_library' club.club_id %}">Book Club Library</a></div>
-            <div style="display: inline-block"><a class="anchor_button" href="{% url 'readmore_app:club_schedule' club.club_id %}">Meeting Schedule</a></div>
+            <div style="display: inline-block"><a class="anchor_button" href="{% url 'readmore_app:club_library' club.club_id %}"><div class="subnavanchor">Book Club Library</div></a></div>
+            <div style="display: inline-block"><a class="anchor_button" href="{% url 'readmore_app:club_schedule' club.club_id %}"><div class="subnavanchor">Meeting Schedule</div></a></div>
             {% if real_user in club.club_users.all %}
-            <div style="display: inline-block"><a class="anchor_button" href="{% url 'readmore_app:club_chat' club.club_id %}">Enter Book Club Chat</a></div>
+            <div style="display: inline-block"><a class="anchor_button" href="{% url 'readmore_app:club_chat' club.club_id %}"><div class="subnavanchor">Enter Book Club Chat</div></a></div>
             {% endif %}
         </div>
         <div style="width: 70%;">
@@ -80,7 +91,8 @@ Readmore - {{ club.club_name }}
 
     <div>
         {% if real_user in club.club_users.all %}
-        <p style="background: #4b4e75;padding:5px 10px 5px 5px; color:white;text-align: center; border-radius: 3px;width:fit-content;"><a href="{% url 'readmore_app:create_club_post' club.club_id %}" class="anchor_button">Create Post</a></p>
+        <a href="{% url 'readmore_app:create_club_post' club.club_id %}" class="anchor_button">Create Post</a>
+        <br/><br/>
         {% endif %}
     </div>
     <center>

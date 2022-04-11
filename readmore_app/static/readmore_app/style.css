@@ -353,7 +353,7 @@ main > div { width: 100%; }
 #drop .dropaw {
     display:block;
     font-family: Arial, Helvetica, sans-serif;
-    padding:2%;
+    padding:15px;
     width: 100%; 
     font-size:small;
     background-color: #1FC198;
@@ -376,7 +376,6 @@ main > div { width: 100%; }
     padding: 0px; 
     z-index: 2; 
     margin-left: 0px;
-      
 }
 
 #drop { 
@@ -611,7 +610,7 @@ div.navbar {
 
 div.subnav {
     background: #414364;
-    border-radius: 2px;
+    border-radius: 5px;
     width: fit-content;
     padding-left:5px;
     padding-right:5px;
@@ -623,7 +622,6 @@ div.subnav {
 
 .subnav div{
     text-align:center;
-    padding:10px;
     width:100%;
 }
 
@@ -647,13 +645,6 @@ div.subnav {
     overflow: hidden;
     padding: 20px;
     padding-bottom:7%;
-}
-
-.subnav div:hover {
-    background: #dee7e9; 
-    color:#3b3e66;
-    border-radius: 4px;
-    transition: all 0.4s;
 }
 
 .club_heading{
