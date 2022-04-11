@@ -2,19 +2,19 @@
 {% load static %}
 
 {% block title %}
-Readmore - {{ book.volumeInfo.title }} Forums
+Readmore - {{ book.title }} Forums
 {% endblock %}
 
 {% block content %}
 <div style="display:flex;flex-direction: column;align-items: center;padding: 4% 0%;margin-left:0%;height:fit-content;">
 	<div style="align-self: flex-start;margin-left: 4.5%;">
-		<a class="anchor_button" href="{% url 'readmore_app:view_book' book_isbn %}" style="margin-top: 1.5%; ">Book's Main Page</a>
+		<a class="anchor_button" href="{% url 'readmore_app:view_book' book_isbn %}" style="margin-top: 1.5%; ">{{ book.title }}</a>
 	</div>
 	<div class="basic_card" style="width:85%;">
 		{% if book != None %}
-			<h1>{{ book.volumeInfo.title }} Forums</h1>
-			<!--img src="{{ book.volumeInfo.imageLinks.thumbnail }}" alt="Image of Book Cover"-->
-			<p style="background: #4b4e75;padding:5px 10px 5px 5px; color:white;text-align: center; border-radius: 3px;width:fit-content;"><a href="{% url 'readmore_app:create_book_forum_post' book_isbn %}" class="anchor_button">Create Post</a></p>
+			<h1>{{ book.title }} Forums</h1>
+			<!--img src="{{ book.thumbnail }}" alt="Image of Book Cover"-->
+			<a href="{% url 'readmore_app:create_book_forum_post' book_isbn %}" class="anchor_button">Create Post</a>
 			<center>
 			<div class="postlist">
 			{% if not book_forum_posts %}

@@ -226,7 +226,7 @@ def view_book(request, book_isbn):
                     book = match
                     break
                     
-        book_forum_post_count = BookForumPost.objects.filter(post_isbn=book_isbn).order_by('-post_date').count()
+        book_forum_post_count = BookForumPost.objects.filter(post_book_isbn=book_isbn).order_by('-post_date').count()
         
         reviews = []
         review_avg = None
@@ -414,19 +414,14 @@ def book_forum(request, book_isbn):
 
     if request.user.is_authenticated:
         real_user = UserExt.objects.get(pk=request.user.id)
-        book_api_key = 'AIzaSyCrRXmYA10KFK9bFearnoAGZ8Suzn1aFgI'
-        book_info = requests.get(f'https://www.googleapis.com/books/v1/volumes?q=+isbn:{book_isbn}&key={book_api_key}').json()
 
         # Find Matching Book
-        book = None
-        if 'items' in book_info.keys():
-            for match in book_info['items']:
-                if book_isbn in [indID['identifier'] for indID in match['volumeInfo']['industryIdentifiers']]:
-                    book = match
-                    break
-                    
+        book = Book(book_isbn)
+        if not book.book_data:
+            raise Http404()
+
         # Collect Book Forum Posts
-        book_forum_posts = BookForumPost.objects.filter(post_isbn=book_isbn).order_by('-post_date')
+        book_forum_posts = BookForumPost.objects.filter(post_book_isbn=book_isbn).order_by('-post_date')
         
         # Render Page
         return render(request, "readmore_app/book_forum.html", {"real_user": real_user, 'book_forum_posts': book_forum_posts, 'book': book, 'book_isbn': book_isbn})

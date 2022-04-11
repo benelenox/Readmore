@@ -23,9 +23,10 @@ Readmore - {{ profile_user.username }}'s Profile
             <div style="height:42px;margin-top: 2em;">
             <a href="{% url 'readmore_app:friend_list' profile_user.id %}" id="friendinfo" class="anchor_button">{{ profile_user.user_friends.all.count }} Friends</a>
             </div>
+            <br/><br/>
             <div>
                 {% if real_user == profile_user %}
-                <p style="background: #4b4e75;padding:5px 10px 5px 5px; color:white;text-align: center; border-radius: 3px;width:fit-content;"><a href="{% url 'readmore_app:create_profile_post' profile_user.id %}" class="anchor_button">Create Post</a></p>
+                <a href="{% url 'readmore_app:create_profile_post' profile_user.id %}" class="anchor_button">Create Post</a>
                 {% endif %}
             </div>
         </div>

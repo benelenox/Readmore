@@ -13,6 +13,8 @@ Readmore - View Post
 			<a class="anchor_button" href="{% url 'readmore_app:club' post.post_club.club_id %}" style="margin-top: 1.5%; ">{{ post.post_club.club_name }}</a>
 		{% elif post.post_profile_user or post.post_rating %}
 			<a class="anchor_button" href="{% url 'readmore_app:profile' post.post_user.id %}" style="margin-top: 1.5%;">{{ post.post_user.username }}'s Profile</a>
+        {% elif post.post_book_isbn %}
+            <a class="anchor_button" href="{% url 'readmore_app:book_forum' book.isbn13 %}" style="margin-top: 1.5%;">{{ book.title }} Forum</a>
 		{% endif %}
 	</div>
 	<div class="basic_card" style="width: 85%;">
@@ -31,7 +33,9 @@ Readmore - View Post
 				</div>
 			</div>
 			{% if post.post_img %}
-			<img style="max-width: 50%;" src="{{ post.post_img }}"/>
+                {% if post.post_rating %}<a href="{% url 'readmore_app:view_book' post.post_isbn %}">{% endif %}
+                <img style="max-width: 500px;" src="{{ post.post_img }}"/>
+                {% if post.post_rating %}</a>{% endif %}
 			{% endif %}
 			{% if post.post_text %}
 			<div class="post_text">
@@ -47,7 +51,7 @@ Readmore - View Post
 			<div class="clubcomment" {% if highlight == comment.post_id %}style="background: white;"{% endif %}>     
 				<div>
 					<div style="margin-right:1%;">
-						<div class="comment_by">{{ comment.post_user }}</div>
+						<div class="comment_by"><a href="{% url 'readmore_app:profile' post.post_user.id %}">{{ comment.post_user }}</a></div>
 						<div style="font-size: 10px;">{{ comment.post_date|date:'m/d/Y h:i A' }}</div>
 					</div>
 				</div>

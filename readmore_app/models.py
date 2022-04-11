@@ -136,7 +136,8 @@ class ReviewPost(Post):
     post_rating = models.IntegerField()
 	
 class BookForumPost(Post):
-    post_isbn = models.TextField()
+    # This NEEDS to be named something other than post_isbn.  Each subclass of post needs a distinct attribute.
+    post_book_isbn = models.TextField()
     
 class Meeting(models.Model):
     meeting_id = models.AutoField(primary_key=True)
