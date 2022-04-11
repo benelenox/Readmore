@@ -26,6 +26,11 @@ Readmore - {{ club.club_name }}
         </tr>
         <tr id="friend{{ friend.id }}underline"><td colspan="2" bgcolor="lightgray"><td></tr>
     {% endfor %}
+    <tr style="display:flex; flex-wrap:wrap; padding: 10px;">
+        <td style="padding-left: 20px; display:flex;justify-content: center;">Invite A Non-Friend</td>
+        <td style="padding-left: 20px;"><input type="text" name="username" id="username" /><button onclick="inviteNonfriend({{ club.club_id }});">Send Invite</button> <span id="resp"></span> </td>
+    </tr>
+    <tr id="friend{{ friend.id }}underline"><td colspan="2" bgcolor="lightgray"><td></tr>
     </table>
     <a class="anchor_button" style="top: 20px; left: 20px; position: relative;" href="{% url 'readmore_app:club' club.club_id %}">Back To Club Home</a>
 </div>
@@ -37,6 +42,20 @@ function inviteMember(friend_id, club_id) {
     invitebutton.innerHTML = "Pending...";
     const xhrinvitemember = new XMLHttpRequest();
     xhrinvitemember.open("GET", "/readmore/ajax/invite_member/" + club_id + "/" + friend_id + "/");
+    xhrinvitemember.send();
+}
+
+function inviteNonfriend(club_id) {
+    var response = document.getElementById("resp");
+    let username = document.getElementById("username").value;
+    const xhrinvitemember = new XMLHttpRequest();
+    xhrinvitemember.onload = function() {
+        response.innerHTML = this.responseText;
+        setInterval(function() {
+            response.innerHTML = "";
+        }, 5000);
+    };
+    xhrinvitemember.open("GET", "/readmore/ajax/invite_nonfriend/" + club_id + "/" + username + "/");
     xhrinvitemember.send();
 }
 {% endblock %}

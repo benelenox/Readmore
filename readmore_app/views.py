@@ -61,7 +61,17 @@ def index(request):
     # If the user isn't logged in, redirect to login page
     if not request.user.is_authenticated:
         return HttpResponseRedirect(reverse("readmore_app:login"))
-    return render(request, "readmore_app/index.html", {})
+    
+    real_user = UserExt.objects.get(pk=request.user.id)
+    
+    by_friend = ProfilePost.objects.filter(post_user__in=[*real_user.user_friends.all()] + [real_user])
+    book_club_list = Club.objects.filter(club_users__in=[real_user])
+    by_club = ClubPost.objects.filter(post_club__in=book_club_list)
+    reviews = ReviewPost.objects.filter(post_user__in=[*real_user.user_friends.all()] + [real_user])
+    
+    feed_posts = set([*by_friend] + [*by_club] + [*reviews])
+    feed_posts = sorted(feed_posts, key=lambda post: post.post_date, reverse=True)
+    return render(request, "readmore_app/index.html", {'posts': feed_posts, 'real_user': real_user})
 
 def login(request, account_created=None):
     if request.user.is_authenticated:
@@ -580,6 +590,28 @@ def invite_member(request, club_id, friend_id):
         notify_member.notification_link_text = club.club_name
         notify_member.save()
     return HttpResponse("")
+    
+def invite_nonfriend(request, club_id, user):
+    real_user = UserExt.objects.get(pk=request.user.id)
+    club = Club.objects.get(pk=club_id)
+    member = UserExt.objects.filter(username__iexact=user)
+    if not member:
+        return HttpResponse("Invalid Username")
+    member = member[0]
+    if member in club.club_pending_invites.all():
+        return HttpResponse("Invitation Already Sent")
+    if member in club.club_users.all():
+        return HttpResponse("This User Is Already A Member of This Club")
+    if club.club_owner == real_user:
+        club.club_pending_invites.add(member)
+        notify_member = Notification()
+        notify_member.notification_user = member
+        notify_member.notification_title = "You Have Been Invited To A Book Club"
+        notify_member.notification_message = f"You have been invited to the book club {club.club_name} by {real_user.username}.  To accept the invitation, click the above link to the book club's homepage and click the 'Join' button."
+        notify_member.notification_link = f"/readmore/club/{club.club_id}/"
+        notify_member.notification_link_text = club.club_name
+        notify_member.save()
+    return HttpResponse("Invitation Sent")
 
 def join_club(request, club_id):
     real_user = UserExt.objects.get(pk=request.user.id)

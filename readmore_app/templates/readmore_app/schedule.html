@@ -25,6 +25,11 @@ Readmore - {{ club.club_name }} Schedule
             <th style="min-width: 300px; background: #414364; color: white;">Meeting Description</th>
             <th style="min-width: 100px; background: #414364; color: white;"></th>
         </tr>
+        {% if not meetings %}
+        <tr>
+            <td colspan="3" style="text-align: center;">No Meetings Here</td>
+        </tr>
+        {% endif %}
         {% for meeting in meetings %}
         <tr id="meeting{{ meeting.meeting_id }}">
             <td>{% if not meeting.meeting_name %}(Unnamed Meeting){% endif %}{{ meeting.meeting_name }}</td>

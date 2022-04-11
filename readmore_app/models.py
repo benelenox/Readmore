@@ -9,7 +9,7 @@ from django.utils import timezone
 class UserExt(User):
     user_friends = models.ManyToManyField('UserExt', related_name="friends")
     user_birthdate = models.DateField()
-    user_bio = models.TextField()
+    user_bio = models.TextField(default="This user hasn't written a bio :(")
     user_pending_friends = models.ManyToManyField('UserExt', related_name="pending_friends")
     user_reading_log = models.ManyToManyField('ReadingLogBook', related_name="reading_log")
     
