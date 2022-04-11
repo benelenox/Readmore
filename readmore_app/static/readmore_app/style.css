@@ -8,15 +8,14 @@ body{
 a{
     text-decoration: none; 
 }
-
-header{
-    position: fixed;
-    z-index: 1;
-    width: 100%;
+.image_404{
+    background-image: url(globe.jpg);
 }
+
 .form{
     height: fit-content;
     width: fit-content;
+    max-width:100%;
     background-color: #f3f4f8;
     padding: 30px;
     margin: auto;
@@ -35,11 +34,8 @@ header{
 }
 
 .comment_by {
-    text-align: center;
-    border-radius: 15px;
     min-width: 15%;
-    padding: 15px;
-    background: #f7f0da;
+    display:inline-flex;
 }
 
 #userbio > * {
@@ -49,10 +45,15 @@ header{
 #bio {width: 600px;}
 
 .comment_text {
-    border-radius: 15px;
-    width: 70%;
-    padding: 25px;
-    background: #f7f0da;
+    text-align: left;
+    width: 73%;
+    background: #f8f8fa;
+    border-radius: 2px;
+    padding: 15px;
+    box-shadow: 2px 2px 2px#7074ac;
+    word-break: break-word;
+    margin-right:1%;
+
 }
 
 div.createform > * {
@@ -71,7 +72,9 @@ div.createform h1 {
     padding-bottom: 60px;
     padding-top: 30px;
     box-shadow: 2px 2px 2px#7074ac;
-    width: 98%;
+    display:flex; 
+    flex-direction:column; 
+    align-items:center;
 }
 
 .clubcomment {
@@ -79,15 +82,26 @@ div.createform h1 {
     margin-bottom: 50px;
     background: #e4e0c5;
     border-radius: 2px;
-    padding-bottom: 30px;
-    padding-top: 30px;
     box-shadow: 2px 2px 2px#7074ac;
     width: 98%;
+    padding: 5% 1%;
+    display:flex;
+}
+
+.review_comment{
+    position: relative;
+    margin-bottom: 50px;
+    background: #e4e0c5;
+    border-radius: 2px;
+    box-shadow: 2px 2px 2px#7074ac;
+    width: 98%;
+    padding: 5% 1%;
+    display:flex;
 }
 
 .post_text {
     text-align: left;
-    width: 75%;
+    width: 90%;
     background: #f8f8fa;
     border-radius: 2px;
     padding: 15px;
@@ -96,8 +110,8 @@ div.createform h1 {
     word-break: break-word;
 }
 
-
-element.style {
+textarea#id_review_text{
+    width: 95%;
 }
 
 .table_card {
@@ -105,7 +119,6 @@ element.style {
     box-shadow: 2px 2px 2px#7074ac;
     border-color: black;
     width: 70%;
-    margin-left: 7em;
     background-color: white;
     margin-top: 1em;
     height:fit-content;
@@ -117,7 +130,11 @@ element.style {
 .book_club {
     width: 80vw;
 }
-
+.book_review{
+    margin: 7% 2% 20% 2%;  
+    display: flex; 
+    flex-direction: row-reverse;
+}
 #search_button{
     border-radius: 3px;
     border: none;
@@ -128,22 +145,40 @@ element.style {
     margin-top: 10px;
 }
 #book_search_results{
-    margin-left: -40px;
+    margin-left: -4%;
     margin-bottom: 10%;
     margin-top: 2%;
+    display: flex;
+    flex-direction: row;
+    align-content: flex-start;
+    align-items: stretch;
+    justify-content: center;
+    flex-wrap: wrap;
+    padding-bottom:60%;
 }
 #book_search_results td{
     color: #eff0f5;
     font-family:Arial, Helvetica, sans-serif;
+    width: 15em;
 }
-
-
+#book_search_results div{
+    display: flex;
+    align-items: center;
+    align-content: space-around;
+    flex-wrap: nowrap;
+    justify-content: center;
+    flex-direction: column;
+    color: #eff0f5;
+    font-family:Arial, Helvetica, sans-serif;
+    
+}
 
 .book_card{
     background: #a5a5aa;
     border-collapse: collapse;
     border: 0px;
-    width: auto;
+    width: 18em;
+    min-height: 18em;   
     position:relative;
     outline: 1px solid #eff0f5;
     outline-offset: -5px;
@@ -151,6 +186,8 @@ element.style {
     flex-direction: column;
     height: auto;
     justify-content: space-between;
+    box-shadow: 2px 2px 8px 6px #7575807a;
+    margin: 5px;
     
 }
 
@@ -158,8 +195,8 @@ element.style {
     background: #a5a5aa;
     border-collapse: collapse;
     border: 0px;
-    width: auto;
-    height: fit-content;
+    min-height:18em;
+    min-height:18em;
     position:relative;
     outline: 1px solid #eff0f5;
     outline-offset: -5px;
@@ -168,29 +205,34 @@ element.style {
     flex-direction: column;
     height: auto;
     justify-content: space-between;
+    box-shadow: 2px 2px 8px 6px #7575807a;
+    margin: 5px;
 }
 
 #club_library_table {
     display: flex;
     overflow: auto;
-    margin-left: -3%;
+    margin-left: -2%;
     margin-right: 2%;
-    width: 75vw;
+    width: 77vw;
     color: #eff0f5;
+    background-color: #8d9ab8;
+    border-style: solid;
+    border-width: 9px;
+    border-color: #847d7d;
 }
+
 
 #club_library_table td {
     background: #a5a5aa;
     border-collapse: collapse;
     border: 0px;
-    margin: 0px;
+    margin: 5px;
     padding: 0px;
     font-family:Arial, Helvetica, sans-serif;
     outline: 1px solid #eff0f5;
     outline-offset: -5px;
-    min-height: 50vh;
 }
-
 
 .book_title{
     display: flex;
@@ -217,6 +259,7 @@ h2.logo{
     display:flex;
     flex-flow: column;
     height: inherit;
+    overflow: hidden;
 }
 
 .content-container {
@@ -224,7 +267,6 @@ h2.logo{
     justify-content: start;
     flex-direction: row;
     flex-wrap: nowrap;
-    padding-top:45px;
     height: 100vh;
 }
 
@@ -260,6 +302,17 @@ h2.logo{
     margin-top: 6px;
 }
 
+#userbio{
+    padding: 1% 2%;
+    background-color: #d0d0e5;
+    margin-right: 1%;
+    color: #3e474d;
+    font-family: monospace;
+    box-shadow: 3px 2px 5px #46494a;
+    word-break: break-word;
+    min-width: 30%;
+
+}
 .submit{
     height: 24px;
     border:none;
@@ -279,16 +332,19 @@ main{
     min-height: 100%;
     height: 100% auto;
     color: #232D5E;
-    padding-left: 21%;
     overflow-y: auto;
     overflow-x: hidden;
-    
+    justify-content:center;
 }
 .book_search_results{
     height: 100% auto;
     margin-right: 2%;
 }
 
+search_add{
+    display:flex;
+    flex-direction: column;
+}
 
 main > * { margin-left: 4.5%; }
 
@@ -297,43 +353,46 @@ main > div { width: 100%; }
 #drop .dropaw {
     display:block;
     font-family: Arial, Helvetica, sans-serif;
-    margin-top: 0;
-    margin-left: 0;
-    width: 90%; 
+    padding:2%;
+    width: 100%; 
     font-size:small;
     background-color: #1FC198;
     color:white;
     position: relative; 
     text-align: center;      
+    z-index: 2;
+    border-radius: 0px;
 }
 
 #drop .dropaw:hover{
     background-color:#E6F4F1;
     color: #3b3e66;
 }
+
 #dropdown {
-    position: absolute; 
+    position: relative; 
     display: none; 
-    background-color: #1FC198;
     color:white;
     padding: 0px; 
-    z-index: 1; 
-    top:45px;
-    border-radius: 0px 0px 4px 4px;    
+    z-index: 2; 
+    margin-left: 0px;
+      
 }
 
 #drop { 
     display: flex; 
     flex-direction: column; 
     padding: 10px;
+    align-content: center;
+    align-items: center;
 }
 
 #drop:hover #dropdown {
-    margin-left:30px;
-    min-width:200px;
+    min-width:25%;
     display:flex; 
     flex-direction: column; 
-    z-index: 0;
+    z-index: 2;
+    background:none;
 }
 
 .basic_card{
@@ -341,7 +400,6 @@ main > div { width: 100%; }
     box-shadow: 2px 2px 2px#7074ac;
     border-color: black;
     width: 100%;
-    margin: 4em 2em;
     background-color: white;
     min-height: 70vh;
     height:fit-content;
@@ -349,29 +407,22 @@ main > div { width: 100%; }
     border-style: solid;
     border-width: 1px;
     padding: 20px;
-    margin: 4em 2em;
+    padding-bottom: 10%;
+    margin: 4%;
 }
 
 .mailbox_card{
-    border-radius: 2px;
-    box-shadow: 2px 2px 2px#7074ac;
-    border-color: black;
-    width: 8vw;
-    background-color: white;
-    margin-top: 3em;
-    height: 80%;
-    overflow: auto;
-    overflow-x: hidden;
-    border-style: solid;
-    border-width: 1px;
-    padding: 20px;
+    width: 30%;
+    padding-top:3%;
+    background-color: #737a79;
     text-align: center;
+    min-width:130px;
+    word-break: break-word;
 }
 
 .likes {
     margin-right: 10%;
     position: absolute;
-    margin-left: 35%;
     font-family: sans-serif;
     font-weight: 700;
     background: #c0d8fc;
@@ -384,8 +435,7 @@ main > div { width: 100%; }
     background: #e35343;
     border: none;
     border-radius: 25px;
-    padding:8px;
-    padding-top: 5px;
+    padding: 7px 6.3px 3px 7px;
 }
 .anchor_button{
     border-radius: 2px;
@@ -397,28 +447,46 @@ main > div { width: 100%; }
     background: #4b4e75;
 }
 
-.mailbox_username {
+p a.anchor_button{
     border-radius: 2px;
-    color: #e2e2db;
+    /* color: #e2e2db; */
+    height: auto;
+    /* width: fit-content; */
     border: none;
-    padding: 10px;
+    /* padding: 10px; */
     background: #4b4e75;
-    display: block; 
-    padding: 10px; 
-    margin: 5px; 
-    padding-bottom: 10px; 
-    width: 6.2vw; 
-    word-wrap: break-word; 
+    width: 100%;
+    text-align: center;
+    padding: 0px;
+    font-size: medium;
+    text-decoration: none;
+    color: #e2e2db;
+    overflow-wrap: break-word;
+    text-align: center;
+    word-break: break-word;
+}
+
+.mailbox_username {
+    color: #737a79;
+    background: #f8f8fa;
+    display: block;
+    padding: 10px;
+    padding-bottom: 10px;
+    word-wrap: break-word;
     height: fit-content;
-}
-
-.anchor_button:hover{
-    background:#e2e2db;
-    color: #4b4e75;
+    margin:1%;
 }
 
 
-.book_club_listing td p a{
+
+.profile_header{
+    display:flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom:4%;
+}
+
+/*.book_club_listing td p a{
     border-radius: 2px;
     color: #e2e2db;
     height: 30px;
@@ -426,7 +494,7 @@ main > div { width: 100%; }
     border: none;
     padding: 10px;
     background: #4b4e75;
-}
+}*/
 
 .anchor_button:hover{
     background: #dee7e9; 
@@ -435,15 +503,12 @@ main > div { width: 100%; }
 }
 
 div.sidebar {
-    position: fixed; 
+    position: relative; 
     text-align: center; 
     background: #8d9ab8;
     width:20%; 
-    min-height:100vh;
-    height:100% auto;
-    border-style: solid;
-    border-width: 1px;
-    border-color:#4b4e75; 
+    height:100vh;
+     
     
     
 }
@@ -468,30 +533,33 @@ div.sidebar {
 
 }
 
+.navbar_wrapper{
+    padding-right: 2%;
+    width:100%;
+}
+
+.navbar{
+    height:3em;
+}
+
 div.navbar {
     float:initial;
     display: flex;
-    justify-content: space-between;
     border: none; 
-    position: relative; 
-    height:45px; 
+    position: relative;  
     background: #414364; 
-    z-index: 5;
+    z-index: 1;
+    justify-content: space-between;
 }
 .navbar a {
     min-width: 120px;
     text-align: center;
     border-radius: 4px;
     font-size: medium;
-    height: 23px; 
-    display:inline; 
     text-decoration: none; 
     color: #e2e2db; 
-    padding: 10px; 
-    float: left; 
     background: none; 
     padding-top:12px; 
-    margin-left: 50px;
     }
 .navbar a:hover {
     background: #dee7e9; 
@@ -505,6 +573,12 @@ div.navbar {
     width: 100%;
     overflow-x: hidden;
 }
+
+#chatmessage{
+    width:50%;
+    word-break: break-word;
+}
+
 #chat_table {
     border-spacing: 10px;
 }
@@ -542,40 +616,59 @@ div.subnav {
     padding-left:5px;
     padding-right:5px;
     display: flex;
+    margin-right: 1%;
+    align-items: center;
 }
 
-.subnav > p {
-    display: inline-block;
+
+.subnav div{
+    text-align:center;
+    padding:10px;
+    width:100%;
 }
+
 
 .subnav a {
     color: white;
-    min-width: 120px;
+    width:100%;
     text-align: center;
-    border-radius: 4px;
+    padding:0px;
     font-size: medium;
-    height: 60px;
     text-decoration: none; 
     color: #e2e2db; 
-    padding: 10px;
     background: none;
+} 
+
+.message_area{
+    display: inline-table;
+    box-shadow: 2px 2px 2px#7074ac;
+    width: 100%;
+    background-color: white;
+    overflow: hidden;
+    padding: 20px;
+    padding-bottom:7%;
 }
 
-.subnav a:hover {
+.subnav div:hover {
     background: #dee7e9; 
     color:#3b3e66;
+    border-radius: 4px;
     transition: all 0.4s;
 }
 
+.club_heading{
+    display:flex;
+    flex-direction:row; 
+    justify-content:space-between;
+}
 
 .stars {
   --percent: calc((var(--rating) - 0.025 ) / 5 * 100%);
   
   display: inline-block;
-  font-size: 40px;
   font-family: Times;
   line-height: 1;
-  
+  font-size: 250%;
 }
 .stars:before {
     content: '★★★★★';
@@ -588,5 +681,175 @@ div.subnav {
 .book_search_link {
     color: inherit;
 }
+
+#view_book_table{
+    display:flex;
+    flex-direction: column;
+    margin-bottom: 4%;
+}
+
+.book_table_head{
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+}
+
+.post_title{
+    max-width: 92%;
+    word-break: break-word;
+    text-align: center;
+}
+
+.sidebar_filler{
+    background-image: url(stackedbooks.jpg);
+    height: inherit;
+}
+
+@media (max-width:889px){
+    .navbar_wrapper{
+        flex-direction: column;
+        height:6em;
+        justify-content: baseline;
+    }
+    .navbar_wrapper.navbar{
+        align-items: center;
+    }
+    .content-container{
+        flex-direction: column;
+    }
+    div.sidebar{
+        width: 100%;
+        display: inline-flex; 
+        justify-content: flex-start;
+        background: white;
+        border: none;
+        box-shadow: 2px 2px 10px #444444;
+    }
+    .message_area{
+        padding-bottom:22%;
+    }
+    .sidebar a{
+        width: 100%;
+        background-color: white;    
+        color:#656679;
+        font-family: Arial, Helvetica, sans-serif;
+        border-radius: 20px;
+    }
+
+    .sidebar a:hover{
+        background: #414364;
+        color: white;
+        transition: all 0.4s;
+    }
+
+    main{
+        width: 100%;
+    }
+    
+    .basic_card{
+        margin:1em;
+        margin-bottom:50%;
+    }
+    #club_library_table{
+        width:96vw;
+    }
+    .book_review{
+        margin-top: 2%;
+    }
+    #book_search_results{
+        margin-bottom:28%;
+    }
+}
+
+@media (max-width:709px){
+    
+    .club_heading{
+        flex-direction: column;
+        align-items: center;
+    }
+    #current_book{
+        margin-top:2%;
+    }
+    .navbar_wrapper{
+        height: 8em;
+        align-content: flex-start;
+    }
+    .navbar_links{
+        flex-wrap: wrap;
+        height:inherit;
+        align-content: baseline;
+        height: 6em;
+    }
+   div form.link{
+       margin-left:4%;
+       margin-right:0.5em;
+   }
+   .book_review{
+        flex-direction: column;
+        align-items: center;
+        margin-bottom: 53%;
+   }
+   #formtable tbody tr{
+        display: flex;
+        flex-direction: column;
+   }
+   
+   .review_form{
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+   }
+   .review_form div{
+        display: inline-block;
+        margin-left: 3%;
+   }
+
+   .profile_header{
+       flex-direction: column;
+       align-items:stretch;
+   }
+   .message_area{
+       padding-bottom:50%;
+   }
+   .post_title{
+       max-width: 86%;
+   }
+   .clubcomment{
+    display: grid;
+    grid-template-columns: 20% 80%;
+    padding-bottom: 15%;
+   }
+   .clubcomment :nth-child(1){
+    grid-row-start: 1;
+    grid-row-end: 2;
+   }
+   .clubcomment :nth-child(2){
+    grid-row-start: 1;
+    grid-row-end: 3;
+    width:87%;
+    padding-bottom:9%;
+   }
+   #book_search_results{
+        margin-bottom:41%;
+    }
+
+}   
+
+@media (max-width: 500px){
+    .book_table_head{
+        flex-direction: column;
+    }
+    .clubcomment{
+        padding-bottom: 14%;
+    }
+    #book_search_results{
+        margin-bottom:65%;
+    }
+}
+
+
+
+
+
 
 .error {margin-top: 20px; position:relative; color:red;font-size:24;padding:10px;border:1px solid black;border-radius:5px; background:rgba(255, 25, 25, 0.3);}

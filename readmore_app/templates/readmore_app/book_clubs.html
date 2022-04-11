@@ -16,8 +16,8 @@ Readmore - Book Clubs
     {% else %}
     {% for book_club in book_club_list %}
         <tr class="book_club_listing" id="club{{ book_club.club_id }}">
-            <td style="padding-left: 20px;">
-                <p><a href="{% url 'readmore_app:club' book_club.club_id %}" class="anchor_button">{{ book_club.club_name }}</a></p>
+            <td >
+                <p style="background: #4b4e75;padding:5px 10px 5px 5px; color:white;text-align: center; border-radius: 3px;"><a href="{% url 'readmore_app:club' book_club.club_id %}" class="anchor_button">{{ book_club.club_name }}</a></p>
             </td>
             <td style="padding-left: 20px;">
                 <p><button onclick="leaveClub({{ book_club.club_id }});">{% if book_club.club_owner != real_user %}Leave Book Club{% else %}Delete Book Club{% endif %}</button></p>

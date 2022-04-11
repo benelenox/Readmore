@@ -7,64 +7,76 @@ Readmore - View Post
 {% endblock %}
 
 {% block content %}
-{% if post.post_club %}<a class="anchor_button" href="{% url 'readmore_app:club' post.post_club.club_id %}" style="margin-top: 1.5%; position: absolute;">{{ post.post_club.club_name }}</a>
-{% elif post.post_profile_user or post.post_rating %}<a class="anchor_button" href="{% url 'readmore_app:profile' post.post_user.id %}" style="margin-top: 1.5%; position: absolute;">{{ post.post_user.username }}'s Profile</a>{% endif %}
-<div class="basic_card">
-    <div style=" text-align: center;" class="clubpost">
-        <span style="margin-right: 10%; position: absolute; margin-left: 35%;" class="likes">
-            <span id="nlikes{{ post.post_id }}">{{ post.post_likes.count }}</span>
-            <input id="likeimage{{post.post_id}}" onclick="doLike({{post.post_id}});" style="width: 20px;" type="image" src="{% if real_user in post.post_likes.all %}{% static 'readmore_app/thumbs_up.png' %}{% else %}{% static 'readmore_app/thumbs_up_gray.png' %}{% endif %}" />
-        </span>
-        <h2 style="margin: 10px;">{{ post.post_title }}</h2>
-        <h5 style="margin: 2px;">Post By: <a href="{% url 'readmore_app:profile' post.post_user.id %}">{{ post.post_user.username }}</a></h5>
-        <h6 style="margin: 2px;">{{ post.post_date|date:'m/d/Y h:i A' }}</h6>
-        {% if post.post_img %}
-            {% if post.post_rating %}<a href="{% url 'readmore_app:view_book' post.post_isbn %}">{% endif %}
-                <img style="max-width: 500px;" src="{{ post.post_img }}"/>
-            {% if post.post_rating %}</a>{% endif %}
-        {% endif %}
-        {% if post.post_rating %}
-            <div align="center" colspan=3><div class="stars" style="font-size: 50px; --rating:{{ post.post_rating|divide:2 }};"></div></div>
-        {% endif %}
-        {% if post.post_text %}
-        <center>
-        <div class="post_text">
-			{% autoescape off %}
-			<p>{{ post.post_text }}</p>
-			{% endautoescape %}
-        </div>
-        </center>
-        {% endif %}
-    </div>
-    <div id="commentslist" class="comments">
-    {% for comment in post.comments.all %}
-        <div class="clubcomment" {% if highlight == comment.post_id %}style="background: #fbff8c;"{% endif %}>
-        <span style="position: absolute; margin-left: 94.1%;" class="likes">
-            <span id="nlikes{{ comment.post_id }}" >{{ comment.post_likes.count }}</span>
-            <input id="likeimage{{comment.post_id}}" onclick="doLike({{comment.post_id}});" style="width: 20px;" type="image" src="{% if real_user in comment.post_likes.all %}{% static 'readmore_app/thumbs_up.png' %}{% else %}{% static 'readmore_app/thumbs_up_gray.png' %}{% endif %}" />
-        </span>
-        <table style="width: 94%;">
-            <tr>
-                <td class="comment_by">{{ comment.post_user }}<br><span style="font-size: 10px;">{{ comment.post_date|date:'m/d/Y h:i A' }}</span></td>
-                {% autoescape off %}
-				<td class="comment_text">{{ comment.post_text }}</td>
+<div style="display:flex;flex-direction: column;align-items: center;padding: 4% 0%;margin-left:0%;height:fit-content;">
+	<div style="align-self: flex-start;margin-left: 4.5%;">
+		{% if post.post_club %}
+			<a class="anchor_button" href="{% url 'readmore_app:club' post.post_club.club_id %}" style="margin-top: 1.5%; ">{{ post.post_club.club_name }}</a>
+		{% elif post.post_profile_user or post.post_rating %}
+			<a class="anchor_button" href="{% url 'readmore_app:profile' post.post_user.id %}" style="margin-top: 1.5%;">{{ post.post_user.username }}'s Profile</a>
+		{% endif %}
+	</div>
+	<div class="basic_card" style="width: 85%;">
+		<div class="clubpost">
+			<div style="display:inline-flex;">
+				<div class="post_title">
+					<a href="{% url 'readmore_app:view_post' post.post_id %}"><h2 style="margin: 10px;">{{ post.post_title }}</h2></a>
+					<h5 style="margin: 2px;">Post By: <a href="{% url 'readmore_app:profile' post.post_user.id %}">{{ post.post_user.username }}</a></h5>
+					<h6 style="margin: 2px;">{{ post.post_date|date:"m/d/Y h:i:s A" }}</h6>
+				</div>
+				<div>
+					<span class="likes">
+						<span id="nlikes{{ post.post_id }}">{{ post.post_likes.count }}</span>
+						<input id="likeimage{{post.post_id}}" onclick="doLike({{post.post_id}});" style="width: 20px;" type="image" src="{% if real_user in post.post_likes.all %}{% static 'readmore_app/thumbs_up.png' %}{% else %}{% static 'readmore_app/thumbs_up_gray.png' %}{% endif %}" />
+					</span>
+				</div>
+			</div>
+			{% if post.post_img %}
+			<img style="max-width: 50%;" src="{{ post.post_img }}"/>
+			{% endif %}
+			{% if post.post_text %}
+			<div class="post_text">
+				{% autoescape off %}
+				<p>{{ post.post_text }}</p>
 				{% endautoescape %}
-            </tr>
-        </table>
-        </div>
-    {% endfor %}
-    </div>
-    {% if real_user in post.post_club.club_users.all or post.post_profile_user or post.post_rating %}
-    
-    <div id="makeComment" style="display: none;">
-        <div style="display: flex; justify-content: center; flex-direction: column;">
-        <textarea id="comment_text" style="display: block; resize: none;" rows=8 cols=100 name="comment_text"></textarea>
-        <input onclick="doComment();" style="margin: 10px;width: fit-content;" type="submit" value="Submit" />
-        </div>
-    </div>
-    
-    <button style="display: block; margin-bottom: 200px;" id="commentButton" onclick="displayComment();">Comment on this Post</button>
-    {% endif %}
+			</div>
+			{% endif %}
+		</div>
+		<div id="commentslist" class="comments">
+		{% for comment in post.comments.all %}  
+		<div>
+			<div class="clubcomment" {% if highlight == comment.post_id %}style="background: white;"{% endif %}>     
+				<div>
+					<div style="margin-right:1%;">
+						<div class="comment_by">{{ comment.post_user }}</div>
+						<div style="font-size: 10px;">{{ comment.post_date|date:'m/d/Y h:i A' }}</div>
+					</div>
+				</div>
+				{% autoescape off %}
+				<div class="comment_text">{{ comment.post_text }}</div>
+				{% endautoescape %}
+				<div>
+					<span class="likes">
+						<span id="nlikes{{ comment.post_id }}" >{{ comment.post_likes.count }}</span>
+						<input id="likeimage{{comment.post_id}}" onclick="doLike({{comment.post_id}});" style="width: 20px;" type="image" src="{% if real_user in comment.post_likes.all %}{% static 'readmore_app/thumbs_up.png' %}{% else %}{% static 'readmore_app/thumbs_up_gray.png' %}{% endif %}" />
+					</span>
+				</div>
+			</div>
+		</div>
+
+		{% endfor %}
+		</div>
+		{% if real_user in post.post_club.club_users.all or post.post_profile_user or post.post_rating %}
+		
+		<div id="makeComment" style="display: none;">
+			<div style="display: flex; justify-content: center; flex-direction: column;">
+			<textarea id="comment_text" style="display: block; resize: none;" rows=8 cols=100 name="comment_text"></textarea>
+			<input onclick="doComment();" style="margin: 10px;width: fit-content;" type="submit" value="Submit" />
+			</div>
+		</div>
+		
+		<button style="display: block; margin-bottom: 200px;" id="commentButton" onclick="displayComment();">Comment on this Post</button>
+		{% endif %}
+	</div>
 </div>
 {% endblock %}
 

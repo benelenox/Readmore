@@ -7,32 +7,32 @@ Readmore - {{ club.club_name }}
 
 {% block content %}
 <div class="basic_card" style="width:100%;">
-    <div style="display:flex;flex-direction:row; justify-content: space-between;">
+    <div class="club_heading">
         <div>
-        <h1 style="display: inline-block; word-wrap: break-word; width: 100%;">{{ club.club_name }}</h1>
-        <div id="joindiv" style="display: inline-block;">
-        {% if real_user in club.club_users.all %}
-        <h3 style="margin-left: 30px; display: inline-block;">[Joined]</h3>
-        {% elif real_user in club.club_pending_invites.all %}
-        <button onclick="joinClub();">Join</button>
-        {% endif %}
+            <h1 style="display: inline-block; word-wrap: break-word; width: 100%;">{{ club.club_name }}</h1>
+            <div id="joindiv" style="display: inline-block;">
+            {% if real_user in club.club_users.all %}
+            <h3 style="margin-left: 30px; display: inline-block;">[Joined]</h3>
+            {% elif real_user in club.club_pending_invites.all %}
+            <button onclick="joinClub();">Join</button>
+            {% endif %}
         </div>
         <div class="subnav">
-        <p style="display: inline-block"><a href="{% url 'readmore_app:club_members' club.club_id %}">{{ club.club_users.all.count }} Members</a></p>
-        {% if real_user == club.club_owner %}
-        <p style="display: inline-block"><a class="anchor_button" href="{% url 'readmore_app:invite_to_club' club.club_id %}">Invite Users</a></p>
-        {% endif %}
-        <p style="display: inline-block"><a class="anchor_button" href="{% url 'readmore_app:club_library' club.club_id %}">Book Club Library</a></p>
-        {% if real_user in club.club_users.all %}
-        <p style="display: inline-block"><a class="anchor_button" href="{% url 'readmore_app:club_chat' club.club_id %}">Enter Book Club Chat</a></p>
-        {% endif %}
+            <div style="display: inline-block"><a class="anchor_button" href="{% url 'readmore_app:club_members' club.club_id %}">{{ club.club_users.all.count }} Members</a></div>
+            {% if real_user == club.club_owner %}
+            <div style="display: inline-block"><a class="anchor_button" href="{% url 'readmore_app:invite_to_club' club.club_id %}">Invite Users</a></div>
+            {% endif %}
+            <div style="display: inline-block"><a class="anchor_button" href="{% url 'readmore_app:club_library' club.club_id %}">Book Club Library</a></div>
+            {% if real_user in club.club_users.all %}
+            <div style="display: inline-block"><a class="anchor_button" href="{% url 'readmore_app:club_chat' club.club_id %}">Enter Book Club Chat</a></div>
+            {% endif %}
         </div>
-        </div>
+    </div>
     {% if current_book %}
-        <div id="current_book" class="book_card_mv" style="color: #eff0f5;width: 18em;font-family:Arial, Helvetica, sans-serif;">
-            <div><h2 style="width: 100%; text-align: center; padding: 5px;">Current Book</h2></div>
-            <a class="book_search_link" href="{% url 'readmore_app:view_book' current_book.isbn13 %}">
-                <div style="width: 16em;margin-left: 4%;">
+    <div id="current_book" class="book_card_mv" style="color: #eff0f5;width: 19em;font-family:Arial, Helvetica, sans-serif;">
+        <div><h2 style="width: 100%; text-align: center; padding: 5px;">Current Book</h2></div>
+        <a class="book_search_link" href="{% url 'readmore_app:view_book' current_book.isbn13 %}">
+            <div style="width: 16em;">
                 <div class="book_title" style="position: relative;">
                     <div style="width: 40%; margin: 4px;"><img width="100px" height="140px" src="{{ current_book.small_thumbnail }}" alt="{{ book.title }} Cover Image" /></div>
                     <div style="width: 100%; margin-left: 0.6em;">
@@ -41,34 +41,34 @@ Readmore - {{ club.club_name }}
                     
                     </div>
                 </div>
-                <div style="margin-top: 0%;margin-bottom: 20px;margin-left: 30px;height: 100px;">
-                    <div style="display:flex;">
-                        <div style="font-size:12px; width: 28%; margin-top: 12px;">
-                            Author{{ current_book.authors|length|pluralize:"s" }}
-                        </div>
-                        <div style="width: 50%;">
-                            <p style="font-size:12px;">
-                            {% for author in current_book.authors %}
-                            <span style="font-size:12px;">{{ author }}</span>
-                            </p>
-                            {% endfor %}
-                        </div>
+            <div style="margin-top: 0%;margin-left: 30px;">
+                <div style="display:flex;">
+                    <div style="font-size:12px; width: 28%; margin-top: 12px;">
+                        Author{{ current_book.authors|length|pluralize:"s" }}
+                    </div>
+                    <div style="width: 50%;">
+                        <p style="font-size:12px;">
+                        {% for author in current_book.authors %}
+                        <span style="font-size:12px;">{{ author }}</span>
+                        </p>
+                        {% endfor %}
                     </div>
                 </div>
-                <div style="margin-left: 30px;">
-                    <div colspan=2 style="font-size:12px;">ISBN: {{ current_book.isbn13 }}</div>
-                </div>
-                <div style="margin-bottom:5%;"><div align="center"><div class="stars" style="--rating:{{ current_book.rating }};"></div></div></div>
-                </div>
-            </a>
-        
+            </div>
+            <div style="margin-left: 30px;">
+                <div colspan=2 style="font-size:12px;">ISBN: {{ current_book.isbn13 }}</div>
+            </div>
+            <div style="margin-bottom:5%;"><div align="center"><div class="stars" style="--rating:{{ current_book.rating }};"></div></div></div>
         </div>
+    </a>
+    
+    </div>
     {% endif %}
     </div>
     <div>
         <p>{{ club.club_description }}</p>
         {% if real_user in club.club_users.all %}
-        <p><a href="{% url 'readmore_app:create_club_post' club.club_id %}" class="anchor_button">Create Post</a></p>
+        <p style="background: #4b4e75;padding:5px 10px 5px 5px; color:white;text-align: center; border-radius: 3px;width:fit-content;"><a href="{% url 'readmore_app:create_club_post' club.club_id %}" class="anchor_button">Create Post</a></p>
         {% endif %}
     </div>
     <center>
@@ -78,15 +78,21 @@ Readmore - {{ club.club_name }}
     {% else %}
         {% for post in club_posts %}
             <div class="clubpost">
-                <span class="likes">
-                    <span id="nlikes{{ post.post_id }}">{{ post.post_likes.count }}</span>
-                    <input id="likeimage{{post.post_id}}" onclick="doLike({{post.post_id}});" style="width: 20px;" type="image" src="{% if real_user in post.post_likes.all %}{% static 'readmore_app/thumbs_up.png' %}{% else %}{% static 'readmore_app/thumbs_up_gray.png' %}{% endif %}" />
-                </span>
-                <a href="{% url 'readmore_app:view_post' post.post_id %}"><h2 style="margin: 10px;">{{ post.post_title }}</h2></a>
-                <h5 style="margin: 2px;">Post By: <a href="{% url 'readmore_app:profile' post.post_user.id %}">{{ post.post_user.username }}</a></h5>
-                <h6 style="margin: 2px;">{{ post.post_date|date:"m/d/Y h:i:s A" }}</h6>
+                <div style="display:inline-flex;">
+                    <div style="max-width: 92%;word-break: break-word;">
+                        <a href="{% url 'readmore_app:view_post' post.post_id %}"><h2 style="margin: 10px;">{{ post.post_title }}</h2></a>
+                        <h5 style="margin: 2px;">Post By: <a href="{% url 'readmore_app:profile' post.post_user.id %}">{{ post.post_user.username }}</a></h5>
+                        <h6 style="margin: 2px;">{{ post.post_date|date:"m/d/Y h:i:s A" }}</h6>
+                    </div>
+                    <div>
+                        <span class="likes">
+                            <span id="nlikes{{ post.post_id }}">{{ post.post_likes.count }}</span>
+                            <input id="likeimage{{post.post_id}}" onclick="doLike({{post.post_id}});" style="width: 20px;" type="image" src="{% if real_user in post.post_likes.all %}{% static 'readmore_app/thumbs_up.png' %}{% else %}{% static 'readmore_app/thumbs_up_gray.png' %}{% endif %}" />
+                        </span>
+                    </div>
+                </div>
                 {% if post.post_img %}
-                <img style="max-width: 500px;" src="{{ post.post_img }}"/>
+                <div><img style="max-width: 50%;" src="{{ post.post_img }}"/></div>
                 {% endif %}
                 {% if post.post_text %}
 				<div class="post_text">

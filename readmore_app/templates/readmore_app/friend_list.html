@@ -15,8 +15,7 @@ Readmore - {{ profile_user.username }}'s Profile
     {% for friend in profile_user.user_friends.all %}
         <tr id="friend{{ friend.id }}">
             <td>
-                <p><a href="{% url 'readmore_app:profile' friend.id %}" class="anchor_button">@{{ friend.username }}</a></p>
-                <hr>
+                <p style="background: #4b4e75;padding:5px 10px 5px 5px; color:white;text-align: center; border-radius: 3px;width:fit-content;"><a href="{% url 'readmore_app:profile' friend.id %}" class="anchor_button">@{{ friend.username }}</a></p>
             </td>
         </tr>
     {% endfor %}

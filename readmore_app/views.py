@@ -207,16 +207,21 @@ def view_book(request, book_isbn):
                 if book_isbn in [indID['identifier'] for indID in match['volumeInfo']['industryIdentifiers']]:
                     book = match
                     break
+                    
+        book_forum_post_count = BookForumPost.objects.filter(post_isbn=book_isbn).order_by('-post_date').count()
+        
         reviews = []
         review_avg = None
         if book != None:
             try:
                 reviews = ReviewPost.objects.filter(post_isbn=get_isbn13(book['volumeInfo']['industryIdentifiers'])).annotate(num_likes=Count('post_likes')).order_by('-num_likes')
                 review_avg = ReviewPost.objects.filter(post_isbn="9781408855898").aggregate(Avg('post_rating'))['post_rating__avg']
+                print(review_avg)
+                print("REEEEEVIIEWIWWIWIWW AVVGGGG")
             except KeyError:
                 pass
 
-        return render(request, "readmore_app/view_book.html", {"real_user": real_user, "book": book, 'reviews': reviews, 'review_avg': review_avg})
+        return render(request, "readmore_app/view_book.html", {"real_user": real_user, "book": book, 'book_forum_post_count': book_forum_post_count, 'reviews': reviews, 'review_avg': review_avg})
         
     # Redirect Unknown Users
     return redirect(reverse('readmore_app:login'))
@@ -378,7 +383,6 @@ def create_review_post(request, book_isbn):
                 new_post.post_isbn = review_book.isbn
                 new_post.post_rating = int(form.cleaned_data['rating'])
                 new_post.setup_info(real_user, f"Review of {review_book.title}", form.cleaned_data['review_text'], review_book.thumbnail)
-                new_post.save()
                 return redirect(reverse('readmore_app:profile', kwargs={'profile_id': real_user.id}))
             else:
                 return render(request, 'readmore_app/review_book.html', {'form': form, 'book': review_book})
@@ -389,12 +393,26 @@ def book_forum(request, book_isbn):
     """
     The discussion forum page for individual books
     """
-    
+
     if request.user.is_authenticated:
         real_user = UserExt.objects.get(pk=request.user.id)
+        book_api_key = 'AIzaSyCrRXmYA10KFK9bFearnoAGZ8Suzn1aFgI'
+        book_info = requests.get(f'https://www.googleapis.com/books/v1/volumes?q=+isbn:{book_isbn}&key={book_api_key}').json()
+
+        # Find Matching Book
+        book = None
+        if 'items' in book_info.keys():
+            for match in book_info['items']:
+                if book_isbn in [indID['identifier'] for indID in match['volumeInfo']['industryIdentifiers']]:
+                    book = match
+                    break
+                    
+        # Collect Book Forum Posts
         book_forum_posts = BookForumPost.objects.filter(post_isbn=book_isbn).order_by('-post_date')
-        return render(request, "readmore_app/book_forum.html", {"real_user": real_user, 'book_forum_posts': book_forum_posts, 'book_isbn': book_isbn})
         
+        # Render Page
+        return render(request, "readmore_app/book_forum.html", {"real_user": real_user, 'book_forum_posts': book_forum_posts, 'book': book, 'book_isbn': book_isbn})
+
     # Redirect Unknown Users
     return HttpResponseRedirect(reverse("readmore_app:login"))
 
@@ -402,15 +420,13 @@ def create_book_forum_post(request, book_isbn):
     """
     The creation page for book forum posts
     """
-    
+
     if request.user.is_authenticated:
         real_user = UserExt.objects.get(pk=request.user.id)
-        
-        
+
+
     # Redirect Unknown Users
     return HttpResponseRedirect(reverse("readmore_app:login"))
-
-
 
 
 """ 
@@ -558,7 +574,7 @@ def add_to_library(request, club_id, isbn):
             template = f"""
            <td id="clubbook{book.id}"  class="book_card">
             <a class="book_search_link" href="/readmore/view_book/{book.isbn13}">
-                <div style="width: 20em;margin-left: 4%;">
+                <div style="width: 20em;">
                 <div class="book_title">
                     <div style="width: 40%; margin: 3px;"><img width="100px" height="140px" src="{book.small_thumbnail}" alt="{book.title} Cover Image" /></div>
                     <div style="width: 100%; margin-left: 0.6em;">                   
@@ -626,18 +642,24 @@ def make_comment(request, post_id):
     new_comment.post_parent = post
     new_comment.setup_info(info_user=real_user, info_text=data['comment_text'])
     new_comment.save()
-    return HttpResponse(f"""<div class="clubpost">
-        <span style="position: absolute; margin-left: 95%;">
-            <span id="nlikes{new_comment.post_id}">{new_comment.post_likes.count()}</span>
-            <input id="likeimage{new_comment.post_id}" onclick="doLike({new_comment.post_id});" style="width: 20px;" type="image" src="{'/static/readmore_app/thumbs_up.png' if real_user in new_comment.post_likes.all() else '/static/readmore_app/thumbs_up_gray.png'}" />
-        </span>
-        <table style="width: 93%;">
-            <tr>
-                <td class="comment_by">{new_comment.post_user}<br><span style="font-size: 10px;">{datetime.now().strftime("%m/%d/%Y %I:%M %p")}</span></td>
-                <td class="comment_text">{new_comment.post_text}</td>
-            </tr>
-        </table>
-        </div>""")
+    return HttpResponse(f"""
+        <div class="clubcomment">
+            <div>
+                <div style="margin-right: 1%;">                   
+                    <div class="comment_by">{new_comment.post_user}</div>
+                    <div style="font-size: 10px;">{datetime.now().strftime("%m/%d/%Y %I:%M %p")}</div>
+                </div>
+            </div>
+            <div class="comment_text">{new_comment.post_text }</div>
+            <div>
+                <span class="likes">
+                    <span id="nlikes{new_comment.post_id}" >{new_comment.post_likes.count()}</span>
+                    <input id="likeimage{new_comment.post_id}" onclick="doLike({new_comment.post_id});" style="width: 20px;" type="image" src="{'/static/readmore_app/thumbs_up.png' if real_user in new_comment.post_likes.all() else '/static/readmore_app/thumbs_up_gray.png'}" />
+                </span>
+                </div>
+            </div>
+        </div>
+        """)
 
 @csrf_exempt
 def save_bio(request, user_id):
@@ -673,7 +695,7 @@ def add_to_user_library(request, isbn):
                     
                     </div>
                 </div>
-                <div style="margin-top: 50%;margin-bottom: 20px;margin-left: 30px;">
+                <div style="margin-top: 60%;margin-bottom: 20px;margin-left: 30px;">
                     <div style="display:flex;">
                         <div style="font-size:12px; width: 28%; margin-top: 12px;">
                             Author{'s' if len(book.authors) > 1 else ''}
@@ -683,8 +705,14 @@ def add_to_user_library(request, isbn):
                         </div>
                     </div>
                 </div>
+                <div style="margin-left: 30px;">
+                    <div colspan=2 style="font-size:12px;">ISBN: {book.isbn13}</div>
+                </div>
             </div>
             </a>
+            <div style="display: flex; flex-direction: column; justify-content: center; margin-bottom: 15px;">
+                <div><div align="center"><div class="stars" style="--rating:{book.rating};margin-bottom:5%;"></div></div></div>
+                </div>
             <div style="display: flex; justify-content: center; margin-bottom: 15px;">
                <a href="/readmore/review_book/{book.isbn13}" style="display: block; margin-right: 20px;"><button class="book_action">Review Book</button></a>
                <button onclick="delete_user_library_book('{{ book.id }}');" class="book_action" style="display: block; margin-left: 20px;">Delete Book</button>

@@ -11,85 +11,86 @@ Readmore - Book Not Found
 {% endblock %}
 
 {% block content %}
-<div class="basic_card">
+<div style="display:flex;flex-direction: column;align-items: center;padding: 4% 0%;margin-left:0%;height:fit-content;">
+<div class="basic_card" style="width: 85%;">
     {% if book != None %}
     <h1>{{ book.volumeInfo.title }}</h1>
     <h2>{{ book.volumeInfo.subtitle }}</h2>
-    <table id="view_book_table">
-    <tr>
-        <td style="width: 20%;" rowspan=5>
-            <img width="300px" src="{{ book.volumeInfo.imageLinks.thumbnail }}" alt="Image of Book Cover"> 
-        </td>
-        <td style="width:200px;" align="center" rowspan=5>
-            <div style="margin-bottom: 50%;">
-            Rating: 
-            <br>
-            <div class="stars" style="--rating:{{ book.volumeInfo.averageRating }};"></div>
+    <div id="view_book_table">
+        <div class="book_table_head">
+            <div style="width: 20%;" rowspan=5>
+                <img width="200%" src="{{ book.volumeInfo.imageLinks.thumbnail }}" alt="Image of Book Cover"> 
             </div>
-            {% if reviews %}
-            <div style="margin-bottom: 50%;">
-            Readmore Rating: 
-            <br>
-            <div class="stars" style="--rating:{{ review_avg|divide:2 }};"></div>
+            <div style="width: 50%;">
+                <div style="margin-bottom: 6%;">
+                    <div >
+                    <h3>Rating: </h3>
+                    <div class="stars" style="--rating:{{ book.volumeInfo.averageRating }};"></div>
+                    </div>
+                    {% if reviews %}
+                    <div>
+                        <h3>Readmore Rating: </h3>
+                        <div class="stars" style="--rating:{{ review_avg|divide:2 }};"></div>
+                    </div>
+                    {% endif %}
+                </div>
+                <div>
+                    <h3>Author{{ book.volumeInfo.authors|length|pluralize:"s" }}:</h3>
+                    {% for author in book.volumeInfo.authors %}
+                    <h5><span style="margin-left: 3%;">{{ author }}</span></h5>
+                    {% endfor %}
+                </div>
             </div>
-            {% endif %}
-        </td>
-        <td>
-            Author{{ book.volumeInfo.authors|length|pluralize:"s" }}:
-                        <br>
-                        {% for author in book.volumeInfo.authors %}
-                        <span style="margin-left: 3%;">{{ author }}<span>
-                        <br>
-                        {% endfor %}
-        </td>
-    </tr>
-    <tr>
-        <td>Publisher: {{ book.volumeInfo.publisher }}</td>
-    </tr>
-    <tr>
-        <td>Publication Date: {{ book.volumeInfo.publishedDate }}</td>
-    </tr>
-    <tr>
-        <td>ISBN13: {% get_isbn_thirteen book.volumeInfo.industryIdentifiers %}</td>
-    </tr>
-    <tr>
-        <td>ISBN10: {% get_isbn_ten book.volumeInfo.industryIdentifiers %}</td>
-    </tr>
-    <tr>
-        <td colspan=3>
+        </div>
+        <div>
+            <h4>Publisher: {{ book.volumeInfo.publisher }}</h4>
+            <h4>Publication Date: {{ book.volumeInfo.publishedDate }}</h4>
+            <h4>ISBN13: {% get_isbn_thirteen book.volumeInfo.indusdivyIdentifiers %}</h4>
+            <h4>ISBN10: {% get_isbn_ten book.volumeInfo.indusdivyIdentifiers %}</h4>
+        </div>
+        <div>
             <h2>Description</h2>
             <p>{{ book.volumeInfo.description }}</p>
-        </td>
-    </tr>
-    </table>
-    <h2>Forums</h2>
-	<h2 style="display: inline;">Reviews</h2>
-    <a href="{% url 'readmore_app:create_review_post' book.volumeInfo.industryIdentifiers|isbn_thirteen_filter %}" style="display: block; display: inline; margin-left: 80%;"><button style="border: none; padding: 9px;">Review This Book</button></a>
-    <br/></br/></br/></br/>
-    {% if reviews %}
-        {% for review in reviews %}
-        <div class="clubcomment" {% if highlight == review.post_id %}style="background: #fbff8c;"{% endif %}>
-        <span style="position: absolute; margin-left: 94.1%;" class="likes">
-            <span id="nlikes{{ review.post_id }}" >{{ review.post_likes.count }}</span>
-            <input id="likeimage{{review.post_id}}" onclick="doLike({{review.post_id}});" style="width: 20px;" type="image" src="{% if real_user in review.post_likes.all %}{% static 'readmore_app/thumbs_up.png' %}{% else %}{% static 'readmore_app/thumbs_up_gray.png' %}{% endif %}" />
-        </span>
-        <div style="width: 100%;">
-            <center>
-            <div class="comment_by" style="width: fit-content;">
-                <a href="{% url 'readmore_app:profile' review.post_user.id %}">{{ review.post_user }}</a><br><span style="font-size: 10px;">{{ review.post_date|date:'m/d/Y h:i A' }}</span>
-            </div>
-            <div>
-                <div style="background: #c0d8fc;padding: 10px;box-shadow: 2px 2px 2px#7074ac; width: fit-content; border-radius: 15px;" align="center" colspan=3><div class="stars" style="font-size: 50px; --rating:{{ review.post_rating|divide:2 }};"></div></div>
-            </div>
-            <div align="center" class="comment_text" style="width: 92%; text-align: left;">
-                {% autoescape off %}
-				<p>{{ review.post_text }}</p>
-				{% endautoescape %}
-            </div>
-            </center>
         </div>
+
+        <h2>Forums</h2>
+		<a href="{% url 'readmore_app:book_forum' book.volumeInfo.industryIdentifiers|isbn_thirteen_filter %}" ><button style="border: none; padding: 9px;">View This Book's Forums</button> ({{book_forum_post_count}} Post{{book_forum_post_count|pluralize:"s"}})</a>
+		<p>
+		<a href="{% url 'readmore_app:create_book_forum_post' book.volumeInfo.industryIdentifiers|isbn_thirteen_filter %}" ><button style="border: none; padding: 9px;">Post to This Book's Forums</button></a>
+		</p>
+		
+        <h2 style="display: inline;">Reviews</h2>
+        <a href="{% url 'readmore_app:create_review_post' book.volumeInfo.industryIdentifiers|isbn_thirteen_filter %}" ><button style="border: none; padding: 9px;">Review This Book</button></a>
+    </div>
+    {% if reviews %}
+    <div id="commentslist" class="comments">
+        {% for review in reviews %}
+        <div class="clubcomment" style="align-items: flex-start;justify-content: space-between;"{% if highlight == review.post_id %}style="background: white;"{% endif %}>  
+            
+            <div>
+                <div style="margin-right:1%;">
+                    <div class="comment_by">{{ review.post_user }}</div>
+                    <div style="font-size: 10px;">{{ review.post_date|date:'m/d/Y h:i A' }}</div>
+                </div>
+            </div>
+            <div style="width: 81%;">
+                <div style="margin-bottom: 3%;margin-top: -5%;">
+                    <div style="background: #c0d8fc;padding: 10px;box-shadow: 2px 2px 2px#7074ac; width: fit-content; border-radius: 15px;" align="center" colspan=3><div class="stars" style="font-size: 2em; --rating:{{ review.post_rating|divide:2 }};"></div></div>
+                </div>
+                {% autoescape off %}
+                <div class="comment_text">{{ review.post_text }}</div>
+                {% endautoescape %}
+            </div>
+            <div style="margin-right:7%;">
+                <span class="likes">
+                    <span id="nlikes{{ review.post_id }}" >{{ review.post_likes.count }}</span>
+                    <input id="likeimage{{review.post_id}}" onclick="doLike({{review.post_id}});" style="width: 20px;" type="image" src="{% if real_user in review.post_likes.all %}{% static 'readmore_app/thumbs_up.png' %}{% else %}{% static 'readmore_app/thumbs_up_gray.png' %}{% endif %}" />
+                </span>
+            </div>
+            
         </div>
         {% endfor %}
+        </div>
     {% else %}
         <p>No reviews have been posted about this book.</p>
     {% endif %}
@@ -97,6 +98,7 @@ Readmore - Book Not Found
     {% else %}
         <h1>Book Not Found</h1>
     {% endif %}
+</div>
 </div>
 {% endblock %}
 

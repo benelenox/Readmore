@@ -133,6 +133,6 @@ class Comment(Post):
 class ReviewPost(Post):
     post_isbn = models.TextField()
     post_rating = models.IntegerField()
-
+	
 class BookForumPost(Post):
     post_isbn = models.TextField()
