@@ -8,9 +8,7 @@ body{
 a{
     text-decoration: none; 
 }
-.image_404{
-    background-image: url(globe.jpg);
-}
+
 
 .form{
     height: fit-content;
@@ -629,14 +627,15 @@ div.subnav {
 
 
 .subnav a {
-    color: white;
-    width:100%;
+    align-self: stretch;
+    width: 100%;
     text-align: center;
-    padding:0px;
     font-size: medium;
-    text-decoration: none; 
-    color: #e2e2db; 
+    text-decoration: none;
+    color: #e2e2db;
     background: none;
+    display: flex;
+    align-items: center;
 } 
 
 .message_area{

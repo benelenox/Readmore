@@ -18,13 +18,13 @@ Readmore - {{ club.club_name }}
             {% endif %}
         </div>
         <div class="subnav">
-            <div style="display: inline-block"><a class="anchor_button" href="{% url 'readmore_app:club_members' club.club_id %}">{{ club.club_users.all.count }} Members</a></div>
+            <a class="anchor_button" href="{% url 'readmore_app:club_members' club.club_id %}">{{ club.club_users.all.count }} Members</a>
             {% if real_user == club.club_owner %}
-            <div style="display: inline-block"><a class="anchor_button" href="{% url 'readmore_app:invite_to_club' club.club_id %}">Invite Users</a></div>
+            <a class="anchor_button" href="{% url 'readmore_app:invite_to_club' club.club_id %}">Invite Users</a>
             {% endif %}
-            <div style="display: inline-block"><a class="anchor_button" href="{% url 'readmore_app:club_library' club.club_id %}">Book Club Library</a></div>
+            <a class="anchor_button" href="{% url 'readmore_app:club_library' club.club_id %}">Book Club Library</a>
             {% if real_user in club.club_users.all %}
-            <div style="display: inline-block"><a class="anchor_button" href="{% url 'readmore_app:club_chat' club.club_id %}">Enter Book Club Chat</a></div>
+            <a class="anchor_button" href="{% url 'readmore_app:club_chat' club.club_id %}">Enter Book Club Chat</a>
             {% endif %}
         </div>
     </div>
