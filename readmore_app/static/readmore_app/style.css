@@ -557,7 +557,7 @@ div.navbar {
     text-decoration: none; 
     color: #e2e2db; 
     background: none; 
-    padding-top:12px; 
+    padding: 12px 0px; 
     }
 .navbar a:hover {
     background: #dee7e9; 
