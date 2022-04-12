@@ -12,12 +12,13 @@ Readmore - {{ club.club_name }}
     {% for member in club.club_users.all %}
         <tr id="member{{ member.id }}">
             <td style="padding-left: 20px;">
-                <p style="background: #4b4e75;padding:5px 10px 5px 5px; color:white;text-align: center; border-radius: 3px;"><a href="{% url 'readmore_app:profile' member.id %}" class="anchor_button">@{{ member.username }}</a></p>
+                <a href="{% url 'readmore_app:profile' member.id %}" class="anchor_button">@{{ member.username }}</a>
             </td>
-            <td style="padding-left: 20px;">
+            <td style="padding-left: 20px; height: 55px;">
                 {% if club.club_owner == real_user and member.id != real_user.id %}
                 <p><button onclick="kickMember({{ member.id }}, {{ club.club_id }});">Kick User</button></p>
                 {% endif %}
+
             </td>
         </tr>
         <tr id="member{{ member.id }}underline"><td colspan="2" bgcolor="lightgray"><td></tr>
