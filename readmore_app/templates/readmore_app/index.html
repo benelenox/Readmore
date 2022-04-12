@@ -30,6 +30,9 @@ Readmore - Index
                     {% if post.post_club %}
                     <h5>Posted to: <a href="{% url 'readmore_app:club' post.post_club.club_id %}">{{ post.post_club.club_name }}</a></h5>
                     {% endif %}
+                    {% if post.post_book_isbn %}
+                    <h5>Posted to: <a href="{% url 'readmore_app:book_forum' post.post_book_isbn %}">"{% get_title post.post_book_isbn %}" Forum</a></h5>
+                    {% endif %}
                     <h5 style="margin: 2px;">Post By: <a href="{% url 'readmore_app:profile' post.post_user.id %}">{{ post.post_user.username }}</a></h5>
                     <h6 style="margin: 2px;">{{ post.post_date|date:"m/d/Y h:i:s A" }}</h6>
                     </div>

@@ -14,7 +14,7 @@ Readmore - View Post
 		{% elif post.post_profile_user or post.post_rating %}
 			<a class="anchor_button" href="{% url 'readmore_app:profile' post.post_user.id %}" style="margin-top: 1.5%;">{{ post.post_user.username }}'s Profile</a>
         {% elif post.post_book_isbn %}
-            <a class="anchor_button" href="{% url 'readmore_app:book_forum' book.isbn13 %}" style="margin-top: 1.5%;">{{ book.title }} Forum</a>
+            <a class="anchor_button" href="{% url 'readmore_app:book_forum' post.post_book_isbn %}" style="margin-top: 1.5%;">"{% get_title post.post_book_isbn %}" Forum</a>
 		{% endif %}
 	</div>
 	<div class="basic_card" style="width: 85%;">
@@ -48,7 +48,7 @@ Readmore - View Post
 		<div id="commentslist" class="comments">
 		{% for comment in post.comments.all %}  
 		<div>
-			<div class="clubcomment" {% if highlight == comment.post_id %}style="background: white;"{% endif %}>     
+			<div class="clubcomment" {% if highlight == comment.post_id %}style="background: #faf9be;"{% endif %}>     
 				<div>
 					<div style="margin-right:1%;">
 						<div class="comment_by"><a href="{% url 'readmore_app:profile' post.post_user.id %}">{{ comment.post_user }}</a></div>
@@ -69,7 +69,7 @@ Readmore - View Post
 
 		{% endfor %}
 		</div>
-		{% if real_user in post.post_club.club_users.all or post.post_profile_user or post.post_rating %}
+		{% if real_user in post.post_club.club_users.all or post.post_profile_user or post.post_rating or post.post_book_isbn %}
 		
 		<div id="makeComment" style="display: none;">
 			<div style="display: flex; justify-content: center; flex-direction: column;">
