@@ -22,7 +22,7 @@
           <div><h2 class="logo">readmore</h2></div>
           <div><img src="{% static 'readmore_app/logo_small.png' %}"></div>
         </div>
-        <div class="navbar navbar_links" style="padding-right:2%;">
+        <div class="navbar_links" style="padding-right:2%;">
           
           <a class="link" href="{% url 'readmore_app:index' %}">Home</a>
           {% if not user.is_authenticated %}
@@ -33,7 +33,7 @@
           <a href="{% url 'readmore_app:logout' %}" >Logout</a>
           <div id="drop">
               {% num_notifications user.id as has_notifications %}
-              <a  href="{% url 'readmore_app:profile' user.id %}" style="margin-top: -10px; border-radius: 4px 4px 0px 0px;"><span id="notification_dot" style="color: red;">{% if has_notifications %}●{% endif %}</span>{{ user.username }}</a>
+              <a  href="{% url 'readmore_app:profile' user.id %}" style="padding-bottom:17px;"><span id="notification_dot" style="color: red;">{% if has_notifications %}●{% endif %}</span>{{ user.username }}</a>
               <div id="dropdown">
                   <a class="dropaw" href="{% url 'readmore_app:notifications' %}">(<span id="num_notifications">{% num_notifications user.id %}</span>) Notifications</a>
                   <a class="dropaw" href="{% url 'readmore_app:reading_log' %}">My Reading Log</a>
