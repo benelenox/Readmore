@@ -46,7 +46,7 @@ Readmore - Index
                     <div>
                     {% if post.post_img %}
                         {% if post.post_rating %}<a href="{% url 'readmore_app:view_book' post.post_isbn %}">{% endif %}
-                            <img style="max-width: 500px; width: 100%;" src="{{ post.post_img }}"/>
+                            <img style="max-width: 500px; min-width: 200px;" src="{{ post.post_img }}"/>
                         {% if post.post_rating %}</a>{% endif %}
                     {% endif %}
                     </div>

@@ -8,7 +8,7 @@ Readmore - {{ club.club_name }}
 {% block content %}
 <div class="basic_card">
     <h1>{{ club.club_name }} Members</h1>
-    <table>
+    <table cellspacing="5px;">
     {% for member in club.club_users.all %}
         <tr id="member{{ member.id }}">
             <td style="padding-left: 20px;">
