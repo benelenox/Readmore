@@ -12,7 +12,7 @@ Readmore - Search Book
     <h1>Search Books</h1>
     <form action="{% url 'readmore_app:search_book' %}" method="POST">
     {% csrf_token %}
-        <input style="width: 50vw;" type="text" name="search_query" required/>
+        <input style="width: 50vw;" type="text" maxlength="300" name="search_query" required/>
         <select style="padding: 5px; border-radius: 5px; border:none;" name="search_type">
             <option value="general" selected>General Search</option>
             <option value="title">Title</option>
