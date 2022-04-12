@@ -69,7 +69,11 @@ def index(request):
     by_club = ClubPost.objects.filter(post_club__in=book_club_list)
     reviews = ReviewPost.objects.filter(post_user__in=[*real_user.user_friends.all()] + [real_user])
     
-    feed_posts = set([*by_friend] + [*by_club] + [*reviews])
+    forum_posts = []
+    for book in real_user.user_reading_log.all():
+        forum_posts.extend([*BookForumPost.objects.filter(post_book_isbn=book.isbn)])
+    
+    feed_posts = set([*by_friend] + [*by_club] + [*reviews] + forum_posts)
     feed_posts = sorted(feed_posts, key=lambda post: post.post_date, reverse=True)
     return render(request, "readmore_app/index.html", {'posts': feed_posts, 'real_user': real_user})
 
@@ -345,11 +349,14 @@ def view_post(request, post_id, highlight=None):
                     post = ReviewPost.objects.get(pk=post_id)
                 except:
                     try:
-                        comment = Comment.objects.get(pk=post_id)
-                        post = comment.post_parent
-                        return redirect(reverse('readmore_app:view_post_highlighted_comment', kwargs={'post_id': post.post_id, 'highlight': comment.post_id}))
+                        post = BookForumPost.objects.get(pk=post_id)
                     except:
-                        raise Http404()
+                        try:
+                            comment = Comment.objects.get(pk=post_id)
+                            post = comment.post_parent
+                            return redirect(reverse('readmore_app:view_post_highlighted_comment', kwargs={'post_id': post.post_id, 'highlight': comment.post_id}))
+                        except:
+                            raise Http404()
         return render(request, "readmore_app/view_post.html", {'real_user': real_user, 'post': post, 'highlight': highlight})
     else:
         return redirect(reverse("readmore_app:login"))
@@ -436,7 +443,22 @@ def create_book_forum_post(request, book_isbn):
 
     if request.user.is_authenticated:
         real_user = UserExt.objects.get(pk=request.user.id)
-
+        # Using clubpostform because it is identical to the needed data for forumpost
+        form = clubpostform()
+        book = Book(book_isbn)
+        if not book.book_data:
+            raise Http404()
+        if request.method != 'POST':
+            return render(request, 'readmore_app/create_forum_post.html', {'form': form, 'book_isbn': book_isbn, 'book': book})
+        else:
+            form = clubpostform(request.POST)
+            if form.is_valid():
+                new_post = BookForumPost()
+                new_post.post_book_isbn = book_isbn
+                new_post.setup_info(real_user, form.cleaned_data['title'], form.cleaned_data['text'], form.cleaned_data['image'])
+                return redirect(reverse('readmore_app:book_forum', kwargs={'book_isbn': book_isbn}))
+            else:
+                return render(request, 'readmore_app/create_forum_post.html', {'form': form, 'book_isbn': book_isbn, 'book': book})
 
     # Redirect Unknown Users
     return HttpResponseRedirect(reverse("readmore_app:login"))

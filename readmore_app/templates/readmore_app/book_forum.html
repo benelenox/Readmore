@@ -12,9 +12,45 @@ Readmore - {{ book.title }} Forums
 	</div>
 	<div class="basic_card" style="width:85%;">
 		{% if book != None %}
-			<h1>{{ book.title }} Forums</h1>
-			<!--img src="{{ book.thumbnail }}" alt="Image of Book Cover"-->
+			<h1>"{{ book.title }}" Forums</h1>
+			
+            
+            <div id="current_book" class="book_card_mv" style="margin: auto; color: #eff0f5;width: 19em;font-family:Arial, Helvetica, sans-serif; height: fit-content;">
+                <div><h2 style="width: 100%; text-align: center; padding: 5px;">Forum Book</h2></div>
+                <a class="book_search_link" href="{% url 'readmore_app:view_book' book.isbn13 %}">
+                    <div style="width: 16em;">
+                        <div class="book_title" style="position: relative;">
+                            <div style="width: 40%; margin: 4px;"><img width="100px" height="140px" src="{{ book.small_thumbnail }}" alt="{{ book.title }} Cover Image" /></div>
+                            <div style="width: 100%; margin-left: 0.6em;">
+                            
+                            <p style="font-size:18px;">{{ book.title }}</p>
+                            
+                            </div>
+                        </div>
+                    <div style="margin-top: 0%;margin-left: 30px;">
+                        <div style="display:flex;">
+                            <div style="font-size:12px; width: 28%; margin-top: 12px;">
+                                Author{{ book.authors|length|pluralize:"s" }}
+                            </div>
+                            <div style="width: 50%;">
+                                <p style="font-size:12px;">
+                                {% for author in book.authors %}
+                                <span style="font-size:12px;">{{ author }}</span>
+                                </p>
+                                {% endfor %}
+                            </div>
+                        </div>
+                    </div>
+                    <div style="margin-left: 30px;">
+                        <div colspan=2 style="font-size:12px;">ISBN: {{ book.isbn13 }}</div>
+                    </div>
+                    <div style="margin-bottom:5%;"><div align="center"><div class="stars" style="--rating:{{ book.rating }};"></div></div></div>
+                </div>
+                </a>
+            </div>
+            <br/><br/>
 			<a href="{% url 'readmore_app:create_book_forum_post' book_isbn %}" class="anchor_button">Create Post</a>
+            <br/><br/><br/>
 			<center>
 			<div class="postlist">
 			{% if not book_forum_posts %}
