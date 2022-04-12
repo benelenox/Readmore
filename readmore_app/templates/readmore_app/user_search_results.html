@@ -13,12 +13,12 @@ Readmore - Search Results
         <tr><td>No results matching search</td></tr>
     {% else %}
     {% for user_found in user_search_results %}
-        <tr>
+        <tr style="height: 50px;">
             <td>
-                <p><a href="{% url 'readmore_app:profile' user_found.id %}" style="word-break:break-word">@{{ user_found.username }}</a></p>
-                <hr>
+                <a class="anchor_button" href="{% url 'readmore_app:profile' user_found.id %}" style="word-break:break-word">@{{ user_found.username }}</a>
             </td>
         </tr>
+        <tr><td bgcolor="lightgray"><td></tr>
     {% endfor %}
     {% endif %}
     </table>

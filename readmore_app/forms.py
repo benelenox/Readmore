@@ -6,7 +6,7 @@ import re
 from datetime import date, timedelta, datetime
 
 class club_post(forms.Form):
-    title = forms.CharField(widget=forms.TextInput(attrs={'size':50}), validators=[validators.RegexValidator(regex="^[a-zA-Z_\-0-9].{2,99}$", message="A valid post title must be provided.")])
+    title = forms.CharField(widget=forms.TextInput(attrs={'size':50}), validators=[validators.RegexValidator(regex="^[a-zA-Z_\-0-9].{2,99}$", message="A valid post title less than 100 characters must be provided.")])
     image = forms.CharField(required=False, widget=forms.TextInput(attrs={'size':50}))
     text = forms.CharField(widget=forms.Textarea(attrs={'cols': 50, 'style': 'resize: vertical;'}), required=False)
 
@@ -82,3 +82,18 @@ class reading_log(forms.Form):
 class review_post(forms.Form):
     review_text = forms.CharField(widget=forms.Textarea(attrs={'cols': 50, 'style': 'resize: vertical;'}), required=False)
     rating = forms.ChoiceField(choices=((1,1),(2,2),(3,3),(4,4),(5,5),(6,6),(7,7),(8,8),(9,9),(10,10)))
+
+class meeting(forms.Form):
+    meeting_name = forms.CharField(widget=forms.TextInput(attrs={'size':50}), validators=[validators.RegexValidator(regex="^.{0,100}$", message="Meeting name must be less than 100 characters.")], required=False)
+    meeting_date = forms.DateField(widget=forms.SelectDateWidget(years=[*range(datetime.now().year, datetime.now().year + 100)]))
+    meeting_time = forms.TimeField(widget=forms.TimeInput(attrs={"type": "time"}))
+    meeting_description = forms.CharField(validators=[validators.RegexValidator(".{0,300}$", message="Description must be 300 or fewer characters.")], widget=forms.Textarea(attrs={'cols': 50, 'rows': 6, 'style': 'resize: vertical;'}), required=False)
+    
+    def clean(self):
+        cleaned_data=super().clean()
+        meeting_date = cleaned_data['meeting_date']
+        meeting_time = cleaned_data['meeting_time']
+        meeting_datetime = datetime.combine(meeting_date, meeting_time)
+        if meeting_datetime < datetime.now():
+            raise ValidationError("Meeting must not be in the past")
+        return cleaned_data

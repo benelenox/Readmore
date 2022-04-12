@@ -28,6 +28,9 @@ urlpatterns = [
     path('review_book/<str:book_isbn>/', views.create_review_post, name='create_review_post'),
     path('messages/', views.messages, name='messages_no_id'),
     path('messages/<int:friend_id>/', views.messages, name='messages'),
+    path('book_forum/<str:book_isbn>/', views.book_forum, name='book_forum'),
+    path('create_book_forum_post/<str:book_isbn>/', views.create_book_forum_post, name="create_book_forum_post"),
+    path('club_schedule/<int:club_id>/', views.club_schedule, name='club_schedule'),
 ]
 
 # AJAX url patterns
@@ -39,6 +42,7 @@ urlpatterns.extend(
     path('ajax/leave_club/<int:club_id>/', views.leave_club, name="leave_club"),
     path('ajax/kick_member/<int:club_id>/<int:member_id>/', views.kick_member, name="kick_member"),
     path('ajax/invite_member/<int:club_id>/<int:friend_id>/', views.invite_member, name="invite_member"),
+    path('ajax/invite_nonfriend/<int:club_id>/<str:user>/', views.invite_nonfriend, name="invite_nonfriend"),
     path('ajax/join_club/<int:club_id>/', views.join_club, name="join_club"),
     path('ajax/remove_from_library/<int:club_id>/<int:club_book_id>/', views.remove_from_library, name='remove_from_library'),
     path('ajax/add_to_library/<int:club_id>/<str:isbn>/', views.add_to_library, name='add_to_library'),
@@ -48,5 +52,6 @@ urlpatterns.extend(
     path('ajax/add_to_user_library/<str:isbn>/', views.add_to_user_library, name='add_to_user_library'),
     path('ajax/delete_post/<int:post_id>/', views.delete_post, name='delete_post'),
     path('ajax/save_bio/<int:user_id>/', views.save_bio, name='save_bio'),
+    path('ajax/delete_meeting/<int:meeting_id>/', views.delete_meeting, name='delete_meeting'),
     ]
 )

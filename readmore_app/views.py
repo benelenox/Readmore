@@ -7,9 +7,9 @@ from django.shortcuts import render, redirect, get_object_or_404
 from django.urls import reverse
 from django.db.models import Count, Avg
 from django.http import HttpResponse, HttpResponseRedirect, Http404, HttpResponseNotFound
-from .models import UserExt, Notification, Club, ClubChat, ClubBook, ClubPost, ReadingLogBook, ProfilePost, Post, Comment, ReviewPost, PM
+from .models import UserExt, Notification, Club, ClubChat, ClubBook, ClubPost, ReadingLogBook, ProfilePost, Post, Comment, ReviewPost, PM, BookForumPost, Meeting
 from .pseudomodels import Book
-from .forms import register as regform, login as loginform, club as clubform, club_post as clubpostform, reading_log as readinglogform, profile_post as profilepostform, review_post as reviewpostform
+from .forms import register as regform, login as loginform, club as clubform, club_post as clubpostform, reading_log as readinglogform, profile_post as profilepostform, review_post as reviewpostform, meeting as meetingform
 from django.contrib.auth import authenticate, login as log_in, logout as log_out
 
 def friend_list(request, profile_id):
@@ -61,7 +61,17 @@ def index(request):
     # If the user isn't logged in, redirect to login page
     if not request.user.is_authenticated:
         return HttpResponseRedirect(reverse("readmore_app:login"))
-    return render(request, "readmore_app/index.html", {})
+    
+    real_user = UserExt.objects.get(pk=request.user.id)
+    
+    by_friend = ProfilePost.objects.filter(post_user__in=[*real_user.user_friends.all()] + [real_user])
+    book_club_list = Club.objects.filter(club_users__in=[real_user])
+    by_club = ClubPost.objects.filter(post_club__in=book_club_list)
+    reviews = ReviewPost.objects.filter(post_user__in=[*real_user.user_friends.all()] + [real_user])
+    
+    feed_posts = set([*by_friend] + [*by_club] + [*reviews])
+    feed_posts = sorted(feed_posts, key=lambda post: post.post_date, reverse=True)
+    return render(request, "readmore_app/index.html", {'posts': feed_posts, 'real_user': real_user})
 
 def login(request, account_created=None):
     if request.user.is_authenticated:
@@ -153,12 +163,20 @@ def club(request, club_id):
     """
     if request.user.is_authenticated:
         club = get_object_or_404(Club, club_id=club_id)
+        
+        # delete past meetings
+        Meeting.update_meetings(club_id)
+        
         real_user = get_object_or_404(UserExt, id=request.user.id)
         club_posts = ClubPost.objects.filter(post_club = club).order_by('-post_date')
         current_book = False
         if club.club_library.order_by('-time'):
             current_book = Book(club.club_library.order_by('-time')[0].isbn)
-        return render(request, "readmore_app/club_home.html", {"real_user": real_user, "club": club, 'club_posts': club_posts, 'current_book': current_book})
+        next_meeting = False
+        meetings = Meeting.objects.filter(meeting_club=club)
+        if meetings:
+            next_meeting = meetings.order_by('meeting_time')[0]
+        return render(request, "readmore_app/club_home.html", {"real_user": real_user, "club": club, 'club_posts': club_posts, 'current_book': current_book, 'next_meeting': next_meeting})
     else:
         return redirect(reverse('readmore_app:login'))
 
@@ -207,6 +225,9 @@ def view_book(request, book_isbn):
                 if book_isbn in [indID['identifier'] for indID in match['volumeInfo']['industryIdentifiers']]:
                     book = match
                     break
+                    
+        book_forum_post_count = BookForumPost.objects.filter(post_book_isbn=book_isbn).order_by('-post_date').count()
+        
         reviews = []
         review_avg = None
         if book != None:
@@ -218,7 +239,7 @@ def view_book(request, book_isbn):
             except KeyError:
                 pass
 
-        return render(request, "readmore_app/view_book.html", {"real_user": real_user, "book": book, 'reviews': reviews, 'review_avg': review_avg})
+        return render(request, "readmore_app/view_book.html", {"real_user": real_user, "book": book, 'book_forum_post_count': book_forum_post_count, 'reviews': reviews, 'review_avg': review_avg})
         
     # Redirect Unknown Users
     return redirect(reverse('readmore_app:login'))
@@ -364,8 +385,6 @@ def messages(request, friend_id=None):
     sorted_friends = real_user.user_friends.order_by('username')
     return render(request, 'readmore_app/messages.html', {'real_user': real_user, 'friend': friend, 'pm_list': pm_list, 'sorted_friends': sorted_friends})
 
-
-
 def create_review_post(request, book_isbn):
     if request.user.is_authenticated:
         real_user = UserExt.objects.get(pk=request.user.id)
@@ -379,22 +398,80 @@ def create_review_post(request, book_isbn):
             form = reviewpostform(request.POST)
             if form.is_valid():
                 new_post = ReviewPost()
-                new_post.post_user = real_user
-                new_post.post_title = f"Review of {review_book.title}"
-                new_post.post_text = form.cleaned_data['review_text']
-                new_post.post_img = review_book.thumbnail
                 new_post.post_isbn = review_book.isbn
                 new_post.post_rating = int(form.cleaned_data['rating'])
-                new_post.save()
+                new_post.setup_info(real_user, f"Review of {review_book.title}", form.cleaned_data['review_text'], review_book.thumbnail)
                 return redirect(reverse('readmore_app:profile', kwargs={'profile_id': real_user.id}))
             else:
                 return render(request, 'readmore_app/review_book.html', {'form': form, 'book': review_book})
     else:
         return redirect(reverse("readmore_app:login"))
 
+def book_forum(request, book_isbn):
+    """
+    The discussion forum page for individual books
+    """
+
+    if request.user.is_authenticated:
+        real_user = UserExt.objects.get(pk=request.user.id)
+
+        # Find Matching Book
+        book = Book(book_isbn)
+        if not book.book_data:
+            raise Http404()
+
+        # Collect Book Forum Posts
+        book_forum_posts = BookForumPost.objects.filter(post_book_isbn=book_isbn).order_by('-post_date')
+        
+        # Render Page
+        return render(request, "readmore_app/book_forum.html", {"real_user": real_user, 'book_forum_posts': book_forum_posts, 'book': book, 'book_isbn': book_isbn})
+
+    # Redirect Unknown Users
+    return HttpResponseRedirect(reverse("readmore_app:login"))
+
+def create_book_forum_post(request, book_isbn):
+    """
+    The creation page for book forum posts
+    """
+
+    if request.user.is_authenticated:
+        real_user = UserExt.objects.get(pk=request.user.id)
 
 
+    # Redirect Unknown Users
+    return HttpResponseRedirect(reverse("readmore_app:login"))
 
+def club_schedule(request, club_id):
+    if not request.user.is_authenticated:
+        return HttpResponseRedirect(reverse("readmore_app:login"))
+    
+    real_user = UserExt.objects.get(pk=request.user.id)
+    club = get_object_or_404(Club, club_id=club_id)
+    meetings = Meeting.objects.filter(meeting_club=club).order_by('meeting_time')
+    
+    # delete past meetings
+    Meeting.update_meetings(club_id)
+    
+    if real_user == club.club_owner:
+        message = False
+        if request.method != "POST":
+            form = meetingform()
+            return render(request, "readmore_app/schedule.html", {"real_user": real_user, "club": club, 'meetings': meetings, 'form': form})
+        else:
+            form = meetingform(request.POST)
+            if form.is_valid():
+                new_meeting = Meeting()
+                new_meeting.meeting_club = club
+                new_meeting.meeting_name = form.cleaned_data['meeting_name']
+                new_meeting.meeting_time = datetime.combine(form.cleaned_data['meeting_date'], form.cleaned_data['meeting_time'])
+                new_meeting.meeting_description = form.cleaned_data['meeting_description']
+                new_meeting.save()
+                message = "New Meeting Saved to Schedule"
+                form = meetingform()
+            meetings = Meeting.objects.filter(meeting_club=club).order_by('meeting_time')
+            return render(request, "readmore_app/schedule.html", {"real_user": real_user, "club": club, 'meetings': meetings, 'form': form, 'message': message})
+    else:
+        return render(request, "readmore_app/schedule_member_view.html", {"real_user": real_user, 'meetings': meetings, "club": club})
 
 """ 
 *************************************
@@ -508,6 +585,28 @@ def invite_member(request, club_id, friend_id):
         notify_member.notification_link_text = club.club_name
         notify_member.save()
     return HttpResponse("")
+    
+def invite_nonfriend(request, club_id, user):
+    real_user = UserExt.objects.get(pk=request.user.id)
+    club = Club.objects.get(pk=club_id)
+    member = UserExt.objects.filter(username__iexact=user)
+    if not member:
+        return HttpResponse("Invalid Username")
+    member = member[0]
+    if member in club.club_pending_invites.all():
+        return HttpResponse("Invitation Already Sent")
+    if member in club.club_users.all():
+        return HttpResponse("This User Is Already A Member of This Club")
+    if club.club_owner == real_user:
+        club.club_pending_invites.add(member)
+        notify_member = Notification()
+        notify_member.notification_user = member
+        notify_member.notification_title = "You Have Been Invited To A Book Club"
+        notify_member.notification_message = f"You have been invited to the book club {club.club_name} by {real_user.username}.  To accept the invitation, click the above link to the book club's homepage and click the 'Join' button."
+        notify_member.notification_link = f"/readmore/club/{club.club_id}/"
+        notify_member.notification_link_text = club.club_name
+        notify_member.save()
+    return HttpResponse("Invitation Sent")
 
 def join_club(request, club_id):
     real_user = UserExt.objects.get(pk=request.user.id)
@@ -704,6 +803,16 @@ def delete_post(request, post_id):
         return HttpResponse("DENY")
     if post.post_user == real_user:
         post.delete()
+        return HttpResponse("CONFIRM")
+    else:
+        return HttpResponse("DENY")
+
+def delete_meeting(request, meeting_id):
+    real_user = UserExt.objects.get(pk=request.user.id)
+    meeting = Meeting.objects.get(pk=meeting_id)
+    club = meeting.meeting_club
+    if real_user == club.club_owner:
+        meeting.delete()
         return HttpResponse("CONFIRM")
     else:
         return HttpResponse("DENY")

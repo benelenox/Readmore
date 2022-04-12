@@ -2,46 +2,61 @@
 {% load static %}
 
 {% block title %}
-Readmore - Book Forum
+Readmore - {{ book.title }} Forums
 {% endblock %}
 
 {% block content %}
-<div class="basic_card" style="width:100%;">
-    <div style="display:flex;flex-direction:row; justify-content: space-between;">
-        <h1 style="display: inline-block; word-wrap: break-word; width: 100%;">Hello There</h1>
-    </div>
-    <center>
-    <div class="postlist">
-    {% if not book_forum_posts %}
-        <p>No posts have been made to this book's forum</p>
-    {% else %}
-        {% for post in book_forum_posts %}
-            <div class="clubpost">
-                <span class="likes">
-                    <span id="nlikes{{ post.post_id }}">{{ post.post_likes.count }}</span>
-                    <input id="likeimage{{post.post_id}}" onclick="doLike({{post.post_id}});" style="width: 20px;" type="image" src="{% if real_user in post.post_likes.all %}{% static 'readmore_app/thumbs_up.png' %}{% else %}{% static 'readmore_app/thumbs_up_gray.png' %}{% endif %}" />
-                </span>
-                <a href="{% url 'readmore_app:view_post' post.post_id %}"><h2 style="margin: 10px;">{{ post.post_title }}</h2></a>
-                <h5 style="margin: 2px;">Post By: <a href="{% url 'readmore_app:profile' post.post_user.id %}">{{ post.post_user.username }}</a></h5>
-                <h6 style="margin: 2px;">{{ post.post_date|date:"m/d/Y h:i:s A" }}</h6>
-                {% if post.post_img %}
-                <img style="max-width: 500px;" src="{{ post.post_img }}"/>
-                {% endif %}
-                {% if post.post_text %}
-				<div class="post_text">
-					{% autoescape off %}
-					<p>{{ post.post_text }}</p>
-					{% endautoescape %}
-                </div>
-                {% endif %}
-                {% if post.post_user == real_user %}
-                <button onclick="deletePost({{ post.post_id }});" class="anchor_button" style="float: right; margin-right: 10px; margin-top: 10px;">Delete This Post</button>
-                {% endif %}
-            </div>
-        {% endfor %}
-    {% endif %}
-    </div>
-    </center>
+<div style="display:flex;flex-direction: column;align-items: center;padding: 4% 0%;margin-left:0%;height:fit-content;">
+	<div style="align-self: flex-start;margin-left: 4.5%;">
+		<a class="anchor_button" href="{% url 'readmore_app:view_book' book_isbn %}" style="margin-top: 1.5%; ">{{ book.title }}</a>
+	</div>
+	<div class="basic_card" style="width:85%;">
+		{% if book != None %}
+			<h1>{{ book.title }} Forums</h1>
+			<!--img src="{{ book.thumbnail }}" alt="Image of Book Cover"-->
+			<a href="{% url 'readmore_app:create_book_forum_post' book_isbn %}" class="anchor_button">Create Post</a>
+			<center>
+			<div class="postlist">
+			{% if not book_forum_posts %}
+				<p>No posts have been made to this book's forum</p>
+			{% else %}
+				{% for post in book_forum_posts %}
+					<div class="clubpost">
+						<div style="display:inline-flex;">
+							<div style="max-width: 92%;word-break: break-word;">
+								<a href="{% url 'readmore_app:view_post' post.post_id %}"><h2 style="margin: 10px;">{{ post.post_title }}</h2></a>
+								<h5 style="margin: 2px;">Post By: <a href="{% url 'readmore_app:profile' post.post_user.id %}">{{ post.post_user.username }}</a></h5>
+								<h6 style="margin: 2px;">{{ post.post_date|date:"m/d/Y h:i:s A" }}</h6>
+							</div>
+							<div>
+								<span class="likes">
+									<span id="nlikes{{ post.post_id }}">{{ post.post_likes.count }}</span>
+									<input id="likeimage{{post.post_id}}" onclick="doLike({{post.post_id}});" style="width: 20px;" type="image" src="{% if real_user in post.post_likes.all %}{% static 'readmore_app/thumbs_up.png' %}{% else %}{% static 'readmore_app/thumbs_up_gray.png' %}{% endif %}" />
+								</span>
+							</div>
+						</div>
+						{% if post.post_img %}
+						<div><img style="max-width: 50%;" src="{{ post.post_img }}"/></div>
+						{% endif %}
+						{% if post.post_text %}
+						<div class="post_text">
+							{% autoescape off %}
+							<p>{{ post.post_text }}</p>
+							{% endautoescape %}
+						</div>
+						{% endif %}
+						{% if post.post_user == real_user %}
+						<button onclick="deletePost({{ post.post_id }});" class="anchor_button" style="float: right; margin-right: 10px; margin-top: 10px;">Delete This Post</button>
+						{% endif %}
+					</div>
+				{% endfor %}
+			{% endif %}
+			</div>
+			</center>
+		{% else %}
+			<h1>Book Not Found</h1>
+		{% endif %}
+	</div>
 </div>
 {% endblock %}
 

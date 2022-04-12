@@ -1,0 +1,80 @@
+{% extends parent_template|default:"base.html" %}
+{% load static %}
+{% load extras %}
+
+{% block title %}
+Readmore - {{ club.club_name }} Schedule
+{% endblock %}
+
+{% block content %}
+<style>
+ #schedule td {border: 1px solid black;}
+ #schedule th {border: 1px solid black;}
+</style>
+<div style="display:flex;flex-direction: column;align-items: center;padding: 4% 0%;margin-left:0%;height:fit-content;">
+<div style="align-self: flex-start;margin-left: 4.5%;">
+	<a class="anchor_button" href="{% url 'readmore_app:club' club.club_id %}" style="margin-top: 1.5%; ">{{ club.club_name }}</a>
+</div>
+<div class="basic_card" style="width: 80%;">
+<center>
+    <table id="schedule">
+        <tr><th colspan="4" style="text-align: center; background: #8d9ab8; color: white;">Meeting Schedule</th></tr>
+        <tr>
+            <th style="min-width: 200px; background: #414364; color: white;">Meeting Name</th>
+            <th style="min-width: 170px; background: #414364; color: white;">Meeting Time</th>
+            <th style="min-width: 300px; background: #414364; color: white;">Meeting Description</th>
+            <th style="min-width: 100px; background: #414364; color: white;"></th>
+        </tr>
+        {% if not meetings %}
+        <tr>
+            <td colspan="3" style="text-align: center;">No Meetings Here</td>
+        </tr>
+        {% endif %}
+        {% for meeting in meetings %}
+        <tr id="meeting{{ meeting.meeting_id }}">
+            <td>{% if not meeting.meeting_name %}(Unnamed Meeting){% endif %}{{ meeting.meeting_name }}</td>
+            <td>{{ meeting.meeting_time|date:'m/d/Y h:i A' }}</td>
+            <td>{{ meeting.meeting_description }}</td>
+            <td><button onclick="deleteMeeting({{ meeting.meeting_id }});">Delete This Meeting</button></td>
+        </tr>
+        {% endfor %}
+    </table>
+    {% if message %}
+    <h3 style="color: red">{{ message }}</h3>
+    {% endif %}
+    <div style="height: 100px;"></div>
+    <button id="show_form_button" onclick="show_form();" style="{% if request.method == 'POST' %}display:none{% endif %}">Schedule New Meeting</button>
+    <div id="new_meeting_div" style="{% if request.method != 'POST' %}display:none{% endif %}">
+        <form method="POST" action="{% url 'readmore_app:club_schedule' club.club_id %}">
+            {% csrf_token %}
+            <table>
+            {{ form.as_table }}
+            <tr><td colspan="2" style="text-align: center;"><input type="submit" value="Submit" /></td></tr>
+            </table>
+        </form>
+    </div>
+    </center>
+</div>
+</div>
+{% endblock %}
+
+{% block js %}
+function show_form() {
+    const show_form_button = document.getElementById("show_form_button");
+    const new_meeting_div = document.getElementById("new_meeting_div");
+    show_form_button.style.display = "none";
+    new_meeting_div.style.display = "block";
+}
+
+function deleteMeeting(meeting_id) {
+    const xhrdeletemeeting = new XMLHttpRequest();
+    xhrdeletemeeting.open("GET", `/readmore/ajax/delete_meeting/${meeting_id}/`);
+    xhrdeletemeeting.send();
+    meeting_html = document.getElementById(`meeting${meeting_id}`);
+    meeting_html.parentNode.removeChild(meeting_html);
+}
+
+if ( window.history.replaceState ) {
+  window.history.replaceState( null, null, window.location.href );
+}
+{% endblock %}

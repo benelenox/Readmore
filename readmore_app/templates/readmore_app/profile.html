@@ -23,14 +23,15 @@ Readmore - {{ profile_user.username }}'s Profile
             <div style="height:42px;margin-top: 2em;">
             <a href="{% url 'readmore_app:friend_list' profile_user.id %}" id="friendinfo" class="anchor_button">{{ profile_user.user_friends.all.count }} Friends</a>
             </div>
+            <br/><br/>
             <div>
                 {% if real_user == profile_user %}
-                <p style="background: #4b4e75;padding:5px 10px 5px 5px; color:white;text-align: center; border-radius: 3px;width:fit-content;"><a href="{% url 'readmore_app:create_profile_post' profile_user.id %}" class="anchor_button">Create Post</a></p>
+                <a href="{% url 'readmore_app:create_profile_post' profile_user.id %}" class="anchor_button">Create Post</a>
                 {% endif %}
             </div>
         </div>
         <div id="userbio">
-            <p id="bio" style="width:100%;">{{ profile_user.user_bio }}</p>
+            <p id="bio" style="">{{ profile_user.user_bio }}</p>
             {% if real_user == profile_user %}
                 <button id="biobutton" onclick="makeEditable();" style="border:none; padding:0.5% 1%">Edit Bio</button>
             {% endif %}
@@ -51,7 +52,11 @@ Readmore - {{ profile_user.username }}'s Profile
                         justify-content: center;
                         max-width: 80%;
                         ">
+                    <div>
                     <a href="{% url 'readmore_app:view_post' post.post_id %}" style="max-width:80;"><h2 style="margin: 10px;">{{ post.post_title }}</h2></a>
+                    <h5 style="margin: 2px;">Post By: <a href="{% url 'readmore_app:profile' post.post_user.id %}">{{ post.post_user.username }}</a></h5>
+                    <h6 style="margin: 2px;">{{ post.post_date|date:"m/d/Y h:i:s A" }}</h6>
+                    </div>
                     <div style="max-width: 92%;word-break: break-word;">
                         <span class="likes">
                             <span id="nlikes{{ post.post_id }}">{{ post.post_likes.count }}</span>
@@ -65,8 +70,6 @@ Readmore - {{ profile_user.username }}'s Profile
                             <img style="max-width: 500px;" src="{{ post.post_img }}"/>
                         {% if post.post_rating %}</a>{% endif %}
                     {% endif %}
-                    <h5 style="margin: 2px;">Post By: <a href="{% url 'readmore_app:profile' post.post_user.id %}">{{ post.post_user.username }}</a></h5>
-                    <h6 style="margin: 2px;">{{ post.post_date|date:"m/d/Y h:i:s A" }}</h6>
                     </div>
                 </div>
                 
