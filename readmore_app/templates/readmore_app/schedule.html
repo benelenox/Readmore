@@ -32,9 +32,9 @@ Readmore - {{ club.club_name }} Schedule
         {% endif %}
         {% for meeting in meetings %}
         <tr id="meeting{{ meeting.meeting_id }}">
-            <td>{% if not meeting.meeting_name %}(Unnamed Meeting){% endif %}{{ meeting.meeting_name }}</td>
+            <td style="max-width: 200px; word-wrap: break-word;">{% if not meeting.meeting_name %}(Unnamed Meeting){% endif %}{{ meeting.meeting_name }}</td>
             <td>{{ meeting.meeting_time|date:'m/d/Y h:i A' }}</td>
-            <td>{{ meeting.meeting_description }}</td>
+            <td style="max-width: 300px; word-wrap: break-word;">{{ meeting.meeting_description }}</td>
             <td><button onclick="deleteMeeting({{ meeting.meeting_id }});">Delete This Meeting</button></td>
         </tr>
         {% endfor %}
@@ -48,8 +48,36 @@ Readmore - {{ club.club_name }} Schedule
         <form method="POST" action="{% url 'readmore_app:club_schedule' club.club_id %}">
             {% csrf_token %}
             <table>
-            {{ form.as_table }}
-            <tr><td colspan="2" style="text-align: center;"><input type="submit" value="Submit" /></td></tr>
+            <tbody>
+                <tr>
+                    <td>
+                        {% for error in form.errors.values %}
+                            {{ error }}
+                        {% endfor %}
+                    </td>
+                </tr>
+                <tr>
+                    <th><label for="id_meeting_name">Meeting name:</label></th>
+                    <td><input type="text" name="meeting_name" size="50" maxlength="100" id="id_meeting_name"></td>
+                </tr>
+                <tr>
+                    <th><label for="id_meeting_date_month">Meeting date:</label></th>
+                    <td>
+                        {{ form.meeting_date }}
+                    </td>
+                </tr>
+                <tr>
+                    <th><label for="id_meeting_time">Meeting time:</label></th>
+                    <td><input type="time" name="meeting_time" required="" id="id_meeting_time"></td>
+                </tr>
+                <tr>
+                    <th><label for="id_meeting_description">Meeting description:</label></th>
+                    <td><textarea name="meeting_description" cols="50" rows="6" style="resize: vertical;" maxlength="500" id="id_meeting_description"></textarea></td>
+                </tr>
+                <tr>
+                    <td colspan="2" style="text-align: center;"><input type="submit" value="Submit"></td>
+                </tr>
+            </tbody>
             </table>
         </form>
     </div>

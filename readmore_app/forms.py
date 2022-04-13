@@ -17,7 +17,7 @@ class profile_post(forms.Form):
 
 
 class login(forms.Form):
-    username = forms.CharField()
+    username = forms.CharField(widget=forms.TextInput(attrs={'maxlength': "50"}))
     password = forms.CharField(widget = forms.PasswordInput)
     def clean_username(self):
         username = self.cleaned_data['username']
@@ -33,8 +33,8 @@ class register(forms.Form):
     last_name = forms.CharField(validators=[validators.RegexValidator(regex="^[a-zA-Z -]+$", message="Invalid entry for last name.")])
     email = forms.EmailField(validators=[validators.EmailValidator(message="A valid email must be provided.")])
     birthdate = forms.DateField(widget=forms.SelectDateWidget(years=[*range(1900, datetime.now().year)]))
-    password = forms.CharField(widget = forms.PasswordInput)
-    confirm_password = forms.CharField(widget = forms.PasswordInput)
+    password = forms.CharField(widget = forms.PasswordInput(), required=True)
+    confirm_password = forms.CharField(widget = forms.PasswordInput(), required=True)
 
     def clean_username(self):
         username = self.cleaned_data['username']
@@ -42,6 +42,8 @@ class register(forms.Form):
             raise ValidationError("Username already in use.")
         if not username or not re.match("^[a-zA-Z_\-0-9]+[a-zA-Z_\-0-9]*$", username):
             raise ValidationError("A valid username must be provided.")
+        if len(username) > 50:
+            raise ValidationError("Username must be less than or equal to 50 characters.")
         else:
             return username
 
@@ -51,18 +53,23 @@ class register(forms.Form):
             raise ValidationError("Email already in use.")
         else:
             return email
-
-    # this really should be clean_password but this validation requires two fields
-    def clean(self):
-        cleaned_data=super().clean()
+    
+    def clean_birthdate(self):
         birthdate = self.cleaned_data['birthdate']
         if type(birthdate) is type(None):
             raise ValidationError("Birthdate must be entered in the form MM/DD/YYYY.")
         elif birthdate > date.today() - timedelta(days=1095) or birthdate < date(1900, 1, 1):
             raise ValidationError("A valid birthdate must be provided.")
-        password = cleaned_data.get('password')
-        confirm_password = cleaned_data.get('confirm_password')
-        if not re.match("^[^ ]{8}[^ ]*$", password):
+        else:
+            return birthdate
+    
+    # this really should be clean_password but this validation requires two fields
+    def clean(self):
+        cleaned_data=super().clean()
+        password = cleaned_data.get('password') or ""
+        print(password)
+        confirm_password = cleaned_data.get('confirm_password') or ""
+        if not re.match("^[^\s]{8}[^\s]*$", password):
             raise ValidationError("Password must be 8 characters or more in length")
         if password != confirm_password:
             raise ValidationError("Passwords do not match.")
@@ -91,7 +98,10 @@ class meeting(forms.Form):
     
     def clean(self):
         cleaned_data=super().clean()
-        meeting_date = cleaned_data['meeting_date']
+        try:
+            meeting_date = cleaned_data['meeting_date']
+        except:
+            return ValidationError("Date does not exist.")
         meeting_time = cleaned_data['meeting_time']
         meeting_datetime = datetime.combine(meeting_date, meeting_time)
         if meeting_datetime < datetime.now():

@@ -24,6 +24,7 @@ Readmore - {{ club.club_name }}
             <a class="anchor_button" href="{% url 'readmore_app:invite_to_club' club.club_id %}">Invite Users</a>
             {% endif %}
             <a class="anchor_button" href="{% url 'readmore_app:club_library' club.club_id %}">Book Club Library</a>
+            <a class="anchor_button" href="{% url 'readmore_app:club_schedule' club.club_id %}">Meeting Schedule</a>
             {% if real_user in club.club_users.all %}
             <a class="anchor_button" href="{% url 'readmore_app:club_chat' club.club_id %}">Enter Book Club Chat</a>
             {% endif %}
