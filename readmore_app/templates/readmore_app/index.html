@@ -46,7 +46,7 @@ Readmore - Index
                     <div>
                     {% if post.post_img %}
                         {% if post.post_rating %}<a href="{% url 'readmore_app:view_book' post.post_isbn %}">{% endif %}
-                            <img style="max-width: 500px; min-width: 200px;" src="{{ post.post_img }}"/>
+                            <img style="max-width: 500px; width: 100%;-o-object-fit: contain; object-fit: contain; max-height: 400px;" src="{{ post.post_img }}"/>
                         {% if post.post_rating %}</a>{% endif %}
                     {% endif %}
                     </div>
@@ -96,5 +96,18 @@ function doLike(post_id) {
     }
     xhrlike.open("GET", `/readmore/ajax/dolike/${post_id}/`);
     xhrlike.send();
+}
+
+function deletePost(post_id) {
+    if (confirm("Are you sure you wish to delete this post?")) {
+        const xhrdeletepost = new XMLHttpRequest();
+        xhrdeletepost.onload = function() {
+            if (this.responseText == "CONFIRM") {
+                window.location.href = "/readmore/index/";
+            }
+        }
+        xhrdeletepost.open("GET", `/readmore/ajax/delete_post/${post_id}/`);
+        xhrdeletepost.send();
+    }
 }
 {% endblock %}
