@@ -37,6 +37,14 @@ Readmore - View Post
                 <img style="max-width: 500px;" src="{{ post.post_img }}"/>
                 {% if post.post_rating %}</a>{% endif %}
 			{% endif %}
+            {% if post.post_rating %}
+                    <div align="center" colspan=3 style="
+                    margin-top: 1%;
+                    background: #b4b8cffc;
+                    padding: 5px;
+                    border-radius: 15px;
+                    "><div class="stars" style="font-size: 250%; --rating:{{ post.post_rating|divide:2 }};"></div></div>
+                {% endif %}
 			{% if post.post_text %}
 			<div class="post_text">
 				{% autoescape off %}
