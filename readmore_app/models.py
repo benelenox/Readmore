@@ -91,11 +91,12 @@ class Post(models.Model):
         
         # Tagged Users in Post's Message
         tag_list = re.findall("@[a-zA-Z_\-0-9]+", self.post_text)
+        print(tag_list)
         tag_user_set = set()
         for tag in tag_list:
             try:
                 tag_username = tag[1:]
-                tag_user = UserExt.objects.get(username=tag_username)
+                tag_user = UserExt.objects.get(username__iexact=tag_username)
                 
                 # Link to Tagged User's Profile
                 self.post_text = self.post_text.replace(tag, f'<a href="/readmore/profile/{tag_user.id}">&#64;{tag_username}</a>', 1)
