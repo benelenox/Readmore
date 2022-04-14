@@ -843,7 +843,11 @@ div.subnav {
         margin-bottom:65%;
     }
 }
-
+@media (max-width: 400px){
+    #schedule{
+        margin-left: -3%;
+    }
+}
 
 
 

@@ -15,15 +15,15 @@ Readmore - {{ club.club_name }} Schedule
 <div style="align-self: flex-start;margin-left: 4.5%;">
 	<a class="anchor_button" href="{% url 'readmore_app:club' club.club_id %}" style="margin-top: 1.5%; ">{{ club.club_name }}</a>
 </div>
-<div class="basic_card" style="width: 80%;">
+<div class="basic_card" style="width: 92%;">
 <center>
     <table id="schedule">
         <tr><th colspan="4" style="text-align: center; background: #8d9ab8; color: white;">Meeting Schedule</th></tr>
         <tr>
-            <th style="min-width: 200px; background: #414364; color: white;">Meeting Name</th>
-            <th style="min-width: 170px; background: #414364; color: white;">Meeting Time</th>
-            <th style="min-width: 300px; background: #414364; color: white;">Meeting Description</th>
-            <th style="min-width: 100px; background: #414364; color: white;"></th>
+            <th style="background: #414364; color: white;">Meeting Name</th>
+            <th style="background: #414364; color: white;">Meeting Time</th>
+            <th style="background: #414364; color: white;">Meeting Description</th>
+            <th style="background: #414364; color: white;"></th>
         </tr>
         {% if not meetings %}
         <tr>
@@ -32,9 +32,9 @@ Readmore - {{ club.club_name }} Schedule
         {% endif %}
         {% for meeting in meetings %}
         <tr id="meeting{{ meeting.meeting_id }}">
-            <td style="max-width: 200px; word-wrap: break-word;">{% if not meeting.meeting_name %}(Unnamed Meeting){% endif %}{{ meeting.meeting_name }}</td>
+            <td class="meeting_name" style="max-width: 15vw; word-wrap: break-word;"><p>{% if not meeting.meeting_name %}(Unnamed Meeting){% endif %}{{ meeting.meeting_name }}</p></td>
             <td>{{ meeting.meeting_time|date:'m/d/Y h:i A' }}</td>
-            <td style="max-width: 300px; word-wrap: break-word;">{{ meeting.meeting_description }}</td>
+            <td class="meeting_desc" style="max-width: 38vw; word-wrap: break-word;"><p>{{ meeting.meeting_description }}</p></td>
             <td><button onclick="deleteMeeting({{ meeting.meeting_id }});">Delete This Meeting</button></td>
         </tr>
         {% endfor %}
