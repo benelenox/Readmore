@@ -24,17 +24,41 @@
             flex-wrap: nowrap;
             font-family: Arial, Helvetica, sans-serif;
         }
+        img{
+          width: 50%;
+          align-self:center;
+        }
+        body{
+          display: flex;
+          flex-direction: column;
+          justify-content: flex-start;
+          height: 100vh; 
+          margin: 0px;
+        }
+        .container_404{
+          display: flex;
+          align-items: stretch;
+          justify-content: space-around;
+          height:88%;
+          background: #ced6f0;
+        }
 
     </style>
   </head>
   <body>
-      <div>
-      <div class="image_404"></div>
+    <div style="height:6%; background: black;"></div>
+      <div class="container_404">
+     
+        <img src="{% static 'readmore_app/globe.jpg' %}">
+        
       <div class="info_block">
           <h1>404</h1>
-          <h3>We could not locate this page</h3>
+          <h3 style="text-align:center;">We could not locate this page</h3>
+          <div>
           <a href="javascript:history.back()">Go Back!</a>
           <a href="{% url 'readmore_app:index' %}">Go Home!</a>
+          </div>
       </div>
       </div>
+      <div style="height:6%; background: black;"></div>
   </body>

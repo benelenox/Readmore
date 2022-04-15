@@ -760,7 +760,9 @@ div.subnav {
 }
 
 @media (max-width:709px){
-    
+    .next_meeting{
+        align-self: center;
+    }
     .club_heading{
         flex-direction: column;
         align-items: center;

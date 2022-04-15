@@ -9,7 +9,7 @@ Readmore - {{ club.club_name }}
 
 <div class="basic_card" style="width:100%;">
     <div style="margin-bottom: 50px;" class="club_heading">
-        <div>
+        <div style="display:flex;flex-direction: column;">
             <h1 style="display: inline-block; word-wrap: break-word; width: 100%;">{{ club.club_name }}</h1>
             <div id="joindiv" style="display: inline-block;">
             {% if real_user in club.club_users.all %}
@@ -34,11 +34,11 @@ Readmore - {{ club.club_name }}
             <p>{{ club.club_description }}</p>
         </div>
         {% if next_meeting %}
-            <div style="background: #d8dff0; padding: 10px; border-radius: 15px; width: 80%; margin-top: 50px;">
+            <div class="next_meeting" style="background: #d8dff0; padding: 10px; border-radius: 15px; width: 80%; margin-top: 50px;max-width:300px;">
                 <h3>Next Meeting</h3>
-                <h4>{{ next_meeting.meeting_name }}</h4>
+                <h4 style="word-wrap:break-word;">{{ next_meeting.meeting_name }}</h4>
                 <h5>Scheduled For {{ next_meeting.meeting_time|date:"N j, Y \a\t h:i A" }}</h5>
-                <p>{{ next_meeting.meeting_description }}</p>
+                <p style="word-wrap:break-word;">{{ next_meeting.meeting_description }}</p>
             </div>
         {% endif %}
     </div>
