@@ -3,25 +3,22 @@
 {% load extras %}
 
 {% block title %}
-Readmore - {{ club.club_name }}
+Readmore - {{ profile_user.username }}'s Reading Log
 {% endblock %}
 
 {% block content %}
 
 <div style="display: flex; flex-direction: column; width: 80vw;">
-<a style="margin-top: 50px; width:fit-content;" class="anchor_button" href="{% url 'readmore_app:club' club.club_id %}">Back To Club Home</a>
+<a style="margin-top: 50px; width:fit-content;" class="anchor_button" href="{% url 'readmore_app:profile' profile_user.id %}">{{ profile_user.username }}'s Profile</a>
 <div id="library">
     <center>
-    <h1>My Club Library</h1>
-    <h2>Club Books</h2>
+    <h1>{{ profile_user.username }}'s Reading Log</h1>
     </center>
-    {% if not club_library_isbns %}
+    {% if not reading_log %}
     <h3>No Books Here</h3>
-    {% endif %}
+    {% else %}
     <div class="table" id="book_search_results" style="overflow:unset; margin-right;">
-        {% for shortlist in club_library %}
-            {% for book in shortlist %}
-            
+        {% for book in reading_log %}
                 <div id="clubbook{{ book.id }}"  class="book_card_mv">
                 <a class="book_search_link" href="{% url 'readmore_app:view_book' book.isbn13 %}">
                     <div style="width:20em;">
@@ -66,12 +63,10 @@ Readmore - {{ club.club_name }}
                 <div><div align="center" colspan=2><div class="stars" style="--rating:{{ book.rating }};margin-bottom:5%;"></div></div></div>
                 
             </div>
-            
-            {% endfor %}
-        
         {% endfor %}
         
     </div>
+    {% endif %}
 </div>
 </div>
 {% endblock %}

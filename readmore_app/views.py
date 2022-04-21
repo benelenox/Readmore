@@ -332,6 +332,21 @@ def reading_log(request):
     # Redirect Unknown Users
     return HttpResponseRedirect(reverse("readmore_app:login"))
 
+def reading_log_friend_view(request, profile_id):
+    if request.user.is_authenticated:
+        real_user = UserExt.objects.get(pk=request.user.id)
+        profile_user = get_object_or_404(UserExt, id=profile_id)
+        if profile_user == real_user:
+            return redirect(reverse('readmore_app:reading_log'))
+        print(Book.booklike_to_book(profile_user.user_reading_log.all()))
+        reading_log = Book.booklike_to_book(profile_user.user_reading_log.all())
+        
+        # Display the Reading Log Table & Search Bar
+        return render(request, "readmore_app/reading_log_friend_view.html", {"real_user": real_user, "reading_log": reading_log, "profile_user": profile_user})
+            
+    # Redirect Unknown Users
+    return HttpResponseRedirect(reverse("readmore_app:login"))
+
 def view_post(request, post_id, highlight=None):
     if request.user.is_authenticated:
         real_user = UserExt.objects.get(pk=request.user.id)

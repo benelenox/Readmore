@@ -24,6 +24,7 @@ urlpatterns = [
     path('create_club_post/<int:club_id>/', views.create_club_post, name="create_club_post"),
     path('create_profile_post/<int:profile_id>/', views.create_profile_post, name="create_profile_post"),
 	path('reading_log/', views.reading_log, name='reading_log'),
+    path('reading_log/<int:profile_id>', views.reading_log_friend_view, name="reading_log_friend_view"),
     path('view_post/<int:post_id>/', views.view_post, name='view_post'),
     path('view_post/<int:post_id>/<int:highlight>/', views.view_post, name="view_post_highlighted_comment"),
     path('review_book/<str:book_isbn>/', views.create_review_post, name='create_review_post'),
