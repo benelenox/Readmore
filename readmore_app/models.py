@@ -35,8 +35,8 @@ class Club(models.Model):
     club_description = models.TextField(blank=True)
     club_owner = models.ForeignKey(UserExt, on_delete=models.CASCADE)
     club_users = models.ManyToManyField(UserExt, related_name="user_clubs")
-    club_pending_invites = models.ManyToManyField('UserExt', related_name="pending_invites")
-    club_library = models.ManyToManyField('ClubBook', related_name='clubs')
+    club_pending_invites = models.ManyToManyField('UserExt', related_name="pending_invites", blank=True)
+    club_library = models.ManyToManyField('ClubBook', related_name='clubs', blank=True)
 
 class ClubBook(models.Model):
     isbn = models.CharField(max_length=20)
@@ -63,9 +63,9 @@ class Post(models.Model):
     post_id = models.AutoField(primary_key=True)
     post_user = models.ForeignKey(UserExt, models.DO_NOTHING)
     post_title = models.TextField()
-    post_text = models.TextField()
+    post_text = models.TextField(blank=True)
     post_img = models.TextField(blank=True)
-    post_likes = models.ManyToManyField(UserExt, related_name="likes")
+    post_likes = models.ManyToManyField(UserExt, related_name="likes", blank=True)
     post_date = models.DateTimeField(auto_now_add=True)
     
     def setup_info(self, info_user, info_title=None, info_text="", info_image="", info_date=datetime.now()):
@@ -142,8 +142,8 @@ class BookForumPost(Post):
     
 class Meeting(models.Model):
     meeting_id = models.AutoField(primary_key=True)
-    meeting_name = models.CharField(max_length=100)
-    meeting_description = models.TextField()
+    meeting_name = models.CharField(max_length=100, blank=True)
+    meeting_description = models.TextField(blank=True)
     meeting_club = models.ForeignKey(Club, models.CASCADE)
     meeting_time = models.DateTimeField()
     
