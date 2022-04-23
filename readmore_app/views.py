@@ -237,7 +237,7 @@ def view_book(request, book_isbn):
         if book != None:
             try:
                 reviews = ReviewPost.objects.filter(post_isbn=get_isbn13(book['volumeInfo']['industryIdentifiers'])).annotate(num_likes=Count('post_likes')).order_by('-num_likes')
-                review_avg = ReviewPost.objects.filter(post_isbn="9781408855898").aggregate(Avg('post_rating'))['post_rating__avg']
+                review_avg = ReviewPost.objects.filter(post_isbn=book_isbn).aggregate(Avg('post_rating'))['post_rating__avg']
             except KeyError:
                 pass
 
