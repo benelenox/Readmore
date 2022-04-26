@@ -61,7 +61,7 @@ class PM(Chat):
 
 class Post(models.Model):
     post_id = models.AutoField(primary_key=True)
-    post_user = models.ForeignKey(UserExt, models.DO_NOTHING)
+    post_user = models.ForeignKey(UserExt, models.CASCADE)
     post_title = models.TextField()
     post_text = models.TextField(blank=True)
     post_img = models.TextField(blank=True)
