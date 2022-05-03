@@ -45,8 +45,8 @@ Readmore - Book Not Found
         <div>
             <h4>Publisher: {{ book.volumeInfo.publisher }}</h4>
             <h4>Publication Date: {{ book.volumeInfo.publishedDate }}</h4>
-            <h4>ISBN13: {% get_isbn_thirteen book.volumeInfo.indusdivyIdentifiers %}</h4>
-            <h4>ISBN10: {% get_isbn_ten book.volumeInfo.indusdivyIdentifiers %}</h4>
+            <h4>ISBN13: {% get_isbn_thirteen book.volumeInfo.industryIdentifiers %}</h4>
+            <h4>ISBN10: {% get_isbn_ten book.volumeInfo.industryIdentifiers %}</h4>
         </div>
         <div>
             <h2>Description</h2>

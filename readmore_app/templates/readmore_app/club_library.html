@@ -129,7 +129,8 @@ Readmore - {{ club.club_name }}
                     </a>
                     <div style="display: flex; flex-direction: column; justify-content: center;margin-top:10%; margin-bottom: 15px;">
                         <div><div align="center" colspan=3><div class="stars" style="--rating:{{ book.volumeInfo.averageRating }};margin-bottom:5%;"></div></div></div>
-                    <button style="{% if book.volumeInfo.industryIdentifiers.0.identifier in club_library_isbns %}display: none;{% endif %}" id="add{{ book.volumeInfo.industryIdentifiers.0.identifier }}" onclick="addBook('{{ book.volumeInfo.industryIdentifiers.0.identifier }}');" class="book_action">Add To Club Library</button>
+                    {% get_isbn_thirteen book.volumeInfo.industryIdentifiers as isbn13temp %}
+                    <button style="{% if isbn13temp in club_library_isbns %}display: none;{% endif %}" id="add{% get_isbn_thirteen book.volumeInfo.industryIdentifiers %}" onclick="addBook('{% get_isbn_thirteen book.volumeInfo.industryIdentifiers %}');" class="book_action">Add To Club Library</button>
                     </div>
                 </div>
                 

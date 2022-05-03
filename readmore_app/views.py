@@ -816,7 +816,7 @@ def add_to_user_library(request, isbn):
                 </div>
             <div style="display: flex; justify-content: center; margin-bottom: 15px;">
                <a href="/readmore/review_book/{book.isbn13}" style="display: block; margin-right: 20px;"><button class="book_action">Review Book</button></a>
-               <button onclick="delete_user_library_book('{{ book.id }}');" class="book_action" style="display: block; margin-left: 20px;">Delete Book</button>
+               <button onclick="delete_user_library_book('{ book.id }');" class="book_action" style="display: block; margin-left: 20px;">Delete Book</button>
             </div>
         </td>
         """

@@ -1,5 +1,6 @@
 {% extends parent_template|default:"base.html" %}
 {% load static %}
+{% load extras %}
 
 {% block title %}
 Readmore - Reading Log
@@ -126,7 +127,8 @@ Readmore - Reading Log
                         <div><div align="center" colspan=3><div class="stars" style="--rating:{{ book.volumeInfo.averageRating }};margin-bottom:5%;"></div></div></div>
                     </div>
                <div style="display: flex; align-content: center;margin-top:10%; margin-bottom: 15px;">
-               <button style="{% if book.volumeInfo.industryIdentifiers.0.identifier in reading_log_isbns %}display: none;{% endif %} bottom: 5%;" id="add{{ book.volumeInfo.industryIdentifiers.0.identifier }}" onclick="add_user_library_book('{{ book.volumeInfo.industryIdentifiers.0.identifier }}');" class="book_action">Add To Reading Log</button>
+               {% get_isbn_thirteen book.volumeInfo.industryIdentifiers as isbn13temp %}
+               <button style="{% if isbn13temp in reading_log_isbns %}display: none;{% endif %} bottom: 5%;" id="add{% get_isbn_thirteen book.volumeInfo.industryIdentifiers %}" onclick="add_user_library_book('{% get_isbn_thirteen book.volumeInfo.industryIdentifiers %}');" class="book_action">Add To Reading Log</button>
                </div>
             </div>
                 
